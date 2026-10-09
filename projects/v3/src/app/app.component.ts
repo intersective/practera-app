@@ -16,6 +16,7 @@ import { VersionCheckService } from "@v3/services/version-check.service";
 import { Subject } from "rxjs";
 import { takeUntil } from "rxjs/operators";
 import { ComponentCleanupService } from "./services/component-cleanup.service";
+import { beginAuthorizationCode, exchangeAuthorizationCode } from "./services/oauth-pkce";
 
 @Component({
   standalone: false,
@@ -122,6 +123,32 @@ export class AppComponent implements OnInit, OnDestroy {
       queryString = currentLocation.hash.substring(2);
     }
     searchParams = new URLSearchParams(queryString);
+
+    if (searchParams.has('code') && searchParams.has('state')) {
+      const code = searchParams.get('code');
+      const state = searchParams.get('state');
+      history.replaceState(null, '', window.location.pathname);
+      exchangeAuthorizationCode(code, state).then((token) => {
+        if (!token) return;
+        try { sessionStorage.setItem('pending_jwt_token', token); } catch { /* private browsing */ }
+        this.navigate(['auth', 'jwt']);
+      }).catch((err) => {
+        console.error('OAuth token exchange failed', err);
+      });
+      return;
+    }
+
+    if (searchParams.get('oauth') === '1' && searchParams.has('stack_uuid')) {
+      beginAuthorizationCode({
+        stackUuid: searchParams.get('stack_uuid'),
+        email: searchParams.get('email') || undefined,
+        redirect: searchParams.get('redirect') || undefined,
+        experienceUuid: searchParams.get('experienceUuid') || undefined,
+        brandColor: searchParams.get('brandColor') || undefined,
+        brandLogo: searchParams.get('brandLogo') || undefined,
+      }).catch((err) => console.error('OAuth authorize failed', err));
+      return;
+    }
 
     if (searchParams.has('experienceUuid')) {
       this.storage.setTabExperience(searchParams.get('experienceUuid'));
