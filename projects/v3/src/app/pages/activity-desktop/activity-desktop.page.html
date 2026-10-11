@@ -80,6 +80,18 @@
               id="task-content-simulation"
             ></app-h5p-player>
           }
+          @if (currentTask?.type === 'Simulation' && currentTask?.simulationType === 'cmi5') {
+            <app-cmi5-player
+              [assessmentId]="currentTask.assessmentId"
+              [activityId]="currentTask.activityId"
+              [taskId]="currentTask.id"
+              [contextId]="currentTask.contextId"
+              id="task-content-cmi5"
+            ></app-cmi5-player>
+          }
+          @if (currentTask?.type === 'Simulation' && !currentTask?.h5p && currentTask?.simulationType !== 'cmi5' && !currentTask?.scorm) {
+            <p class="ion-padding">This simulation could not be loaded.</p>
+          }
           @if (currentTask?.type === 'Simulation' && currentTask?.scorm) {
             <app-scorm-player
               [scorm]="currentTask.scorm"

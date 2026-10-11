@@ -85,13 +85,25 @@ export class TopicService {
     ).subscribe();
   }
 
-  fetchSimulation(topicId: number): Observable<H5pContent | null> {
+  fetchSimulation(topicId: number): Observable<{
+    simulationType: string | null;
+    h5p: H5pContent | null;
+    launchUrl: string | null;
+    assessmentId: number | null;
+    activityId: string | null;
+  } | null> {
     if (environment.demo) {
       return of({
-        contentUrl: 'https://example.com/h5p/content/',
-        librariesUrl: 'https://example.com/h5p/libraries/',
-        frameJs: 'https://example.com/h5p/frame.bundle.js',
-        frameCss: 'https://example.com/h5p/frame.css',
+        simulationType: 'h5p',
+        h5p: {
+          contentUrl: 'https://example.com/h5p/content/',
+          librariesUrl: 'https://example.com/h5p/libraries/',
+          frameJs: 'https://example.com/h5p/frame.bundle.js',
+          frameCss: 'https://example.com/h5p/frame.css',
+        },
+        launchUrl: null,
+        assessmentId: null,
+        activityId: null,
       });
     }
 
@@ -99,12 +111,39 @@ export class TopicService {
       `query simulation($id: ID!) {
         topic(id: $id) {
           id
+          simulationType
+          launchUrl
+          assessmentId
+          activityId
           h5p { contentUrl librariesUrl frameJs frameCss }
         }
       }`,
       { variables: { id: topicId } }
     ).pipe(
-      map((response: any) => response?.data?.topic?.h5p ?? null)
+      map((response: any) => {
+        const topic = response?.data?.topic;
+        if (!topic) return null;
+        return {
+          simulationType: topic.simulationType ?? null,
+          h5p: topic.h5p ?? null,
+          launchUrl: topic.launchUrl ?? null,
+          assessmentId: topic.assessmentId ?? null,
+          activityId: topic.activityId ?? null,
+        };
+      })
+    );
+  }
+
+  launchCmi5(assessmentId: number, activityId: string): Observable<string | null> {
+    return this.apolloService.graphQLMutate(
+      `mutation launchCmi5($assessmentId: Int!, $activityId: String!) {
+        launchCmi5Activity(assessmentId: $assessmentId, activityId: $activityId) {
+          launchUrl
+        }
+      }`,
+      { assessmentId, activityId }
+    ).pipe(
+      map((response: any) => response?.data?.launchCmi5Activity?.launchUrl ?? null)
     );
   }
 

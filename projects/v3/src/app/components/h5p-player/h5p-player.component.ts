@@ -54,15 +54,19 @@ export class H5pPlayerComponent implements AfterViewInit, OnDestroy {
     }
 
     try {
-      const { H5PStandalone } = await import('h5p-standalone');
+      const loaded: any = await import('h5p-standalone');
+      const exported = loaded.H5PStandalone ?? loaded.default ?? loaded;
+      const Player = typeof exported === 'function' ? exported : exported.H5P;
       const el = this.containerRef.nativeElement;
 
-      await new H5PStandalone(el, {
-        h5pJsonPath: this.h5p.contentUrl,
+      const root = this.h5p.contentUrl.replace(/\/$/, '');
+      const libraries = this.h5p.librariesUrl.replace(/\/$/, '');
+      await new Player(el, {
+        h5pJsonPath: root,
         frameJs: this.h5p.frameJs,
         frameCss: this.h5p.frameCss,
-        librariesPath: this.h5p.librariesUrl,
-        contentJsonPath: `${this.h5p.contentUrl}content.json`,
+        librariesPath: libraries,
+        contentJsonPath: `${root}/content`,
       });
 
       this.zone.run(() => {
@@ -74,9 +78,9 @@ export class H5pPlayerComponent implements AfterViewInit, OnDestroy {
         this.zone.run(() => this.handleXapi(event));
       };
       window.addEventListener('message', this.xapiListener);
-    } catch {
+    } catch (err) {
       this.zone.run(() => {
-        this.error = 'Failed to load H5P content.';
+        this.error = err instanceof Error ? err.message : 'Failed to load H5P content.';
         this.isLoading = false;
         this.cdr.markForCheck();
       });

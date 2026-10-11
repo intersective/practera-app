@@ -1,0 +1,38 @@
+name: Semgrep
+
+on:
+  pull_request:
+  push:
+    branches: [trunk, main, release/live]
+
+jobs:
+  semgrep:
+    name: semgrep
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install semgrep
+      - name: Apply deterministic fixes
+        if: github.event_name == 'pull_request'
+        run: |
+          if git log -1 --pretty=%s | grep -q 'apply Semgrep autofix'; then
+            echo "head commit is already an autofix"
+            exit 0
+          fi
+          semgrep scan --config p/default --autofix --metrics=off || true
+          if git diff --quiet; then
+            echo "no deterministic fixes"
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -u
+          git commit -m "fix: apply Semgrep autofix"
+          git push || echo "could not push autofix; scan still runs"
+      - name: Scan
+        run: semgrep scan --config p/default --error --metrics=off

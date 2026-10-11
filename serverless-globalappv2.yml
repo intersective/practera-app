@@ -1,6 +1,6 @@
 ## deprecated
 service: ${env:STACK_NAME}-globalappv2
-frameworkVersion: '2'
+frameworkVersion: '4'
 useDotenv: true
 enableLocalInstallationFallback: true
 

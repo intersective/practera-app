@@ -415,7 +415,7 @@ export class ActivityDesktopPage {
       if (task.type === 'Simulation' && !task.h5p && !task.scorm) {
         await firstValueFrom(
           this.activityService.currentTask$.pipe(
-            filter(t => t != null && t.id === task.id && (!!t.h5p || !!t.scorm)),
+            filter(t => t != null && t.id === task.id && (t.h5p !== undefined || t.simulationType !== undefined || !!t.scorm)),
             first(),
           )
         );
@@ -516,12 +516,16 @@ export class ActivityDesktopPage {
         );
         return;
       }
-      if (type !== 'scormXapiStatements' && type !== 'h5pXapiStatements') return;
+      if (type !== 'scormXapiStatements' && type !== 'h5pXapiStatements' && type !== 'cmi5XapiStatements') return;
       if (!Array.isArray(data.statements) || data.statements.length === 0) return;
 
+      const assessmentId = data.assessmentId
+        ?? (data.activitySource === 'cmi5' && this.currentTask?.simulationType === 'cmi5'
+          ? this.currentTask.assessmentId
+          : undefined);
       await firstValueFrom(
         this.topicService.storeXapiStatements(data.statements, {
-          assessmentId: data.assessmentId,
+          assessmentId,
           activitySource: data.activitySource,
         })
       );

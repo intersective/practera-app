@@ -1,0 +1,58 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": [
+    "config:recommended"
+  ],
+  "labels": [
+    "dependencies"
+  ],
+  "osvVulnerabilityAlerts": true,
+  "vulnerabilityAlerts": {
+    "labels": [
+      "security"
+    ],
+    "automerge": true
+  },
+  "packageRules": [
+    {
+      "description": "No patched release exists. Do not open an update.",
+      "matchPackageNames": [
+        "braces"
+      ],
+      "enabled": false
+    },
+    {
+      "description": "Majors stay as pull requests.",
+      "matchUpdateTypes": [
+        "major"
+      ],
+      "automerge": false
+    },
+    {
+      "description": "Patch and minor updates merge when required checks are green.",
+      "matchUpdateTypes": [
+        "minor",
+        "patch",
+        "pin",
+        "digest"
+      ],
+      "automerge": true
+    },
+    {
+      "description": "Non-major security fixes are labeled for live deploy.",
+      "matchUpdateTypes": [
+        "minor",
+        "patch",
+        "pin",
+        "digest"
+      ],
+      "matchCategories": [
+        "security"
+      ],
+      "labels": [
+        "security"
+      ],
+      "automerge": true
+    }
+  ]
+}

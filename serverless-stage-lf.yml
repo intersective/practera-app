@@ -1,14 +1,13 @@
 ## deprecated
 service: ${env:STACK_NAME}-${env:SUBDOMAIN}
 
-frameworkVersion: '2'
+frameworkVersion: '4'
 useDotenv: true
 
 
 package:
-  exclude:
-    - .github/**
-  include:
+  patterns:
+    - '!.github/**'
     - artifacts/**/*
     - serverless.yml
     - .env

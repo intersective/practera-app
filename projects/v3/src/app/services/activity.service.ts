@@ -65,6 +65,10 @@ export interface Task {
   };
   assessmentType?: string;
   h5p?: H5pContent;
+  simulationType?: string | null;
+  launchUrl?: string | null;
+  assessmentId?: number | null;
+  activityId?: string | null;
   scorm?: {
     contentUrl: string;
     launch: string;
@@ -543,8 +547,15 @@ export class ActivityService {
           return;
         }
         try {
-          const h5p = await firstValueFrom(this.topic.fetchSimulation(task.id));
-          this._currentTask$.next({ ...task, h5p });
+          const simulation = await firstValueFrom(this.topic.fetchSimulation(task.id));
+          this._currentTask$.next({
+            ...task,
+            h5p: simulation?.h5p ?? undefined,
+            simulationType: simulation?.simulationType ?? null,
+            launchUrl: simulation?.launchUrl ?? null,
+            assessmentId: simulation?.assessmentId ?? task.assessmentId ?? null,
+            activityId: simulation?.activityId ?? null,
+          });
         } catch (error) {
           throw new Error(error);
         }

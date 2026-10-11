@@ -1,0 +1,20 @@
+<div class="cmi5-wrapper">
+  @if (isLoading) {
+    <div class="cmi5-loading">
+      <ion-spinner name="crescent"></ion-spinner>
+      <p>Loading simulation...</p>
+    </div>
+  }
+  @if (error) {
+    <p class="cmi5-error">{{ error }}</p>
+  }
+  @if (launchUrl) {
+    <iframe
+      class="cmi5-frame"
+      [src]="launchUrl"
+      title="cmi5 activity"
+      allow="fullscreen; xr-spatial-tracking; gyroscope; accelerometer"
+      allowfullscreen
+    ></iframe>
+  }
+</div>

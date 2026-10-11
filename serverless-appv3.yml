@@ -1,5 +1,5 @@
 service: ${env:STACK_NAME}-${env:ROOTSTACK}
-frameworkVersion: '3'
+frameworkVersion: '4'
 useDotenv: true
 
 

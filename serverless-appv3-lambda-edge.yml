@@ -1,6 +1,6 @@
 ## deprecated
 service: ${env:STACK_NAME}-lambda-edge-${env:ROOTSTACK}
-frameworkVersion: "2"
+frameworkVersion: "4"
 useDotenv: true
 
 provider:
