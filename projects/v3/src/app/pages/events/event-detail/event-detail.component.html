@@ -35,18 +35,28 @@
       @if (event.videoConference) {
         @if (!event.isBooked) {
           <ion-item class="zoom-meeting">
-            <img src="./assets/icon_zoom_24.svg" alt="booked zoom meeting">
-            <div class="subtitle-1 ion-text-capitalize" i18n> {{ event.videoConference.provider }} Meeting </div>
+            <ion-icon class="leading-icon gray-2" name="videocam-outline"></ion-icon>
+            <div class="subtitle-1">{{ meetingLabel(event.videoConference) }}</div>
           </ion-item>
         }
         @if (event.isBooked) {
           <ion-item class="zoom-meeting" (click)="openMeetingLink(event.videoConference.url)">
-            <img src="./assets/icon_zoom_24.svg" alt="open zoom meeting">
+            <ion-icon class="leading-icon gray-2" name="videocam-outline"></ion-icon>
             <div class="item-content">
-              <p class="subtitle-1"> Join {{ event.videoConference.provider }} meeting </p>
-              <p class="caption gray-2"> ID: {{ event.videoConference.meetingId }} </p>
+              <p class="subtitle-1">{{ meetingLabel(event.videoConference) }}</p>
+              @if (event.videoConference.meetingId) {
+                <p class="caption gray-2">ID: {{ event.videoConference.meetingId }}</p>
+              }
             </div>
             <ion-icon slot="end" name="chevron-forward-outline"></ion-icon>
+          </ion-item>
+        }
+      }
+      @if (event.attachments?.length) {
+        @for (file of event.attachments; track file.url) {
+          <ion-item (click)="openMeetingLink(file.url)">
+            <ion-icon class="leading-icon gray-2" name="document-outline"></ion-icon>
+            <div class="subtitle-1">{{ file.name }}</div>
           </ion-item>
         }
       }

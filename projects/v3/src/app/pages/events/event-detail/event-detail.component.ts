@@ -33,6 +33,14 @@ export class EventDetailComponent implements OnInit {
     this.isMobile = this.utils.isMobile();
   }
 
+  meetingLabel(conference: { provider?: string; url?: string }): string {
+    const url = conference?.url ?? '';
+    if (/zoom\.us/i.test(url)) return 'Join Zoom';
+    if (/teams\.microsoft\.com|teams\.live\.com/i.test(url)) return 'Join Microsoft Teams';
+    if (/meet\.google\.com/i.test(url)) return 'Join Google Meet';
+    return conference?.provider ? `Join ${conference.provider}` : 'Join meeting';
+  }
+
   ngOnInit() {
     this.ctaIsActing = false;
   }

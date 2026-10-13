@@ -179,6 +179,14 @@ export class AssessmentService {
                 }
               }
             }
+            reviews {
+              id status modified
+              reviewer { name }
+              answers {
+                questionId answer comment
+              }
+            }
+            aggregatedScore
           }
         }
       }`,
@@ -380,6 +388,9 @@ export class AssessmentService {
     }
 
     const firstSubmission = data.assessment.submissions[0];
+    const reviewNames = Array.isArray(firstSubmission.reviews)
+      ? firstSubmission.reviews.map((review) => this.checkReviewer(review.reviewer)).filter(Boolean)
+      : [];
     let submission: Submission = {
       id: firstSubmission.id,
       status: this._submissionStatus(firstSubmission.status),
@@ -390,9 +401,11 @@ export class AssessmentService {
       completed: firstSubmission.completed,
       pendingReviewerName: firstSubmission.pendingReviewerName || null,
       signOffs: firstSubmission.signOffs || [],
-      reviewerName: firstSubmission.review
-        ? this.checkReviewer(firstSubmission.review.reviewer)
-        : null,
+      reviewerName: reviewNames.length
+        ? reviewNames.join(', ')
+        : (firstSubmission.review
+          ? this.checkReviewer(firstSubmission.review.reviewer)
+          : null),
       answers: {},
     };
 
@@ -431,7 +444,10 @@ export class AssessmentService {
       return null;
     }
     const firstSubmission = data.assessment.submissions[0];
-    const firstSubmissionReview = firstSubmission.review;
+    const reviewList = Array.isArray(firstSubmission.reviews) && firstSubmission.reviews.length
+      ? firstSubmission.reviews
+      : (firstSubmission.review ? [firstSubmission.review] : []);
+    const firstSubmissionReview = reviewList[0];
     if (!firstSubmissionReview) {
       return null;
     }
@@ -451,15 +467,25 @@ export class AssessmentService {
       return review;
     }
 
-    firstSubmissionReview.answers.forEach((eachAnswer) => {
-      eachAnswer.answer = this._normaliseAnswer(
-        eachAnswer.questionId,
-        eachAnswer.answer || eachAnswer.file, // we do this because answer could be a file
-      );
-      review.answers[eachAnswer.questionId] = {
-        answer: eachAnswer.answer,
-        comment: eachAnswer.comment,
-      };
+    reviewList.forEach((oneReview) => {
+      const reviewerName = this.checkReviewer(oneReview.reviewer);
+      (oneReview.answers || []).forEach((eachAnswer) => {
+        eachAnswer.answer = this._normaliseAnswer(
+          eachAnswer.questionId,
+          eachAnswer.answer || eachAnswer.file,
+        );
+        const existing = review.answers[eachAnswer.questionId];
+        const text = eachAnswer.answer;
+        const labelled = reviewList.length > 1 && reviewerName && typeof text === 'string'
+          ? `${reviewerName}: ${text}`
+          : text;
+        review.answers[eachAnswer.questionId] = {
+          answer: existing && typeof existing.answer === 'string' && typeof labelled === 'string'
+            ? `${existing.answer}\n\n${labelled}`
+            : labelled,
+          comment: [existing?.comment, eachAnswer.comment].filter(Boolean).join('\n\n') || eachAnswer.comment,
+        };
+      });
     });
     return review;
   }

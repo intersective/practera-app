@@ -41,6 +41,7 @@ export interface Event {
     meetingId: string;
     password: string
   };
+  attachments?: Array<{ name: string; url: string }>;
   type?: string;
   isMultiDay?: boolean; // optional, only appear when event is multi day
   multiDayInfo?: {
@@ -116,6 +117,7 @@ export class EventService {
             meetingId
             password
           }
+          attachments { name url }
           assessment {
             id
             contextId
@@ -168,6 +170,7 @@ export class EventService {
           meetingId: event.videoConference.meetingId,
           password: event.videoConference.password,
         } : null,
+        attachments: Array.isArray(event.attachments) ? event.attachments : [],
         type: event.type,
         allDay: event.isAllDay ?? false,
       };
