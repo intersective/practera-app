@@ -53,8 +53,22 @@ export interface PkceStart {
   brandLogo?: string;
 }
 
+/** The login guard can run while this is still starting. A second call must not replace the verifier. */
+let authorizationStart: Promise<void> | null = null;
+
 /** Leave this origin for login-api /oauth2/authorize. Verifier stays in sessionStorage. */
-export async function beginAuthorizationCode(start: PkceStart): Promise<void> {
+export function beginAuthorizationCode(start: PkceStart): Promise<void> {
+  if (authorizationStart) return authorizationStart;
+  authorizationStart = startAuthorizationCode(start).catch((err) => {
+    authorizationStart = null;
+    throw err;
+  });
+  return authorizationStart;
+}
+
+async function startAuthorizationCode(start: PkceStart): Promise<void> {
+  // Marker first, so the login guard can see the handoff before the digest finishes.
+  sessionStorage.setItem(STORE_KEY, JSON.stringify({ pending: true, ...start }));
   const verifier = randomVerifier();
   const state = randomVerifier();
   const challenge = await s256(verifier);
@@ -81,12 +95,21 @@ export async function beginAuthorizationCode(start: PkceStart): Promise<void> {
  * Trade ?code= for an access token. Returns the token, or null when this page
  * load is not an authorization-code callback.
  */
-export async function exchangeAuthorizationCode(code: string, state: string | null): Promise<string | null> {
+let authorizationExchange: Promise<string | null> | null = null;
+
+export function exchangeAuthorizationCode(code: string, state: string | null): Promise<string | null> {
+  if (authorizationExchange) return authorizationExchange;
+  authorizationExchange = exchangeOnce(code, state);
+  return authorizationExchange;
+}
+
+async function exchangeOnce(code: string, state: string | null): Promise<string | null> {
   const raw = sessionStorage.getItem(STORE_KEY);
   if (!raw || !code) return null;
-  sessionStorage.removeItem(STORE_KEY);
-  const stored = JSON.parse(raw) as { verifier: string; state: string; redirectUri: string };
-  if (!state || stored.state !== state || !stored.verifier) {
+  const stored = JSON.parse(raw) as { verifier?: string; state?: string; redirectUri?: string };
+  if (!stored.verifier) return null;
+  if (!state || stored.state !== state) {
+    sessionStorage.removeItem(STORE_KEY);
     throw new Error('OAuth state mismatch');
   }
   const body = new URLSearchParams({
@@ -102,6 +125,7 @@ export async function exchangeAuthorizationCode(code: string, state: string | nu
     body,
   });
   const json = await res.json().catch(() => ({}));
+  sessionStorage.removeItem(STORE_KEY);
   if (!res.ok || !json.access_token) {
     throw new Error(json.error_description || 'Token request failed');
   }
