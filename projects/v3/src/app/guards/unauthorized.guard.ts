@@ -5,6 +5,18 @@ import { Observable } from 'rxjs';
 import { UtilsService } from '@v3/services/utils.service';
 import { environment } from '@v3/environments/environment';
 
+/** True while Authorization Code + PKCE is starting or returning to this app. */
+function oauthHandoffInProgress(): boolean {
+  const params = new URLSearchParams(window.location.search);
+  if (params.get('oauth') === '1' && params.has('stack_uuid')) return true;
+  if (params.has('code') && params.has('state')) return true;
+  try {
+    return Boolean(sessionStorage.getItem('oauth_pkce'));
+  } catch {
+    return false;
+  }
+}
+
 @Injectable()
 export class UnauthorizedGuard implements CanActivate {
 
@@ -24,6 +36,11 @@ export class UnauthorizedGuard implements CanActivate {
       // skip global login on registration page
       if (state.url.includes('registration')) {
         return true;
+      }
+      // Stack handoff (?oauth=1, or the ?code=&state= callback) is still in
+      // progress. Sending the browser to global login here abandons it.
+      if (oauthHandoffInProgress()) {
+        return false;
       }
       // redirect to global login
       this.utils.openUrl(`${ environment.globalLoginUrl }?referrer=${ window.location.hostname }&stackUuid=${ environment.stackUuid }`);

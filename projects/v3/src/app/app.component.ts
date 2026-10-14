@@ -57,6 +57,9 @@ export class AppComponent implements OnInit, OnDestroy {
     private cleanupService: ComponentCleanupService,
   ) {
     this.initializeApp();
+    // Before the first route guard. / redirects to /auth/login, and that guard
+    // would send an OAuth handoff back to global login.
+    this.magicLinkRedirect(window.location);
 
     this.router.events.subscribe(event => {
       if (event instanceof NavigationStart) {
