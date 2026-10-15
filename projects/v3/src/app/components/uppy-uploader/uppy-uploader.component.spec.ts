@@ -98,9 +98,13 @@ describe('UppyUploaderComponent dashboard rendering', () => {
       restrictions: { allowedFileTypes: ['image/*'] },
     });
     const uploader = jasmine.createSpyObj<UppyUploaderService>(
-      'UppyUploaderService', ['createUppyInstance'], { uppyProps: { ...new UppyUploaderService(null!, null!).uppyProps } }
+      'UppyUploaderService', ['createUppyInstance', 'getUploadLimit', 'setUploadLimit'], { uppyProps: { ...new UppyUploaderService(null!, null!).uppyProps } }
     );
     uploader.createUppyInstance.and.returnValue(uppy);
+    uploader.getUploadLimit.and.resolveTo(8388608);
+    uploader.setUploadLimit.and.callFake((instance, source, limit) => {
+      new UppyUploaderService(null!, null!).setUploadLimit(instance, source, limit);
+    });
 
     TestBed.configureTestingModule({
       declarations: [UppyUploaderComponent],

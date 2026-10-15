@@ -5,6 +5,7 @@ import {
   TusUploadResponse,
   UppyUploadSource,
 } from './uppy-uploader.service';
+import { formatUploadSize } from './upload-size';
 import { environment } from '@v3/environments/environment';
 import { NotificationsService } from './../../services/notifications.service';
 import { Component, OnInit, AfterViewInit, Input, Output, EventEmitter, OnDestroy, ElementRef, ViewChild } from '@angular/core';
@@ -36,6 +37,7 @@ export class UppyUploaderComponent implements OnInit, AfterViewInit, OnDestroy {
   uppyProps: any;
 
   s3Info: TusUploadResponse;
+  private destroyed = false;
 
   constructor(
     private notificationsService: NotificationsService,
@@ -46,7 +48,8 @@ export class UppyUploaderComponent implements OnInit, AfterViewInit, OnDestroy {
     this.uppyProps = {
       ...this.uppyUploaderService.uppyProps,
       height: '500px',
-      note: "Upload a file here",
+      note: 'Checking maximum file size…',
+      disabled: true,
     };
   }
 
@@ -64,6 +67,14 @@ export class UppyUploaderComponent implements OnInit, AfterViewInit, OnDestroy {
       onUploadSuccess: this.onUploadSuccess.bind(this),
     }, {
       allowedFileTypes: this.loadAllowedFileTypes(),
+    });
+    this.uppy.setState({ allowNewUpload: false });
+    this.uppyUploaderService.getUploadLimit(this.source, this.tusEndpoint).then(limit => {
+      if (this.destroyed) return;
+      this.uppyUploaderService.setUploadLimit(this.uppy, this.source, limit);
+      this.uppyProps = { ...this.uppyProps, disabled: false, note: `Maximum file size: ${formatUploadSize(this.uppy.opts.restrictions.maxFileSize)}.` };
+      this.uppy.setState({ allowNewUpload: true });
+      this.uppy.getPlugin<Dashboard<FileMetadata, FileBody>>('Dashboard')?.setOptions(this.uppyProps);
     });
   }
 
@@ -107,6 +118,7 @@ export class UppyUploaderComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   ngOnDestroy() {
+    this.destroyed = true;
     this.uppy?.destroy();
   }
 
