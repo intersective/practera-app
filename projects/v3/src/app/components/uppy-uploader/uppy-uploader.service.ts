@@ -2,8 +2,9 @@
 
 import { ModalController } from '@ionic/angular/lazy';
 import { Injectable } from '@angular/core';
-import { UploadResult, Uppy, UppyFile, UppyOptions } from '@uppy/core';
-import Tus from '@uppy/tus';
+import { UploadResult, Uppy, UppyFile } from '@uppy/core';
+import Tus, { TusDetailedError } from '@uppy/tus';
+import { formatUploadSize, sourceUploadLimit } from './upload-size';
 import { environment } from '../../../environments/environment';
 import { BrowserStorageService } from '../../services/storage.service';
 
@@ -130,7 +131,8 @@ export class UppyUploaderService {
     onAfterResponse: (req: any, res: any) => void,
     onUploadSuccess: (file: UppyFile<any, any>, response: any) => void
   }, options?: {
-    allowedFileTypes: string[];
+    allowedFileTypes?: string[];
+    maxFileSize?: number;
   }): Uppy<FileMetadata, FileBody> {
 
     if (!environment.uppyConfig?.restrictions || !environment.stackName) {
@@ -141,16 +143,17 @@ export class UppyUploaderService {
       throw new Error('Unsupported upload source.');
     }
 
-    const restrictions = { ...environment.uppyConfig.restrictions, ...options };
+    const maxFileSize = sourceUploadLimit(source, options?.maxFileSize);
+    const restrictions = { ...environment.uppyConfig.restrictions, ...options, maxFileSize };
     const requestFiles = new WeakMap<object, UppyFile<FileMetadata, FileBody>>();
 
-    const uppyOptions: UppyOptions<FileMetadata, FileBody> = {
+    const uppyOptions = {
       debug: false,
       autoProceed: false,
       restrictions,
     };
 
-    const uppy = new Uppy(uppyOptions)
+    const uppy = new Uppy<FileMetadata, FileBody>(uppyOptions)
       .use(Tus, {
       headers: {
         'apikey': this.storageService.getUser().apikey,
@@ -159,6 +162,16 @@ export class UppyUploaderService {
       },
       endpoint: uploadUrl,
       retryDelays: [0, 1000, 3000, 5000],
+      onShouldRetry: (error, _attempt, _options, next) =>
+        error.originalResponse?.getStatus() !== 413 && next(error),
+      onError: (error) => {
+        const responseError = error as TusDetailedError;
+        if (responseError.originalResponse?.getStatus() === 413) {
+          const file = responseError.originalRequest && requestFiles.get(responseError.originalRequest);
+          error.message = this.sizeError(uppy.opts.restrictions.maxFileSize)
+            .replace('%{file}', file?.name || 'This file');
+        }
+      },
       onBeforeRequest: (req, file) => {
         requestFiles.set(req, file);
       },
@@ -193,9 +206,50 @@ export class UppyUploaderService {
       },
     });
 
+    this.setUploadLimit(uppy, source, maxFileSize);
     this.initializeEventHandlers(uppy, events?.onUploadSuccess);
 
     return uppy;
+  }
+
+  /** Read the source-specific deployment policy before enabling selection. */
+  async getUploadLimit(source: UppyUploadSource, uploadUrl: string): Promise<number> {
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 5000);
+    try {
+      const response = await fetch(uploadUrl, {
+        method: 'OPTIONS',
+        headers: {
+          apikey: this.storageService.getUser().apikey,
+          source,
+          stackName: environment.stackName,
+          'Tus-Resumable': '1.0.0',
+        },
+        signal: controller.signal,
+      });
+      const raw = response.headers.get('Tus-Max-Size');
+      const limit = raw && /^[1-9]\d*$/.test(raw) ? Number(raw) : NaN;
+      if (response.ok && Number.isSafeInteger(limit) && limit > 0) {
+        return sourceUploadLimit(source, limit);
+      }
+    } catch {
+      // Older servers and offline sessions still use the known source policy.
+    } finally {
+      clearTimeout(timeout);
+    }
+    return sourceUploadLimit(source);
+  }
+
+  setUploadLimit(uppy: Uppy<FileMetadata, FileBody>, source: UppyUploadSource, limit: number): void {
+    const maxFileSize = sourceUploadLimit(source, limit);
+    uppy.setOptions({
+      restrictions: { maxFileSize },
+      locale: { strings: { exceedsSize: this.sizeError(maxFileSize) } },
+    });
+  }
+
+  private sizeError(limit: number): string {
+    return `%{file} exceeds the ${formatUploadSize(limit)} limit. Choose a smaller file.`;
   }
 
   parseTusUploadResponse(body: string): TusUploadResponse {

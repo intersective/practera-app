@@ -164,6 +164,21 @@ describe('Uppy uploader TUS request handling', () => {
     expect(flow.uploadSuccess).not.toHaveBeenCalled();
   });
 
+  for (const method of ['POST', 'PATCH'] as const) {
+    it(`shows a size message for HTTP 413 on ${method} without retrying or completing`, async () => {
+      const flow = uploader(method === 'POST' ? { postStatus: 413 } : { patchStatus: 413 });
+      flow.uppy.getPlugin<Tus<any, any>>('Tus')!.setOptions({ retryDelays: [0, 1] });
+      const result = await flow.uppy.upload();
+      expect(result.failed.length).toBe(1);
+      expect(flow.errors[0].originalResponse?.getStatus()).toBe(413);
+      expect(flow.errors[0].message).toContain('8 MiB');
+      expect(flow.errors[0].message).toContain('Choose a smaller file');
+      expect(flow.errors[0].message).not.toContain('unexpected response');
+      expect(flow.requests.map(req => req.method)).toEqual(method === 'POST' ? ['POST'] : ['POST', 'PATCH']);
+      expect(flow.uploadSuccess).not.toHaveBeenCalled();
+    });
+  }
+
   it('rejects malformed final metadata before notifying successful completion', async () => {
     const flow = uploader({ malformed: true });
     const result = await flow.uppy.upload();

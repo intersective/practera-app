@@ -8,6 +8,7 @@ import { ChangeDetectorRef, Component, ElementRef, Input, NgZone, OnDestroy, OnI
 import { AbstractControl } from '@angular/forms';
 import { Subject } from 'rxjs';
 import { Uppy, UppyFile } from '@uppy/core';
+import { formatUploadSize, sourceUploadLimit } from '../uppy-uploader/upload-size';
 import { environment } from '../../../environments/environment';
 import { FileInput, Question, SubmitActions, TusFileResponse } from '../types/assessment';
 import Dashboard, { DashboardOptions } from '@uppy/dashboard';
@@ -44,7 +45,8 @@ export class FileUploadComponent implements OnInit, OnDestroy {
   uppy: Uppy<FileMetadata, FileBody>;
 
   // Uppy UI
-  uppyProps = { ...UPPY_PROPS };
+  uppyProps = { ...UPPY_PROPS, disabled: true, note: 'Checking maximum file size…' };
+  private destroyed = false;
 
   @Input() source!: UppyUploadSource;
   @Input() submitActions$: Subject<SubmitActions>;
@@ -112,27 +114,38 @@ export class FileUploadComponent implements OnInit, OnDestroy {
   ) { }
 
   ngOnDestroy(): void {
-    this.uppy.destroy();
+    this.destroyed = true;
+    this.uppy?.destroy();
   }
 
   ngOnInit() {
     this.initiateUppy();
-    this.uppyProps.note = this.noteMessage();
+    this.uppy.setState({ allowNewUpload: false });
     this._showSavedAnswers();
+    this.uppyUploaderService.getUploadLimit(this.source, this.uploadUrl).then(limit => {
+      if (this.destroyed) return;
+      this.ngZone.run(() => {
+        this.uppyUploaderService.setUploadLimit(this.uppy, this.source, limit);
+        this.uppyProps = { ...this.uppyProps, disabled: false, note: this.noteMessage() };
+        this.uppy.setState({ allowNewUpload: true });
+        this.uppy.getPlugin<Dashboard<FileMetadata, FileBody>>('Dashboard')?.setOptions(this.uppyProps);
+        this.cdr.markForCheck();
+      });
+    });
   }
 
   // size notice based on fileType
   noteMessage(): string {
-    const size = environment.uppyConfig.restrictions.maxFileSize;
+    const size = formatUploadSize(this.uppy?.opts?.restrictions.maxFileSize ?? sourceUploadLimit(this.source || 'assessment'));
     if (this.question.fileType === 'video') {
-      return `Videos only, up to ${size} MB`;
+      return `Videos only, up to ${size} per file`;
     }
 
     if (this.question.fileType === 'image') {
-      return `Images only, up to ${size} MB`;
+      return `Images only, up to ${size} per file`;
     }
 
-    return `Docs, images and videos only, up to ${size} MB`;
+    return `Docs, images and videos only, up to ${size} per file`;
   }
 
   private initiateUppy() {
