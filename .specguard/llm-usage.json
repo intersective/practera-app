@@ -1,0 +1,40 @@
+{
+  "version": 1,
+  "updatedAt": "2026-10-19T00:29:47.326Z",
+  "totals": {
+    "calls": 14,
+    "inputTokens": 102285,
+    "outputTokens": 35856,
+    "estimatedUsd": 0.844695,
+    "unpricedCalls": 0,
+    "replayedCalls": 0
+  },
+  "byPipeline": {
+    "cluster": {
+      "calls": 1,
+      "inputTokens": 10308,
+      "outputTokens": 5157,
+      "estimatedUsd": 0.108279,
+      "unpricedCalls": 0,
+      "replayedCalls": 0
+    },
+    "spec-draft": {
+      "calls": 13,
+      "inputTokens": 91977,
+      "outputTokens": 30699,
+      "estimatedUsd": 0.736416,
+      "unpricedCalls": 0,
+      "replayedCalls": 0
+    }
+  },
+  "byModel": {
+    "claude-sonnet-4-5": {
+      "calls": 14,
+      "inputTokens": 102285,
+      "outputTokens": 35856,
+      "estimatedUsd": 0.844695,
+      "unpricedCalls": 0,
+      "replayedCalls": 0
+    }
+  }
+}

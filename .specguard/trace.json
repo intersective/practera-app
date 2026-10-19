@@ -1,0 +1,2503 @@
+{
+  "version": 1,
+  "generated": "2026-10-19T04:55:48.947Z",
+  "system": {
+    "id": "system",
+    "title": "Practera Learner App",
+    "value": "Practera provides learners with a single, mobile-responsive interface to access all learning activities, submit assessments, communicate with peers and mentors, track deadlines, and view their skill development—supporting engagement and success throughout their experiential learning journey."
+  },
+  "nodes": [
+    {
+      "id": "system",
+      "specKey": "system",
+      "kind": "system",
+      "title": "Practera Learner App",
+      "status": "active",
+      "value": "Practera provides learners with a single, mobile-responsive interface to access all learning activities, submit assessments, communicate with peers and mentors, track deadlines, and view their skill development—supporting engagement and success throughout their experiential learning journey.",
+      "unit": ".",
+      "ownedFiles": [],
+      "tests": [],
+      "docs": [],
+      "history": [],
+      "claims": [],
+      "counts": {
+        "claims": 0,
+        "proven": 0,
+        "failed": 0,
+        "stale": 0,
+        "unexercised": 0,
+        "error": 0,
+        "unproven": 0,
+        "withTests": 0
+      }
+    },
+    {
+      "id": "achievements-credentials",
+      "specKey": "capabilities/achievements-credentials",
+      "kind": "capability",
+      "title": "Achievements & Credentials",
+      "status": "active",
+      "value": "Recognizes learner accomplishments by displaying earned badges, certificates, and credentials with details and achievement unlock animations.",
+      "parent": "system",
+      "unit": ".",
+      "ownedFiles": [
+        "projects/v3/src/app/components/achievement-pop-up/achievement-pop-up.component.html",
+        "projects/v3/src/app/components/achievement-pop-up/achievement-pop-up.component.scss",
+        "projects/v3/src/app/components/achievement-pop-up/achievement-pop-up.component.spec.ts",
+        "projects/v3/src/app/components/achievement-pop-up/achievement-pop-up.component.ts",
+        "projects/v3/src/app/components/badge-detail-modal/badge-detail-modal.component.html",
+        "projects/v3/src/app/components/badge-detail-modal/badge-detail-modal.component.scss",
+        "projects/v3/src/app/components/badge-detail-modal/badge-detail-modal.component.spec.ts",
+        "projects/v3/src/app/components/badge-detail-modal/badge-detail-modal.component.ts",
+        "projects/v3/src/app/pages/badges-certificates/badges-certificates-routing.module.ts",
+        "projects/v3/src/app/pages/badges-certificates/badges-certificates.module.ts",
+        "projects/v3/src/app/pages/badges-certificates/badges-certificates.page.html",
+        "projects/v3/src/app/pages/badges-certificates/badges-certificates.page.scss",
+        "projects/v3/src/app/pages/badges-certificates/badges-certificates.page.spec.ts",
+        "projects/v3/src/app/pages/badges-certificates/badges-certificates.page.ts",
+        "projects/v3/src/app/services/achievement.service.ts"
+      ],
+      "tests": [
+        "projects/v3/src/app/components/achievement-pop-up/achievement-pop-up.component.spec.ts",
+        "projects/v3/src/app/components/badge-detail-modal/badge-detail-modal.component.spec.ts",
+        "projects/v3/src/app/pages/badges-certificates/badges-certificates.page.spec.ts",
+        "projects/v3/src/app/services/achievement.service.spec.ts"
+      ],
+      "docs": [],
+      "history": [],
+      "claims": [
+        {
+          "id": "all-earned-listed",
+          "ref": "capabilities/achievements-credentials#all-earned-listed",
+          "text": "All achievements earned by the learner are displayed on the badges and certificates page.",
+          "proof": "unproven",
+          "tests": []
+        },
+        {
+          "id": "achievement-metadata-shown",
+          "ref": "capabilities/achievements-credentials#achievement-metadata-shown",
+          "text": "Each achievement displays its name, description, badge image, points (if configured), earned date (if earned), and lock or checkmark icon indicating earned status.",
+          "proof": "unproven",
+          "tests": []
+        },
+        {
+          "id": "certificate-url-available",
+          "ref": "capabilities/achievements-credentials#certificate-url-available",
+          "text": "Achievements with certificates provide a downloadable certificate URL accessible from the badge detail view.",
+          "proof": "unproven",
+          "tests": []
+        },
+        {
+          "id": "sorted-most-recent-first",
+          "ref": "capabilities/achievements-credentials#sorted-most-recent-first",
+          "text": "Achievements are sorted by earned date with the most recently earned appearing first.",
+          "proof": "unproven",
+          "tests": []
+        },
+        {
+          "id": "badge-type-filter",
+          "ref": "capabilities/achievements-credentials#badge-type-filter",
+          "text": "Learners can switch between viewing badges and super badges using a segment control that filters the visible list.",
+          "proof": "unproven",
+          "tests": []
+        },
+        {
+          "id": "paginated-display",
+          "ref": "capabilities/achievements-credentials#paginated-display",
+          "text": "The page loads achievements in increments of 10 items and provides a 'Load more' button when additional achievements are available.",
+          "proof": "unproven",
+          "tests": []
+        },
+        {
+          "id": "unearned-shown-greyscale",
+          "ref": "capabilities/achievements-credentials#unearned-shown-greyscale",
+          "text": "Badges not yet earned are displayed with a greyscale image and a lock icon to indicate they are locked.",
+          "proof": "unproven",
+          "tests": []
+        },
+        {
+          "id": "earned-points-calculated",
+          "ref": "capabilities/achievements-credentials#earned-points-calculated",
+          "text": "The service totals the points from all earned achievements and makes that sum available to the application.",
+          "proof": "unproven",
+          "tests": []
+        },
+        {
+          "id": "points-configured-flag",
+          "ref": "capabilities/achievements-credentials#points-configured-flag",
+          "text": "The service indicates whether the program has configured any achievements with points greater than zero.",
+          "proof": "unproven",
+          "tests": []
+        },
+        {
+          "id": "graphql-achievements-query",
+          "ref": "capabilities/achievements-credentials#graphql-achievements-query",
+          "text": "The system fetches achievements for the current experience using the 'achievements' GraphQL query which returns id, name, description, type, badge, openBadge, points, isEarned, earnedDate, progress, active, and certificateUrl.",
+          "proof": "unproven",
+          "tests": []
+        },
+        {
+          "id": "graphql-badges-query",
+          "ref": "capabilities/achievements-credentials#graphql-badges-query",
+          "text": "The system fetches all earned badges across institutions using the 'badges' GraphQL query which returns the same fields as achievements but only for badges with email delivery enabled.",
+          "proof": "unproven",
+          "tests": []
+        },
+        {
+          "id": "certificate-url-query",
+          "ref": "capabilities/achievements-credentials#certificate-url-query",
+          "text": "The system can retrieve or regenerate a certificate PDF URL for a given achievement ID, optionally personalizing it with a user name.",
+          "proof": "unproven",
+          "tests": []
+        },
+        {
+          "id": "rebadge-open-badge",
+          "ref": "capabilities/achievements-credentials#rebadge-open-badge",
+          "text": "The system allows changing the email address associated with an Open Badge before download by calling the rebadgeOpenBadge mutation with achievement ID and new email.",
+          "proof": "unproven",
+          "tests": []
+        },
+        {
+          "id": "keyboard-navigation",
+          "ref": "capabilities/achievements-credentials#keyboard-navigation",
+          "text": "Badge items can be opened with Enter or Space key, and the segment control is navigable via keyboard with proper ARIA roles and attributes.",
+          "proof": "unproven",
+          "tests": []
+        },
+        {
+          "id": "loading-skeleton",
+          "ref": "capabilities/achievements-credentials#loading-skeleton",
+          "text": "While achievements are being fetched, the page displays skeleton placeholders to indicate loading state.",
+          "proof": "unproven",
+          "tests": []
+        },
+        {
+          "id": "empty-state-message",
+          "ref": "capabilities/achievements-credentials#empty-state-message",
+          "text": "When no badges match the selected filter, the page shows a centered message with an icon and encouragement to earn badges through program activities.",
+          "proof": "unproven",
+          "tests": []
+        }
+      ],
+      "counts": {
+        "claims": 16,
+        "proven": 0,
+        "failed": 0,
+        "stale": 0,
+        "unexercised": 0,
+        "error": 0,
+        "unproven": 16,
+        "withTests": 0
+      }
+    },
+    {
+      "id": "assessments-and-submissions",
+      "specKey": "capabilities/assessments-and-submissions",
+      "kind": "capability",
+      "title": "Assessments & Submissions",
+      "status": "active",
+      "value": "Enables learners to complete and submit diverse assessment types (text, multiple-choice, file upload, H5P, SCORM) and receive feedback, demonstrating their competency and progress.",
+      "parent": "system",
+      "unit": ".",
+      "ownedFiles": [
+        "projects/v3/src/app/components/assessment/assessment.component.html",
+        "projects/v3/src/app/components/assessment/assessment.component.scss",
+        "projects/v3/src/app/components/assessment/assessment.component.spec.ts",
+        "projects/v3/src/app/components/assessment/assessment.component.ts",
+        "projects/v3/src/app/components/file-display/file-display.component.html",
+        "projects/v3/src/app/components/file-display/file-display.component.scss",
+        "projects/v3/src/app/components/file-display/file-display.component.spec.ts",
+        "projects/v3/src/app/components/file-display/file-display.component.ts",
+        "projects/v3/src/app/components/file-upload/file-upload.component.html",
+        "projects/v3/src/app/components/file-upload/file-upload.component.scss",
+        "projects/v3/src/app/components/file-upload/file-upload.component.spec.ts",
+        "projects/v3/src/app/components/file-upload/file-upload.component.ts",
+        "projects/v3/src/app/components/h5p-player/h5p-player.component.html",
+        "projects/v3/src/app/components/h5p-player/h5p-player.component.scss",
+        "projects/v3/src/app/components/h5p-player/h5p-player.component.spec.ts",
+        "projects/v3/src/app/components/h5p-player/h5p-player.component.ts",
+        "projects/v3/src/app/components/multiple/multiple.component.html",
+        "projects/v3/src/app/components/multiple/multiple.component.scss",
+        "projects/v3/src/app/components/multiple/multiple.component.spec.ts",
+        "projects/v3/src/app/components/multiple/multiple.component.ts",
+        "projects/v3/src/app/components/oneof/oneof.component.html",
+        "projects/v3/src/app/components/oneof/oneof.component.scss",
+        "projects/v3/src/app/components/oneof/oneof.component.spec.ts",
+        "projects/v3/src/app/components/oneof/oneof.component.ts",
+        "projects/v3/src/app/components/slider/slider.component.html",
+        "projects/v3/src/app/components/slider/slider.component.scss",
+        "projects/v3/src/app/components/slider/slider.component.spec.ts",
+        "projects/v3/src/app/components/slider/slider.component.ts",
+        "projects/v3/src/app/components/text/text.component.html",
+        "projects/v3/src/app/components/text/text.component.scss",
+        "projects/v3/src/app/components/text/text.component.spec.ts",
+        "projects/v3/src/app/components/text/text.component.ts",
+        "projects/v3/src/app/pages/assessment-mobile/assessment-mobile-routing.module.ts",
+        "projects/v3/src/app/pages/assessment-mobile/assessment-mobile.module.ts",
+        "projects/v3/src/app/pages/assessment-mobile/assessment-mobile.page.html",
+        "projects/v3/src/app/pages/assessment-mobile/assessment-mobile.page.scss",
+        "projects/v3/src/app/pages/assessment-mobile/assessment-mobile.page.spec.ts",
+        "projects/v3/src/app/pages/assessment-mobile/assessment-mobile.page.ts",
+        "projects/v3/src/app/services/assessment.service.ts"
+      ],
+      "tests": [
+        "projects/v3/src/app/components/assessment/assessment.component.spec.ts",
+        "projects/v3/src/app/components/file-display/file-display.component.spec.ts",
+        "projects/v3/src/app/components/file-upload/file-upload.component.spec.ts",
+        "projects/v3/src/app/components/h5p-player/h5p-player.component.spec.ts",
+        "projects/v3/src/app/components/multiple/multiple.component.spec.ts",
+        "projects/v3/src/app/components/oneof/oneof.component.spec.ts",
+        "projects/v3/src/app/components/slider/slider.component.spec.ts",
+        "projects/v3/src/app/components/text/text.component.spec.ts",
+        "projects/v3/src/app/pages/assessment-mobile/assessment-mobile.page.spec.ts",
+        "projects/v3/src/app/services/assessment.service.spec.ts"
+      ],
+      "docs": [],
+      "history": [],
+      "claims": [
+        {
+          "id": "assessment-loads-for-context",
+          "ref": "capabilities/assessments-and-submissions#assessment-loads-for-context",
+          "text": "The assessment page loads the specified assessment by assessmentId, activityId, contextId, and optional submissionId, displaying questions and any existing submission data for the learner's current activity context.",
+          "proof": "unproven",
+          "tests": []
+        },
+        {
+          "id": "auto-save-every-ten-seconds",
+          "ref": "capabilities/assessments-and-submissions#auto-save-every-ten-seconds",
+          "text": "Answers are automatically saved every 10 seconds (SAVE_PROGRESS_TIMEOUT = 10000ms) to prevent data loss, with a \"Saving...\" indicator followed by a timestamp of the last save.",
+          "proof": "unproven",
+          "tests": []
+        },
+        {
+          "id": "submit-disabled-until-required-answered",
+          "ref": "capabilities/assessments-and-submissions#submit-disabled-until-required-answered",
+          "text": "The submit button remains disabled until all required questions have been answered, enforced by the btnDisabled$ observable.",
+          "proof": "unproven",
+          "tests": []
+        },
+        {
+          "id": "navigation-guard-prevents-data-loss",
+          "ref": "capabilities/assessments-and-submissions#navigation-guard-prevents-data-loss",
+          "text": "A navigation guard (SinglePageDeactivateGuard) prevents the learner from leaving the assessment page when unsaved changes exist, prompting confirmation to avoid accidental data loss.",
+          "proof": "unproven",
+          "tests": []
+        },
+        {
+          "id": "file-upload-supports-tus-protocol",
+          "ref": "capabilities/assessments-and-submissions#file-upload-supports-tus-protocol",
+          "text": "File upload questions use the TUS protocol via Uppy, displaying the upload area whenever no file is attached, including after a learner removes a previously attached file.",
+          "proof": "unproven",
+          "tests": []
+        },
+        {
+          "id": "paginated-question-navigation",
+          "ref": "capabilities/assessments-and-submissions#paginated-question-navigation",
+          "text": "Assessments support pagination, allowing learners to navigate through multiple pages of questions for long assessments.",
+          "proof": "unproven",
+          "tests": []
+        },
+        {
+          "id": "slider-rating-questions",
+          "ref": "capabilities/assessments-and-submissions#slider-rating-questions",
+          "text": "Slider rating questions display a visual slider control with configurable minimum and maximum values for numeric responses.",
+          "proof": "unproven",
+          "tests": []
+        },
+        {
+          "id": "team-file-selection-or-upload",
+          "ref": "capabilities/assessments-and-submissions#team-file-selection-or-upload",
+          "text": "On team assessment file questions, learners can choose an existing team file by filestoreId or upload a new file, recorded via saveSubmissionAnswer.",
+          "proof": "unproven",
+          "tests": []
+        },
+        {
+          "id": "team-sign-off-workflow",
+          "ref": "capabilities/assessments-and-submissions#team-sign-off-workflow",
+          "text": "When an assessment has signOff enabled, the page lists each teammate as signed off (with name, comment, timestamp) or not yet signed off, the submit button reads \"sign off\", the first sign-off submits the team submission, and subsequent teammates can add comments while the submission is pending review.",
+          "proof": "unproven",
+          "tests": []
+        },
+        {
+          "id": "submission-creates-or-updates-answers",
+          "ref": "capabilities/assessments-and-submissions#submission-creates-or-updates-answers",
+          "text": "Submitting an assessment in 'in progress' status calls submitAssessment with submissionId, assessmentId, contextId, and answers, returning success true or throwing an error; duplicate submissions are detected and toasted accordingly.",
+          "proof": "unproven",
+          "tests": []
+        },
+        {
+          "id": "review-submission-workflow",
+          "ref": "capabilities/assessments-and-submissions#review-submission-workflow",
+          "text": "When action is 'review' and submission status is 'pending review', submitting calls submitReview with assessmentId, reviewId, submissionId, and answers, returning success true or throwing an error, then refreshes the reviews list.",
+          "proof": "unproven",
+          "tests": []
+        },
+        {
+          "id": "feedback-read-and-review-rating",
+          "ref": "capabilities/assessments-and-submissions#feedback-read-and-review-rating",
+          "text": "Marking feedback as read via readFeedback saves the reviewed status, refreshes activity tasks and notifications, prompts the learner for review rating if enabled (hasReviewRating and user.hasReviewRating), then navigates to the next task.",
+          "proof": "unproven",
+          "tests": []
+        },
+        {
+          "id": "h5p-player-loads-package",
+          "ref": "capabilities/assessments-and-submissions#h5p-player-loads-package",
+          "text": "The H5P player component loads an H5P package using h5p-standalone with the package's content URL, frame script, frame stylesheet, and libraries URL.",
+          "proof": "unproven",
+          "tests": []
+        },
+        {
+          "id": "h5p-xapi-forwarding",
+          "ref": "capabilities/assessments-and-submissions#h5p-xapi-forwarding",
+          "text": "xAPI statements posted by the H5P player are forwarded for storage, and a completed or answered statement fires the h5pTaskCompleted event to notify the page.",
+          "proof": "unproven",
+          "tests": []
+        },
+        {
+          "id": "simulation-xapi-lifecycle",
+          "ref": "capabilities/assessments-and-submissions#simulation-xapi-lifecycle",
+          "text": "Simulation players (H5P, SCORM, cmi5) post initialized, interacted, completed, and terminated xAPI statements that are forwarded to the LRS with skill IRIs attached from alignments.",
+          "proof": "unproven",
+          "tests": []
+        },
+        {
+          "id": "pulse-check-legacy-skill-sliders",
+          "ref": "capabilities/assessments-and-submissions#pulse-check-legacy-skill-sliders",
+          "text": "Pulse-check assessments include legacy skill sliders 20–25 when requested by the assessment configuration.",
+          "proof": "unproven",
+          "tests": []
+        },
+        {
+          "id": "post-submission-fast-feedback",
+          "ref": "capabilities/assessments-and-submissions#post-submission-fast-feedback",
+          "text": "After a non-auto-save submission of a pulse-check assessment (pulseCheck true), the system pulls fast feedback data to update the learner's skill passport.",
+          "proof": "unproven",
+          "tests": []
+        },
+        {
+          "id": "timesheet-assessment-routing",
+          "ref": "capabilities/assessments-and-submissions#timesheet-assessment-routing",
+          "text": "Assessments of type 'timesheet' or tasks with assessmentType 'timesheet' render the time-log component instead of the standard assessment component.",
+          "proof": "unproven",
+          "tests": []
+        },
+        {
+          "id": "restricted-single-page-access",
+          "ref": "capabilities/assessments-and-submissions#restricted-single-page-access",
+          "text": "When singlePageAccess storage flag is set, the header hides back button and personalised header, restricting navigation for embedded or restricted access contexts.",
+          "proof": "unproven",
+          "tests": []
+        },
+        {
+          "id": "event-referral-navigation",
+          "ref": "capabilities/assessments-and-submissions#event-referral-navigation",
+          "text": "Assessments opened from the events page (from: 'events') skip the deactivation guard and handle navigation context differently, returning to home if no activityId is provided.",
+          "proof": "unproven",
+          "tests": []
+        }
+      ],
+      "counts": {
+        "claims": 20,
+        "proven": 0,
+        "failed": 0,
+        "stale": 0,
+        "unexercised": 0,
+        "error": 0,
+        "unproven": 20,
+        "withTests": 0
+      }
+    },
+    {
+      "id": "events-and-attendance",
+      "specKey": "capabilities/events-and-attendance",
+      "kind": "capability",
+      "title": "Events & Attendance Management",
+      "status": "active",
+      "value": "Enables learners to discover, book, and attend scheduled events and meetings, with QR-based check-in for physical attendance tracking.",
+      "parent": "system",
+      "unit": ".",
+      "ownedFiles": [
+        "projects/v3/src/app/pages/checkin/checkin-routing.module.ts",
+        "projects/v3/src/app/pages/checkin/checkin.module.ts",
+        "projects/v3/src/app/pages/checkin/checkin.page.html",
+        "projects/v3/src/app/pages/checkin/checkin.page.scss",
+        "projects/v3/src/app/pages/checkin/checkin.page.ts",
+        "projects/v3/src/app/pages/events/event-detail/event-detail.component.html",
+        "projects/v3/src/app/pages/events/event-detail/event-detail.component.scss",
+        "projects/v3/src/app/pages/events/event-detail/event-detail.component.spec.ts",
+        "projects/v3/src/app/pages/events/event-detail/event-detail.component.ts",
+        "projects/v3/src/app/pages/events/event-detail/event-detail.module.ts",
+        "projects/v3/src/app/pages/events/event-list/event-list.component.html",
+        "projects/v3/src/app/pages/events/event-list/event-list.component.scss",
+        "projects/v3/src/app/pages/events/event-list/event-list.component.spec.ts",
+        "projects/v3/src/app/pages/events/event-list/event-list.component.ts",
+        "projects/v3/src/app/pages/events/event-list/event-list.module.ts",
+        "projects/v3/src/app/pages/events/events-routing.component.ts",
+        "projects/v3/src/app/pages/events/events-routing.module.ts",
+        "projects/v3/src/app/pages/events/events.module.ts",
+        "projects/v3/src/app/pages/events/events.page.html",
+        "projects/v3/src/app/pages/events/events.page.scss",
+        "projects/v3/src/app/pages/events/events.page.spec.ts",
+        "projects/v3/src/app/pages/events/events.page.ts",
+        "projects/v3/src/app/pages/meeting-poll/meeting-poll-routing.module.ts",
+        "projects/v3/src/app/pages/meeting-poll/meeting-poll.module.ts",
+        "projects/v3/src/app/pages/meeting-poll/meeting-poll.page.html",
+        "projects/v3/src/app/pages/meeting-poll/meeting-poll.page.scss",
+        "projects/v3/src/app/pages/meeting-poll/meeting-poll.page.ts",
+        "projects/v3/src/app/services/event.service.ts",
+        "projects/v3/src/app/services/meeting-poll.service.ts"
+      ],
+      "tests": [
+        "projects/v3/src/app/pages/events/event-detail/event-detail.component.spec.ts",
+        "projects/v3/src/app/pages/events/event-list/event-list.component.spec.ts",
+        "projects/v3/src/app/pages/events/events.page.spec.ts",
+        "projects/v3/src/app/services/event.service.spec.ts"
+      ],
+      "docs": [],
+      "history": [],
+      "claims": [
+        {
+          "id": "event-list-by-experience",
+          "ref": "capabilities/events-and-attendance#event-list-by-experience",
+          "text": "The events page displays all bookable events and meetings associated with the learner's current experience, showing date, time, and location for each.",
+          "proof": "unproven",
+          "tests": []
+        },
+        {
+          "id": "remaining-capacity-and-status",
+          "ref": "capabilities/events-and-attendance#remaining-capacity-and-status",
+          "text": "Each event in the list shows the remaining capacity and the learner's current booking status (booked, available, or full).",
+          "proof": "unproven",
+          "tests": []
+        },
+        {
+          "id": "book-event-when-available",
+          "ref": "capabilities/events-and-attendance#book-event-when-available",
+          "text": "Learners can book an event when capacity is available; the system updates the booking status and decrements remaining capacity.",
+          "proof": "unproven",
+          "tests": []
+        },
+        {
+          "id": "cancel-booking",
+          "ref": "capabilities/events-and-attendance#cancel-booking",
+          "text": "Learners can cancel their own booking; the system removes the booking and increments the event's remaining capacity.",
+          "proof": "unproven",
+          "tests": []
+        },
+        {
+          "id": "event-detail-view",
+          "ref": "capabilities/events-and-attendance#event-detail-view",
+          "text": "The event detail page displays full event information including title, description, date, time, location, capacity, and booking controls.",
+          "proof": "unproven",
+          "tests": []
+        },
+        {
+          "id": "associated-assessment-link",
+          "ref": "capabilities/events-and-attendance#associated-assessment-link",
+          "text": "Events with an associated check-in or reflection assessment display a link or button to access that assessment from the event detail.",
+          "proof": "unproven",
+          "tests": []
+        },
+        {
+          "id": "qr-checkin-url-with-token",
+          "ref": "capabilities/events-and-attendance#qr-checkin-url-with-token",
+          "text": "QR-based check-in is initiated by navigating to /checkin with a token query parameter that encodes the event and session information.",
+          "proof": "unproven",
+          "tests": []
+        },
+        {
+          "id": "checkin-records-attendance",
+          "ref": "capabilities/events-and-attendance#checkin-records-attendance",
+          "text": "When a learner opens a valid check-in URL, the system calls a GraphQL mutation (checkInSession) with the token to record attendance.",
+          "proof": "unproven",
+          "tests": []
+        },
+        {
+          "id": "checkin-success-confirmation",
+          "ref": "capabilities/events-and-attendance#checkin-success-confirmation",
+          "text": "After successful check-in, the page displays a success message confirming attendance was recorded and offers navigation back to the events list.",
+          "proof": "unproven",
+          "tests": []
+        },
+        {
+          "id": "checkin-error-handling",
+          "ref": "capabilities/events-and-attendance#checkin-error-handling",
+          "text": "If check-in fails (invalid or expired token, already checked in, or other error), the page displays an appropriate error message and does not record duplicate attendance.",
+          "proof": "unproven",
+          "tests": []
+        },
+        {
+          "id": "checkin-missing-token",
+          "ref": "capabilities/events-and-attendance#checkin-missing-token",
+          "text": "If the check-in URL is opened without a token parameter, the page displays a message instructing the learner to scan the QR code at the event location.",
+          "proof": "unproven",
+          "tests": []
+        },
+        {
+          "id": "meeting-poll-display-slots",
+          "ref": "capabilities/events-and-attendance#meeting-poll-display-slots",
+          "text": "The meeting poll page displays all proposed time slots for a team meeting, showing the start and end time for each slot.",
+          "proof": "unproven",
+          "tests": []
+        },
+        {
+          "id": "meeting-poll-multi-select",
+          "ref": "capabilities/events-and-attendance#meeting-poll-multi-select",
+          "text": "Learners can select multiple time slots to indicate all times they are available, unavailable, or uncertain (maybe).",
+          "proof": "unproven",
+          "tests": []
+        },
+        {
+          "id": "meeting-poll-submit-availability",
+          "ref": "capabilities/events-and-attendance#meeting-poll-submit-availability",
+          "text": "Learners can submit their availability votes; the system records the vote for each selected slot.",
+          "proof": "unproven",
+          "tests": []
+        },
+        {
+          "id": "meeting-poll-preselect-existing",
+          "ref": "capabilities/events-and-attendance#meeting-poll-preselect-existing",
+          "text": "When a learner revisits a meeting poll they have already voted on, their previously submitted availability is pre-selected.",
+          "proof": "unproven",
+          "tests": []
+        },
+        {
+          "id": "meeting-poll-create",
+          "ref": "capabilities/events-and-attendance#meeting-poll-create",
+          "text": "The system supports creating a new meeting poll with title, description, duration, location, deadline, and a list of proposed time slots via the createMeetingPoll mutation.",
+          "proof": "unproven",
+          "tests": []
+        },
+        {
+          "id": "meeting-poll-view-votes",
+          "ref": "capabilities/events-and-attendance#meeting-poll-view-votes",
+          "text": "Each time slot in a poll displays aggregated vote counts (available, unavailable, maybe) and optionally the names of voters.",
+          "proof": "unproven",
+          "tests": []
+        },
+        {
+          "id": "meeting-poll-status-lifecycle",
+          "ref": "capabilities/events-and-attendance#meeting-poll-status-lifecycle",
+          "text": "Meeting polls have a status lifecycle (open, closed, scheduled, cancelled) that controls whether votes can still be submitted.",
+          "proof": "unproven",
+          "tests": []
+        },
+        {
+          "id": "pending-rating-prompt",
+          "ref": "capabilities/events-and-attendance#pending-rating-prompt",
+          "text": "If the learner has team meetings awaiting contribution ratings, the events page displays a prompt banner showing the count and linking to the rating interface.",
+          "proof": "unproven",
+          "tests": []
+        },
+        {
+          "id": "team-meeting-schedule-navigation",
+          "ref": "capabilities/events-and-attendance#team-meeting-schedule-navigation",
+          "text": "When a teamId is present, the events page header includes a button to navigate to the meeting poll interface for scheduling team meetings.",
+          "proof": "unproven",
+          "tests": []
+        }
+      ],
+      "counts": {
+        "claims": 20,
+        "proven": 0,
+        "failed": 0,
+        "stale": 0,
+        "unexercised": 0,
+        "error": 0,
+        "unproven": 20,
+        "withTests": 0
+      }
+    },
+    {
+      "id": "identity-and-access",
+      "specKey": "capabilities/identity-and-access",
+      "kind": "capability",
+      "title": "Identity & Access Management",
+      "status": "active",
+      "value": "Enables secure, flexible authentication so learners can access their personalized learning environment via multiple pathways including JWT token handoff, direct login, and federated identity.",
+      "parent": "system",
+      "unit": ".",
+      "ownedFiles": [
+        "projects/v3/src/app/pages/auth/auth-direct-login/auth-direct-login.component.html",
+        "projects/v3/src/app/pages/auth/auth-direct-login/auth-direct-login.component.spec.ts",
+        "projects/v3/src/app/pages/auth/auth-direct-login/auth-direct-login.component.ts",
+        "projects/v3/src/app/pages/auth/auth-forgot-password/auth-forgot-password.component.html",
+        "projects/v3/src/app/pages/auth/auth-forgot-password/auth-forgot-password.component.scss",
+        "projects/v3/src/app/pages/auth/auth-forgot-password/auth-forgot-password.component.spec.ts",
+        "projects/v3/src/app/pages/auth/auth-forgot-password/auth-forgot-password.component.ts",
+        "projects/v3/src/app/pages/auth/auth-global-login/auth-global-login.component.html",
+        "projects/v3/src/app/pages/auth/auth-global-login/auth-global-login.component.spec.ts",
+        "projects/v3/src/app/pages/auth/auth-global-login/auth-global-login.component.ts",
+        "projects/v3/src/app/pages/auth/auth-jwt-login/auth-jwt-login.component.ts",
+        "projects/v3/src/app/pages/auth/auth-login/auth-login.component.html",
+        "projects/v3/src/app/pages/auth/auth-login/auth-login.component.scss",
+        "projects/v3/src/app/pages/auth/auth-login/auth-login.component.spec.ts",
+        "projects/v3/src/app/pages/auth/auth-login/auth-login.component.ts",
+        "projects/v3/src/app/pages/auth/auth-logout/auth-logout.component.spec.ts",
+        "projects/v3/src/app/pages/auth/auth-logout/auth-logout.component.ts",
+        "projects/v3/src/app/pages/auth/auth-registration/auth-registration.component.html",
+        "projects/v3/src/app/pages/auth/auth-registration/auth-registration.component.scss",
+        "projects/v3/src/app/pages/auth/auth-registration/auth-registration.component.spec.ts",
+        "projects/v3/src/app/pages/auth/auth-registration/auth-registration.component.ts",
+        "projects/v3/src/app/pages/auth/auth-reset-password/auth-reset-password.component.html",
+        "projects/v3/src/app/pages/auth/auth-reset-password/auth-reset-password.component.scss",
+        "projects/v3/src/app/pages/auth/auth-reset-password/auth-reset-password.component.spec.ts",
+        "projects/v3/src/app/pages/auth/auth-reset-password/auth-reset-password.component.ts",
+        "projects/v3/src/app/pages/auth/auth-routing.module.ts",
+        "projects/v3/src/app/pages/auth/auth.component.ts",
+        "projects/v3/src/app/pages/auth/auth.module.ts",
+        "projects/v3/src/app/pages/auth/terms-conditions-preview/terms-conditions-preview.component.html",
+        "projects/v3/src/app/pages/auth/terms-conditions-preview/terms-conditions-preview.component.scss",
+        "projects/v3/src/app/pages/auth/terms-conditions-preview/terms-conditions-preview.component.spec.ts",
+        "projects/v3/src/app/pages/auth/terms-conditions-preview/terms-conditions-preview.component.ts",
+        "projects/v3/src/app/services/auth.service.ts",
+        "projects/v3/src/app/services/oauth-pkce.ts",
+        "projects/v3/src/app/services/storage.service.ts"
+      ],
+      "tests": [
+        "projects/v3/src/app/pages/auth/auth-direct-login/auth-direct-login.component.spec.ts",
+        "projects/v3/src/app/pages/auth/auth-forgot-password/auth-forgot-password.component.spec.ts",
+        "projects/v3/src/app/pages/auth/auth-global-login/auth-global-login.component.spec.ts",
+        "projects/v3/src/app/pages/auth/auth-login/auth-login.component.spec.ts",
+        "projects/v3/src/app/pages/auth/auth-logout/auth-logout.component.spec.ts",
+        "projects/v3/src/app/pages/auth/auth-registration/auth-registration.component.spec.ts",
+        "projects/v3/src/app/pages/auth/auth-reset-password/auth-reset-password.component.spec.ts",
+        "projects/v3/src/app/pages/auth/terms-conditions-preview/terms-conditions-preview.component.spec.ts",
+        "projects/v3/src/app/services/auth.service.spec.ts",
+        "projects/v3/src/app/services/storage.service.spec.ts"
+      ],
+      "docs": [],
+      "history": [],
+      "claims": [
+        {
+          "id": "jwt-token-handoff-authentication",
+          "ref": "capabilities/identity-and-access#jwt-token-handoff-authentication",
+          "text": "When a user navigates to /auth/jwt/:jwt or /auth/jwt with a JWT in sessionStorage, the system decodes the JWT, stores authentication state, and redirects the user to their home page.",
+          "proof": "unproven",
+          "tests": []
+        },
+        {
+          "id": "email-password-authentication",
+          "ref": "capabilities/identity-and-access#email-password-authentication",
+          "text": "When a user submits valid email and password credentials on the login page, the system authenticates via GraphQL, stores the resulting JWT, and navigates to the home page.",
+          "proof": "unproven",
+          "tests": []
+        },
+        {
+          "id": "logout-clears-session",
+          "ref": "capabilities/identity-and-access#logout-clears-session",
+          "text": "When a user navigates to /auth/logout, the system clears all stored authentication state and redirects to the login page.",
+          "proof": "unproven",
+          "tests": []
+        },
+        {
+          "id": "password-reset-request",
+          "ref": "capabilities/identity-and-access#password-reset-request",
+          "text": "When a user submits an email address on the forgot password page, the system sends a password reset email containing a link with a unique token.",
+          "proof": "unproven",
+          "tests": []
+        },
+        {
+          "id": "password-reset-rate-limiting",
+          "ref": "capabilities/identity-and-access#password-reset-rate-limiting",
+          "text": "If a user attempts to reset their password more than once within 2 minutes, the system displays an error message instructing them to wait before retrying.",
+          "proof": "unproven",
+          "tests": []
+        },
+        {
+          "id": "password-reset-completion",
+          "ref": "capabilities/identity-and-access#password-reset-completion",
+          "text": "When a user navigates to /auth/reset_password/:key/:email and submits a new password, the system validates the token and updates the password.",
+          "proof": "unproven",
+          "tests": []
+        },
+        {
+          "id": "learner-registration",
+          "ref": "capabilities/identity-and-access#learner-registration",
+          "text": "When a user navigates to /auth/registration/:email/:key and submits the registration form, the system creates a new learner account.",
+          "proof": "unproven",
+          "tests": []
+        },
+        {
+          "id": "direct-login-via-magic-link",
+          "ref": "capabilities/identity-and-access#direct-login-via-magic-link",
+          "text": "When a user navigates to /auth/secure/:authToken, the system authenticates the user and redirects them to the intended page.",
+          "proof": "unproven",
+          "tests": []
+        },
+        {
+          "id": "global-login-via-apikey",
+          "ref": "capabilities/identity-and-access#global-login-via-apikey",
+          "text": "When a user navigates to /auth/global_login/:apikey, the system authenticates the user via the provided API key and redirects them to the appropriate experience.",
+          "proof": "unproven",
+          "tests": []
+        },
+        {
+          "id": "unauthorized-guard-protection",
+          "ref": "capabilities/identity-and-access#unauthorized-guard-protection",
+          "text": "Unauthenticated users attempting to access login, registration, forgot password, or reset password pages are allowed through; authenticated users are redirected away from these pages.",
+          "proof": "unproven",
+          "tests": []
+        },
+        {
+          "id": "terms-and-conditions-preview",
+          "ref": "capabilities/identity-and-access#terms-and-conditions-preview",
+          "text": "When a user views terms and conditions, the system displays a PDF in an embedded iframe with options to agree or cancel.",
+          "proof": "unproven",
+          "tests": []
+        },
+        {
+          "id": "login-form-validation",
+          "ref": "capabilities/identity-and-access#login-form-validation",
+          "text": "The login form requires both email and password fields to be filled before enabling the submit button.",
+          "proof": "unproven",
+          "tests": []
+        },
+        {
+          "id": "password-visibility-toggle",
+          "ref": "capabilities/identity-and-access#password-visibility-toggle",
+          "text": "On the login and reset password pages, users can toggle password visibility between masked and plain text.",
+          "proof": "unproven",
+          "tests": []
+        },
+        {
+          "id": "forgot-password-email-validation",
+          "ref": "capabilities/identity-and-access#forgot-password-email-validation",
+          "text": "The forgot password form requires a valid email address before allowing submission.",
+          "proof": "unproven",
+          "tests": []
+        },
+        {
+          "id": "authentication-state-persistence",
+          "ref": "capabilities/identity-and-access#authentication-state-persistence",
+          "text": "Authentication state including JWT tokens is stored in browser storage and persists across page reloads until logout.",
+          "proof": "unproven",
+          "tests": []
+        },
+        {
+          "id": "logout-with-parameters",
+          "ref": "capabilities/identity-and-access#logout-with-parameters",
+          "text": "When a user navigates to /auth/logout with route parameters, the system passes those parameters to the logout method.",
+          "proof": "unproven",
+          "tests": []
+        }
+      ],
+      "counts": {
+        "claims": 16,
+        "proven": 0,
+        "failed": 0,
+        "stale": 0,
+        "unexercised": 0,
+        "error": 0,
+        "unproven": 16,
+        "withTests": 0
+      }
+    },
+    {
+      "id": "learner-dashboard",
+      "specKey": "capabilities/learner-dashboard",
+      "kind": "capability",
+      "title": "Learner Dashboard & Navigation",
+      "status": "active",
+      "value": "Provides learners with a unified home view of their current experience, milestone progress, pulse check status, and quick access to all learning pathways.",
+      "parent": "system",
+      "unit": ".",
+      "ownedFiles": [
+        "projects/v3/src/app/app-routing.module.ts",
+        "projects/v3/src/app/pages/experiences/experiences-routing.module.ts",
+        "projects/v3/src/app/pages/experiences/experiences.module.ts",
+        "projects/v3/src/app/pages/experiences/experiences.page.html",
+        "projects/v3/src/app/pages/experiences/experiences.page.scss",
+        "projects/v3/src/app/pages/experiences/experiences.page.spec.ts",
+        "projects/v3/src/app/pages/experiences/experiences.page.ts",
+        "projects/v3/src/app/pages/home/home-routing.module.ts",
+        "projects/v3/src/app/pages/home/home.module.ts",
+        "projects/v3/src/app/pages/home/home.page.html",
+        "projects/v3/src/app/pages/home/home.page.scss",
+        "projects/v3/src/app/pages/home/home.page.spec.ts",
+        "projects/v3/src/app/pages/home/home.page.ts",
+        "projects/v3/src/app/pages/tabs/tabs-routing.module.ts",
+        "projects/v3/src/app/pages/tabs/tabs.module.ts",
+        "projects/v3/src/app/pages/tabs/tabs.page.html",
+        "projects/v3/src/app/pages/tabs/tabs.page.scss",
+        "projects/v3/src/app/pages/tabs/tabs.page.spec.ts",
+        "projects/v3/src/app/pages/tabs/tabs.page.ts",
+        "projects/v3/src/app/pages/v3/v3-routing.module.ts",
+        "projects/v3/src/app/pages/v3/v3.module.ts",
+        "projects/v3/src/app/pages/v3/v3.page.html",
+        "projects/v3/src/app/pages/v3/v3.page.scss",
+        "projects/v3/src/app/pages/v3/v3.page.spec.ts",
+        "projects/v3/src/app/pages/v3/v3.page.ts",
+        "projects/v3/src/app/services/experience.service.ts",
+        "projects/v3/src/app/services/home.service.ts"
+      ],
+      "tests": [
+        "projects/v3/src/app/pages/experiences/experiences.page.spec.ts",
+        "projects/v3/src/app/pages/home/home.page.spec.ts",
+        "projects/v3/src/app/pages/tabs/tabs.page.spec.ts",
+        "projects/v3/src/app/pages/v3/v3.page.spec.ts",
+        "projects/v3/src/app/services/experience.service.spec.ts",
+        "projects/v3/src/app/services/home.service.spec.ts"
+      ],
+      "docs": [],
+      "history": [],
+      "claims": [
+        {
+          "id": "home-dashboard-loads-experience",
+          "ref": "capabilities/learner-dashboard#home-dashboard-loads-experience",
+          "text": "The home page loads and displays the learner's milestones and activities for the currently selected experience.",
+          "proof": "unproven",
+          "tests": []
+        },
+        {
+          "id": "experience-progress-percentage",
+          "ref": "capabilities/learner-dashboard#experience-progress-percentage",
+          "text": "The home page shows an overall progress percentage for the current experience.",
+          "proof": "unproven",
+          "tests": []
+        },
+        {
+          "id": "pulse-check-traffic-light",
+          "ref": "capabilities/learner-dashboard#pulse-check-traffic-light",
+          "text": "When pulse checks are configured for the experience, a traffic light indicator showing pulse check skill status is displayed on the home page.",
+          "proof": "unproven",
+          "tests": []
+        },
+        {
+          "id": "achievements-display",
+          "ref": "capabilities/learner-dashboard#achievements-display",
+          "text": "Achievements earned by the learner within the current experience are displayed on the home page.",
+          "proof": "unproven",
+          "tests": []
+        },
+        {
+          "id": "locked-activities-distinguished",
+          "ref": "capabilities/learner-dashboard#locked-activities-distinguished",
+          "text": "Activities that are locked by lock/reveal triggers are visually distinguished and not accessible to the learner until unlocked.",
+          "proof": "unproven",
+          "tests": []
+        },
+        {
+          "id": "last-visited-activity-tracking",
+          "ref": "capabilities/learner-dashboard#last-visited-activity-tracking",
+          "text": "The system tracks and highlights the last visited activity when the learner returns to the home page.",
+          "proof": "unproven",
+          "tests": []
+        },
+        {
+          "id": "bookmarked-activities-persisted",
+          "ref": "capabilities/learner-dashboard#bookmarked-activities-persisted",
+          "text": "Bookmarked activities are persisted and displayed with a bookmark indicator on the home page.",
+          "proof": "unproven",
+          "tests": []
+        },
+        {
+          "id": "responsive-layout-support",
+          "ref": "capabilities/learner-dashboard#responsive-layout-support",
+          "text": "The home page supports both mobile (card view) and desktop (list view) responsive layouts.",
+          "proof": "unproven",
+          "tests": []
+        },
+        {
+          "id": "project-brief-modal-access",
+          "ref": "capabilities/learner-dashboard#project-brief-modal-access",
+          "text": "When project briefs are configured for the experience, the project brief modal is accessible from the home page.",
+          "proof": "unproven",
+          "tests": []
+        },
+        {
+          "id": "team-files-section",
+          "ref": "capabilities/learner-dashboard#team-files-section",
+          "text": "The My Team section on the home page includes a Files list displaying teamFiles for the learner's team and supports registering new uploads via addTeamFile.",
+          "proof": "unproven",
+          "tests": []
+        },
+        {
+          "id": "tab-navigation-mobile",
+          "ref": "capabilities/learner-dashboard#tab-navigation-mobile",
+          "text": "On mobile devices without a left sidebar, a bottom tab bar provides navigation to home, events, reviews (if configured), messages (if enabled), due dates, and settings tabs.",
+          "proof": "unproven",
+          "tests": []
+        },
+        {
+          "id": "sidebar-navigation-desktop",
+          "ref": "capabilities/learner-dashboard#sidebar-navigation-desktop",
+          "text": "On desktop devices, a collapsible left sidebar menu provides navigation to home, messages, reviews, events, due dates, notifications, settings, badges/certificates, and my experiences.",
+          "proof": "unproven",
+          "tests": []
+        },
+        {
+          "id": "notification-badges-on-tabs",
+          "ref": "capabilities/learner-dashboard#notification-badges-on-tabs",
+          "text": "Unread message counts and pending review counts are displayed as badges on the messages and reviews tabs or menu items.",
+          "proof": "unproven",
+          "tests": []
+        },
+        {
+          "id": "experience-switcher-page",
+          "ref": "capabilities/learner-dashboard#experience-switcher-page",
+          "text": "The experiences page displays all experiences the learner is enrolled in as a grid of cards, each showing the experience name, lead image or logo, and progress percentage if available.",
+          "proof": "unproven",
+          "tests": []
+        },
+        {
+          "id": "experience-selection-switches-context",
+          "ref": "capabilities/learner-dashboard#experience-selection-switches-context",
+          "text": "Selecting an experience from the experiences page switches the learner's current context and navigates to the home page for that experience.",
+          "proof": "unproven",
+          "tests": []
+        },
+        {
+          "id": "auth-guard-protection",
+          "ref": "capabilities/learner-dashboard#auth-guard-protection",
+          "text": "All learner navigation routes (v3, experiences, topics, assessments, checkin) require authentication via AuthGuard and redirect unauthenticated users to the login page.",
+          "proof": "unproven",
+          "tests": []
+        },
+        {
+          "id": "keyboard-navigation-support",
+          "ref": "capabilities/learner-dashboard#keyboard-navigation-support",
+          "text": "Tab navigation and sidebar menu items support keyboard navigation (Enter, Space) for accessibility.",
+          "proof": "unproven",
+          "tests": []
+        },
+        {
+          "id": "split-pane-responsive-behavior",
+          "ref": "capabilities/learner-dashboard#split-pane-responsive-behavior",
+          "text": "The ion-split-pane layout automatically shows or hides the sidebar menu based on screen width, controlled by the splitpaneEnabled property.",
+          "proof": "unproven",
+          "tests": []
+        }
+      ],
+      "counts": {
+        "claims": 18,
+        "proven": 0,
+        "failed": 0,
+        "stale": 0,
+        "unexercised": 0,
+        "error": 0,
+        "unproven": 18,
+        "withTests": 0
+      }
+    },
+    {
+      "id": "learner-profile-settings",
+      "specKey": "capabilities/learner-profile-settings",
+      "kind": "capability",
+      "title": "Learner Profile & Settings",
+      "status": "active",
+      "value": "Allows learners to manage their personal information, notification preferences, contact details, and access support resources.",
+      "parent": "system",
+      "unit": ".",
+      "ownedFiles": [
+        "projects/v3/src/app/components/contact-number-form/contact-number-form.component.html",
+        "projects/v3/src/app/components/contact-number-form/contact-number-form.component.scss",
+        "projects/v3/src/app/components/contact-number-form/contact-number-form.component.spec.ts",
+        "projects/v3/src/app/components/contact-number-form/contact-number-form.component.ts",
+        "projects/v3/src/app/components/support-popup/support-popup.component.html",
+        "projects/v3/src/app/components/support-popup/support-popup.component.scss",
+        "projects/v3/src/app/components/support-popup/support-popup.component.spec.ts",
+        "projects/v3/src/app/components/support-popup/support-popup.component.ts",
+        "projects/v3/src/app/components/support-popup/support-questions.ts",
+        "projects/v3/src/app/pages/settings/settings-routing.module.ts",
+        "projects/v3/src/app/pages/settings/settings.module.ts",
+        "projects/v3/src/app/pages/settings/settings.page.html",
+        "projects/v3/src/app/pages/settings/settings.page.scss",
+        "projects/v3/src/app/pages/settings/settings.page.spec.ts",
+        "projects/v3/src/app/pages/settings/settings.page.ts",
+        "projects/v3/src/app/pages/timesheet-approve/timesheet-approve-routing.module.ts",
+        "projects/v3/src/app/pages/timesheet-approve/timesheet-approve.module.ts",
+        "projects/v3/src/app/pages/timesheet-approve/timesheet-approve.page.html",
+        "projects/v3/src/app/pages/timesheet-approve/timesheet-approve.page.scss",
+        "projects/v3/src/app/pages/timesheet-approve/timesheet-approve.page.ts",
+        "projects/v3/src/app/services/timesheet.service.ts"
+      ],
+      "tests": [
+        "projects/v3/src/app/components/contact-number-form/contact-number-form.component.spec.ts",
+        "projects/v3/src/app/components/support-popup/support-popup.component.spec.ts",
+        "projects/v3/src/app/pages/settings/settings.page.spec.ts"
+      ],
+      "docs": [],
+      "history": [],
+      "claims": [
+        {
+          "id": "profile-view-and-update",
+          "ref": "capabilities/learner-profile-settings#profile-view-and-update",
+          "text": "A learner can view their name, email, and avatar on the settings page. The learner can upload a new profile avatar.",
+          "proof": "unproven",
+          "tests": []
+        },
+        {
+          "id": "avatar-update-persists",
+          "ref": "capabilities/learner-profile-settings#avatar-update-persists",
+          "text": "When a learner uploads a new avatar, the updated image remains visible even if a background profile refresh completes afterward.",
+          "proof": "unproven",
+          "tests": []
+        },
+        {
+          "id": "notification-preferences",
+          "ref": "capabilities/learner-profile-settings#notification-preferences",
+          "text": "A learner can configure notification preferences from the settings page.",
+          "proof": "unproven",
+          "tests": []
+        },
+        {
+          "id": "contact-support-access",
+          "ref": "capabilities/learner-profile-settings#contact-support-access",
+          "text": "A learner can access a contact support option from the settings page.",
+          "proof": "unproven",
+          "tests": []
+        },
+        {
+          "id": "terms-and-conditions-viewable",
+          "ref": "capabilities/learner-profile-settings#terms-and-conditions-viewable",
+          "text": "A learner can view terms and conditions from the settings page.",
+          "proof": "unproven",
+          "tests": []
+        },
+        {
+          "id": "badges-and-certificates-link",
+          "ref": "capabilities/learner-profile-settings#badges-and-certificates-link",
+          "text": "A learner can access a link to view their badges and certificates.",
+          "proof": "unproven",
+          "tests": []
+        },
+        {
+          "id": "admin-console-access",
+          "ref": "capabilities/learner-profile-settings#admin-console-access",
+          "text": "An administrator or coordinator can access the admin console from the settings page.",
+          "proof": "unproven",
+          "tests": []
+        },
+        {
+          "id": "logout-action",
+          "ref": "capabilities/learner-profile-settings#logout-action",
+          "text": "A learner can log out from the settings page.",
+          "proof": "unproven",
+          "tests": []
+        },
+        {
+          "id": "timesheet-token-validation",
+          "ref": "capabilities/learner-profile-settings#timesheet-token-validation",
+          "text": "When a supervisor opens the timesheet approval link, a missing or unknown token displays a message that the link is no longer valid.",
+          "proof": "unproven",
+          "tests": []
+        },
+        {
+          "id": "timesheet-approval-display",
+          "ref": "capabilities/learner-profile-settings#timesheet-approval-display",
+          "text": "A submitted timesheet displays the learner's name, program name, assessment name, period start and end dates, total hours, and individual time entries with date, hours, category, and optional note. The supervisor can approve or return the timesheet.",
+          "proof": "unproven",
+          "tests": []
+        },
+        {
+          "id": "timesheet-decision-requires-name",
+          "ref": "capabilities/learner-profile-settings#timesheet-decision-requires-name",
+          "text": "A supervisor must enter their name before approving or returning a timesheet. If the name is missing, an error message prompts the supervisor to enter their name.",
+          "proof": "unproven",
+          "tests": []
+        },
+        {
+          "id": "timesheet-decision-recorded",
+          "ref": "capabilities/learner-profile-settings#timesheet-decision-recorded",
+          "text": "When a supervisor approves or returns a timesheet, the decision is recorded via decideTimesheetByToken. A second use of the same token is rejected with an error message that the link is no longer valid.",
+          "proof": "unproven",
+          "tests": []
+        },
+        {
+          "id": "timesheet-decision-feedback",
+          "ref": "capabilities/learner-profile-settings#timesheet-decision-feedback",
+          "text": "After a supervisor's decision is recorded, the page displays a confirmation that the decision was recorded and the supervisor can close the page.",
+          "proof": "unproven",
+          "tests": []
+        },
+        {
+          "id": "timesheet-optional-note",
+          "ref": "capabilities/learner-profile-settings#timesheet-optional-note",
+          "text": "A supervisor may include an optional note when approving or returning a timesheet.",
+          "proof": "unproven",
+          "tests": []
+        }
+      ],
+      "counts": {
+        "claims": 14,
+        "proven": 0,
+        "failed": 0,
+        "stale": 0,
+        "unexercised": 0,
+        "error": 0,
+        "unproven": 14,
+        "withTests": 0
+      }
+    },
+    {
+      "id": "learning-activities",
+      "specKey": "capabilities/learning-activities",
+      "kind": "capability",
+      "title": "Learning Activities & Content",
+      "status": "active",
+      "value": "Delivers structured learning content through activities and topics, enabling learners to consume rich media, complete readings, and progress through their curriculum.",
+      "parent": "system",
+      "unit": ".",
+      "ownedFiles": [
+        "projects/v3/src/app/components/activity/activity.component.html",
+        "projects/v3/src/app/components/activity/activity.component.scss",
+        "projects/v3/src/app/components/activity/activity.component.spec.ts",
+        "projects/v3/src/app/components/activity/activity.component.ts",
+        "projects/v3/src/app/components/topic/topic.component.html",
+        "projects/v3/src/app/components/topic/topic.component.scss",
+        "projects/v3/src/app/components/topic/topic.component.spec.ts",
+        "projects/v3/src/app/components/topic/topic.component.ts",
+        "projects/v3/src/app/pages/activity-desktop/activity-desktop-routing.module.ts",
+        "projects/v3/src/app/pages/activity-desktop/activity-desktop.module.ts",
+        "projects/v3/src/app/pages/activity-desktop/activity-desktop.page.html",
+        "projects/v3/src/app/pages/activity-desktop/activity-desktop.page.scss",
+        "projects/v3/src/app/pages/activity-desktop/activity-desktop.page.spec.ts",
+        "projects/v3/src/app/pages/activity-desktop/activity-desktop.page.ts",
+        "projects/v3/src/app/pages/activity-mobile/activity-mobile-routing.module.ts",
+        "projects/v3/src/app/pages/activity-mobile/activity-mobile.module.ts",
+        "projects/v3/src/app/pages/activity-mobile/activity-mobile.page.html",
+        "projects/v3/src/app/pages/activity-mobile/activity-mobile.page.scss",
+        "projects/v3/src/app/pages/activity-mobile/activity-mobile.page.spec.ts",
+        "projects/v3/src/app/pages/activity-mobile/activity-mobile.page.ts",
+        "projects/v3/src/app/pages/topic-mobile/topic-mobile-routing.module.ts",
+        "projects/v3/src/app/pages/topic-mobile/topic-mobile.module.ts",
+        "projects/v3/src/app/pages/topic-mobile/topic-mobile.page.html",
+        "projects/v3/src/app/pages/topic-mobile/topic-mobile.page.scss",
+        "projects/v3/src/app/pages/topic-mobile/topic-mobile.page.spec.ts",
+        "projects/v3/src/app/pages/topic-mobile/topic-mobile.page.ts",
+        "projects/v3/src/app/services/activity.service.ts",
+        "projects/v3/src/app/services/topic.service.ts"
+      ],
+      "tests": [
+        "projects/v3/src/app/components/activity/activity.component.spec.ts",
+        "projects/v3/src/app/components/topic/topic.component.spec.ts",
+        "projects/v3/src/app/pages/activity-desktop/activity-desktop.page.spec.ts",
+        "projects/v3/src/app/pages/activity-mobile/activity-mobile.page.spec.ts",
+        "projects/v3/src/app/pages/topic-mobile/topic-mobile.page.spec.ts",
+        "projects/v3/src/app/services/activity.service.spec.ts",
+        "projects/v3/src/app/services/topic.service.spec.ts"
+      ],
+      "docs": [],
+      "history": [],
+      "claims": [
+        {
+          "id": "activity-loads-task-list",
+          "ref": "capabilities/learning-activities#activity-loads-task-list",
+          "text": "When a learner navigates to an activity, the system loads and displays the list of tasks (topics, assessments, events, team todos) belonging to that activity.",
+          "proof": "unproven",
+          "tests": []
+        },
+        {
+          "id": "task-displays-type-icon-title-status",
+          "ref": "capabilities/learning-activities#task-displays-type-icon-title-status",
+          "text": "Each task in the activity list shows its type icon, title, and current completion status (not started, in progress, done).",
+          "proof": "unproven",
+          "tests": []
+        },
+        {
+          "id": "locked-tasks-non-interactive",
+          "ref": "capabilities/learning-activities#locked-tasks-non-interactive",
+          "text": "Locked tasks are visually indicated with a lock icon and rendered non-interactive; learners cannot navigate to or interact with them until unlock conditions are met.",
+          "proof": "unproven",
+          "tests": []
+        },
+        {
+          "id": "task-navigation-by-type",
+          "ref": "capabilities/learning-activities#task-navigation-by-type",
+          "text": "When a learner taps or clicks an unlocked task, the system navigates to the appropriate destination: topic page for topics, assessment page for assessments, event detail for events, and todo interaction for team todos.",
+          "proof": "unproven",
+          "tests": []
+        },
+        {
+          "id": "activity-progress-percentage",
+          "ref": "capabilities/learning-activities#activity-progress-percentage",
+          "text": "The activity displays overall progress as a percentage calculated from the number of completed tasks divided by total tasks.",
+          "proof": "unproven",
+          "tests": []
+        },
+        {
+          "id": "desktop-two-column-layout",
+          "ref": "capabilities/learning-activities#desktop-two-column-layout",
+          "text": "On desktop, the activity page renders tasks in a two-column side-by-side layout for efficient content review.",
+          "proof": "unproven",
+          "tests": []
+        },
+        {
+          "id": "topic-renders-safe-html",
+          "ref": "capabilities/learning-activities#topic-renders-safe-html",
+          "text": "Topic content is rendered as sanitised HTML to prevent XSS attacks while preserving formatting, links, and embedded media.",
+          "proof": "unproven",
+          "tests": []
+        },
+        {
+          "id": "topic-marked-complete-on-view",
+          "ref": "capabilities/learning-activities#topic-marked-complete-on-view",
+          "text": "When a learner views a topic and clicks continue, the system marks the topic as visited or completed and updates the task status to 'done'.",
+          "proof": "unproven",
+          "tests": []
+        },
+        {
+          "id": "embedded-media-renders",
+          "ref": "capabilities/learning-activities#embedded-media-renders",
+          "text": "Embedded media within topic content (images, videos) renders correctly within the HTML content area.",
+          "proof": "unproven",
+          "tests": []
+        },
+        {
+          "id": "topic-back-to-activity",
+          "ref": "capabilities/learning-activities#topic-back-to-activity",
+          "text": "The topic page provides navigation back to the parent activity, preserving activity context and task list state.",
+          "proof": "unproven",
+          "tests": []
+        },
+        {
+          "id": "topic-route-with-activity-context",
+          "ref": "capabilities/learning-activities#topic-route-with-activity-context",
+          "text": "Topic pages are routed with both activity ID and topic ID (/topic-mobile/:activityId/:id) to maintain context for progress tracking and navigation.",
+          "proof": "unproven",
+          "tests": []
+        },
+        {
+          "id": "activity-route-with-id",
+          "ref": "capabilities/learning-activities#activity-route-with-id",
+          "text": "Activity pages are routed by activity ID (/activity-mobile/:id or /activity-desktop/:id) and load the corresponding activity and its tasks.",
+          "proof": "unproven",
+          "tests": []
+        },
+        {
+          "id": "desktop-inline-topic-rendering",
+          "ref": "capabilities/learning-activities#desktop-inline-topic-rendering",
+          "text": "Desktop activity routes support inline topic rendering at /activity-desktop/:id/:topicId with a deactivation guard to prevent accidental navigation away from unsaved state.",
+          "proof": "unproven",
+          "tests": []
+        },
+        {
+          "id": "desktop-inline-assessment-rendering",
+          "ref": "capabilities/learning-activities#desktop-inline-assessment-rendering",
+          "text": "Desktop activity routes support inline assessment rendering at /activity-desktop/:contextId/:id/:assessmentId with a deactivation guard.",
+          "proof": "unproven",
+          "tests": []
+        },
+        {
+          "id": "auto-navigate-next-task",
+          "ref": "capabilities/learning-activities#auto-navigate-next-task",
+          "text": "After a learner completes a topic and it is marked done, the system automatically navigates to the next available task in the activity sequence.",
+          "proof": "unproven",
+          "tests": []
+        },
+        {
+          "id": "continue-idempotent-for-completed",
+          "ref": "capabilities/learning-activities#continue-idempotent-for-completed",
+          "text": "If a learner clicks continue on an already-completed topic (status 'done'), the system navigates to the next task without re-marking completion.",
+          "proof": "unproven",
+          "tests": []
+        },
+        {
+          "id": "current-task-restored-on-load",
+          "ref": "capabilities/learning-activities#current-task-restored-on-load",
+          "text": "When a topic page loads, it restores the current task status from the activity service to display accurate completion state even if navigated directly by URL.",
+          "proof": "unproven",
+          "tests": []
+        },
+        {
+          "id": "progress-indicator-during-topic-update",
+          "ref": "capabilities/learning-activities#progress-indicator-during-topic-update",
+          "text": "While marking a topic complete, the system displays a progress indicator and disables the continue button until the server responds.",
+          "proof": "unproven",
+          "tests": []
+        },
+        {
+          "id": "page-title-set-from-content",
+          "ref": "capabilities/learning-activities#page-title-set-from-content",
+          "text": "Activity and topic pages set the browser page title to \"[Activity Name] - Practera\" or \"[Topic Title] - Practera\" for better browser history and bookmarking.",
+          "proof": "unproven",
+          "tests": []
+        },
+        {
+          "id": "late-response-ignored",
+          "ref": "capabilities/learning-activities#late-response-ignored",
+          "text": "If a topic page receives a delayed activity response after the route has changed to a different topic, the system ignores that response to avoid corrupting state.",
+          "proof": "unproven",
+          "tests": []
+        }
+      ],
+      "counts": {
+        "claims": 20,
+        "proven": 0,
+        "failed": 0,
+        "stale": 0,
+        "unexercised": 0,
+        "error": 0,
+        "unproven": 20,
+        "withTests": 0
+      }
+    },
+    {
+      "id": "notifications-alerts",
+      "specKey": "capabilities/notifications-alerts",
+      "kind": "capability",
+      "title": "Notifications & Alerts",
+      "status": "active",
+      "value": "Keeps learners informed of important updates, feedback, milestone unlocks, and system announcements through in-app notifications and unlock indicators.",
+      "parent": "system",
+      "unit": ".",
+      "ownedFiles": [
+        "projects/v3/src/app/pages/notifications/notifications-routing.module.ts",
+        "projects/v3/src/app/pages/notifications/notifications.module.ts",
+        "projects/v3/src/app/pages/notifications/notifications.page.html",
+        "projects/v3/src/app/pages/notifications/notifications.page.scss",
+        "projects/v3/src/app/pages/notifications/notifications.page.spec.ts",
+        "projects/v3/src/app/pages/notifications/notifications.page.ts",
+        "projects/v3/src/app/services/notifications.service.ts",
+        "projects/v3/src/app/services/unlock-indicator.service.ts"
+      ],
+      "tests": [
+        "projects/v3/src/app/pages/notifications/notifications.page.spec.ts",
+        "projects/v3/src/app/services/notifications.service.spec.ts",
+        "projects/v3/src/app/services/unlock-indicator.service.spec.ts"
+      ],
+      "docs": [],
+      "history": [],
+      "claims": [
+        {
+          "id": "notifications-reverse-chronological",
+          "ref": "capabilities/notifications-alerts#notifications-reverse-chronological",
+          "text": "All notifications for the learner are listed in reverse chronological order, with the most recent appearing first.",
+          "proof": "unproven",
+          "tests": []
+        },
+        {
+          "id": "unread-visual-distinction",
+          "ref": "capabilities/notifications-alerts#unread-visual-distinction",
+          "text": "Unread notifications and system notices are visually distinguished from read notifications so learners can identify new items at a glance.",
+          "proof": "unproven",
+          "tests": []
+        },
+        {
+          "id": "notification-navigation",
+          "ref": "capabilities/notifications-alerts#notification-navigation",
+          "text": "Tapping or clicking a notification navigates the learner to the relevant content, such as an assessment, review, chat, or event detail, based on the notification type.",
+          "proof": "unproven",
+          "tests": []
+        },
+        {
+          "id": "mark-all-read",
+          "ref": "capabilities/notifications-alerts#mark-all-read",
+          "text": "Learners can mark all notifications as read in a single action.",
+          "proof": "unproven",
+          "tests": []
+        },
+        {
+          "id": "real-time-notification-updates",
+          "ref": "capabilities/notifications-alerts#real-time-notification-updates",
+          "text": "New notifications arriving via push or Pusher are reflected in the notifications list without requiring a page refresh.",
+          "proof": "unproven",
+          "tests": []
+        },
+        {
+          "id": "notification-types-supported",
+          "ref": "capabilities/notifications-alerts#notification-types-supported",
+          "text": "Supported notification types include feedback_available, review_submission, chat, assessment_submission_reminder, event reminders, and system notices.",
+          "proof": "unproven",
+          "tests": []
+        },
+        {
+          "id": "system-notice-seen-tracking",
+          "ref": "capabilities/notifications-alerts#system-notice-seen-tracking",
+          "text": "When a learner clicks a system notice, it is marked as seen and the visual distinction is removed.",
+          "proof": "unproven",
+          "tests": []
+        },
+        {
+          "id": "locked-activity-access-prevention",
+          "ref": "capabilities/notifications-alerts#locked-activity-access-prevention",
+          "text": "If a learner taps a feedback notification for a locked activity, navigation is blocked and a toast message indicates the activity is locked and requires completing the previous activity first.",
+          "proof": "unproven",
+          "tests": []
+        },
+        {
+          "id": "event-reminder-navigation",
+          "ref": "capabilities/notifications-alerts#event-reminder-navigation",
+          "text": "Event reminder notifications navigate to event detail on mobile via a modal and to the events page with the event selected on desktop.",
+          "proof": "unproven",
+          "tests": []
+        },
+        {
+          "id": "mobile-desktop-navigation-routing",
+          "ref": "capabilities/notifications-alerts#mobile-desktop-navigation-routing",
+          "text": "Assessment and review notifications route to mobile-specific or desktop-specific URLs depending on the device type.",
+          "proof": "unproven",
+          "tests": []
+        },
+        {
+          "id": "unlock-indicator-storage",
+          "ref": "capabilities/notifications-alerts#unlock-indicator-storage",
+          "text": "Unlocked tasks, activities, and milestones are stored in browser storage and exposed as an observable stream for components to subscribe.",
+          "proof": "unproven",
+          "tests": []
+        },
+        {
+          "id": "unlock-task-deduplication",
+          "ref": "capabilities/notifications-alerts#unlock-task-deduplication",
+          "text": "When new unlock data is added, the service deduplicates entries by milestoneId, activityId, and taskId to prevent duplicate unlock indicators.",
+          "proof": "unproven",
+          "tests": []
+        },
+        {
+          "id": "unlock-cascading-removal",
+          "ref": "capabilities/notifications-alerts#unlock-cascading-removal",
+          "text": "Removing an unlocked task triggers cascading removal: if no other tasks remain under the activity, the activity unlock is removed; if no other activities or tasks remain under the milestone, the milestone unlock is removed.",
+          "proof": "unproven",
+          "tests": []
+        },
+        {
+          "id": "unlock-clearable-checks",
+          "ref": "capabilities/notifications-alerts#unlock-clearable-checks",
+          "text": "An activity is clearable only if it has no unlocked tasks; a milestone is clearable only if it has no unlocked activities or tasks.",
+          "proof": "unproven",
+          "tests": []
+        },
+        {
+          "id": "unlock-all-clear-on-switch",
+          "ref": "capabilities/notifications-alerts#unlock-all-clear-on-switch",
+          "text": "All unlocked tasks are cleared from storage when switching experiences.",
+          "proof": "unproven",
+          "tests": []
+        },
+        {
+          "id": "unlock-activity-clear",
+          "ref": "capabilities/notifications-alerts#unlock-activity-clear",
+          "text": "Clearing an activity removes all unlock indicators for that activity and milestone ID, returning the list of cleared items.",
+          "proof": "unproven",
+          "tests": []
+        },
+        {
+          "id": "unlock-tasks-by-activity",
+          "ref": "capabilities/notifications-alerts#unlock-tasks-by-activity",
+          "text": "Unlocked tasks can be retrieved filtered by activity ID or by matching task IDs from an activity's task list.",
+          "proof": "unproven",
+          "tests": []
+        }
+      ],
+      "counts": {
+        "claims": 17,
+        "proven": 0,
+        "failed": 0,
+        "stale": 0,
+        "unexercised": 0,
+        "error": 0,
+        "unproven": 17,
+        "withTests": 0
+      }
+    },
+    {
+      "id": "peer-review-feedback",
+      "specKey": "capabilities/peer-review-feedback",
+      "kind": "capability",
+      "title": "Peer Review & Feedback",
+      "status": "active",
+      "value": "Facilitates peer learning through structured review workflows where learners provide and receive feedback on submissions, contribution ratings, and fast feedback exchanges.",
+      "parent": "system",
+      "unit": ".",
+      "ownedFiles": [
+        "projects/v3/src/app/components/fast-feedback/fast-feedback.component.html",
+        "projects/v3/src/app/components/fast-feedback/fast-feedback.component.scss",
+        "projects/v3/src/app/components/fast-feedback/fast-feedback.component.spec.ts",
+        "projects/v3/src/app/components/fast-feedback/fast-feedback.component.ts",
+        "projects/v3/src/app/components/review-list/review-list.component.html",
+        "projects/v3/src/app/components/review-list/review-list.component.scss",
+        "projects/v3/src/app/components/review-list/review-list.component.spec.ts",
+        "projects/v3/src/app/components/review-list/review-list.component.ts",
+        "projects/v3/src/app/components/review-rating/review-rating.component.html",
+        "projects/v3/src/app/components/review-rating/review-rating.component.scss",
+        "projects/v3/src/app/components/review-rating/review-rating.component.spec.ts",
+        "projects/v3/src/app/components/review-rating/review-rating.component.ts",
+        "projects/v3/src/app/pages/contribution-rating/contribution-rating-routing.module.ts",
+        "projects/v3/src/app/pages/contribution-rating/contribution-rating.module.ts",
+        "projects/v3/src/app/pages/contribution-rating/contribution-rating.page.html",
+        "projects/v3/src/app/pages/contribution-rating/contribution-rating.page.scss",
+        "projects/v3/src/app/pages/contribution-rating/contribution-rating.page.ts",
+        "projects/v3/src/app/pages/review-desktop/review-desktop-routing.module.ts",
+        "projects/v3/src/app/pages/review-desktop/review-desktop.module.ts",
+        "projects/v3/src/app/pages/review-desktop/review-desktop.page.html",
+        "projects/v3/src/app/pages/review-desktop/review-desktop.page.scss",
+        "projects/v3/src/app/pages/review-desktop/review-desktop.page.spec.ts",
+        "projects/v3/src/app/pages/review-desktop/review-desktop.page.ts",
+        "projects/v3/src/app/pages/review-mobile/review-mobile-routing.module.ts",
+        "projects/v3/src/app/pages/review-mobile/review-mobile.module.ts",
+        "projects/v3/src/app/pages/review-mobile/review-mobile.page.html",
+        "projects/v3/src/app/pages/review-mobile/review-mobile.page.scss",
+        "projects/v3/src/app/pages/review-mobile/review-mobile.page.spec.ts",
+        "projects/v3/src/app/pages/review-mobile/review-mobile.page.ts",
+        "projects/v3/src/app/services/contribution.service.ts",
+        "projects/v3/src/app/services/fast-feedback.service.ts",
+        "projects/v3/src/app/services/review-rating.service.ts",
+        "projects/v3/src/app/services/review.service.ts"
+      ],
+      "tests": [
+        "projects/v3/src/app/components/fast-feedback/fast-feedback.component.spec.ts",
+        "projects/v3/src/app/components/review-list/review-list.component.spec.ts",
+        "projects/v3/src/app/components/review-rating/review-rating.component.spec.ts",
+        "projects/v3/src/app/pages/review-desktop/review-desktop.page.spec.ts",
+        "projects/v3/src/app/pages/review-mobile/review-mobile.page.spec.ts",
+        "projects/v3/src/app/services/fast-feedback.service.spec.ts",
+        "projects/v3/src/app/services/review-rating.service.spec.ts"
+      ],
+      "docs": [],
+      "history": [],
+      "claims": [
+        {
+          "id": "assigned-reviews-listed",
+          "ref": "capabilities/peer-review-feedback#assigned-reviews-listed",
+          "text": "The review page displays all reviews assigned to the current user, showing assessment name, submitter name, team name when applicable, due or completion date, and completion status.",
+          "proof": "unproven",
+          "tests": []
+        },
+        {
+          "id": "submission-answers-read-only",
+          "ref": "capabilities/peer-review-feedback#submission-answers-read-only",
+          "text": "When a reviewer opens a submission for review, the learner's submitted answers are displayed in read-only mode alongside the reviewer's questions.",
+          "proof": "unproven",
+          "tests": []
+        },
+        {
+          "id": "reviewer-questions-answerable",
+          "ref": "capabilities/peer-review-feedback#reviewer-questions-answerable",
+          "text": "Reviewers can answer all reviewer-specific questions configured for the assessment, which are distinct from the questions the original submitter answered.",
+          "proof": "unproven",
+          "tests": []
+        },
+        {
+          "id": "review-save-and-submit",
+          "ref": "capabilities/peer-review-feedback#review-save-and-submit",
+          "text": "Reviewers can save progress on incomplete reviews and submit completed reviews; submission marks the review as done and prevents further editing.",
+          "proof": "unproven",
+          "tests": []
+        },
+        {
+          "id": "completed-review-read-only",
+          "ref": "capabilities/peer-review-feedback#completed-review-read-only",
+          "text": "Once a review is submitted or acknowledged, it is displayed in read-only mode and cannot be modified.",
+          "proof": "unproven",
+          "tests": []
+        },
+        {
+          "id": "desktop-side-by-side",
+          "ref": "capabilities/peer-review-feedback#desktop-side-by-side",
+          "text": "The desktop review page displays the review list and selected submission side-by-side, with the review list in a left column and the assessment content in a right column, supporting navigation between reviews without page transitions.",
+          "proof": "unproven",
+          "tests": []
+        },
+        {
+          "id": "contribution-rating-targets-loaded",
+          "ref": "capabilities/peer-review-feedback#contribution-rating-targets-loaded",
+          "text": "The contribution rating page loads all team members the learner must rate for a given event, excluding the learner themselves from the rating targets.",
+          "proof": "unproven",
+          "tests": []
+        },
+        {
+          "id": "configurable-rating-dimensions",
+          "ref": "capabilities/peer-review-feedback#configurable-rating-dimensions",
+          "text": "Contribution rating dimensions are configurable per experience, allowing different programs to assess different aspects of team participation.",
+          "proof": "unproven",
+          "tests": []
+        },
+        {
+          "id": "contribution-ratings-submitted",
+          "ref": "capabilities/peer-review-feedback#contribution-ratings-submitted",
+          "text": "Learners submit contribution ratings for each team member, with each rating including a score or a not-present indicator, which are recorded against the event and team.",
+          "proof": "unproven",
+          "tests": []
+        },
+        {
+          "id": "previously-submitted-ratings-displayed",
+          "ref": "capabilities/peer-review-feedback#previously-submitted-ratings-displayed",
+          "text": "When a learner revisits the contribution rating page for an event where they have already submitted ratings, the previously submitted scores are pre-filled and marked as already rated.",
+          "proof": "unproven",
+          "tests": []
+        },
+        {
+          "id": "review-rating-submission",
+          "ref": "capabilities/peer-review-feedback#review-rating-submission",
+          "text": "Reviewers can submit a rating for a review they received, including a numeric rating, optional comment, and optional tags, which is recorded against the review.",
+          "proof": "unproven",
+          "tests": []
+        },
+        {
+          "id": "pending-contribution-ratings-fetched",
+          "ref": "capabilities/peer-review-feedback#pending-contribution-ratings-fetched",
+          "text": "The system retrieves pending contribution ratings for the current user, returning event details, team information, and the list of teammates to rate with their already-rated status.",
+          "proof": "unproven",
+          "tests": []
+        },
+        {
+          "id": "contribution-todos-created",
+          "ref": "capabilities/peer-review-feedback#contribution-todos-created",
+          "text": "The system can create contribution rating todos on demand, ensuring that learners have pending tasks for events requiring peer contribution assessment.",
+          "proof": "unproven",
+          "tests": []
+        },
+        {
+          "id": "reviews-fetched-graphql",
+          "ref": "capabilities/peer-review-feedback#reviews-fetched-graphql",
+          "text": "Reviews are fetched via GraphQL query, returning review ID, completion status, dates, assessment details, submission details including submitter and team names, and context ID.",
+          "proof": "unproven",
+          "tests": []
+        },
+        {
+          "id": "review-navigation-from-list",
+          "ref": "capabilities/peer-review-feedback#review-navigation-from-list",
+          "text": "Selecting a review from the list navigates to the assessment page in review mode, passing context ID, assessment ID, and submission ID for loading the review interface.",
+          "proof": "unproven",
+          "tests": []
+        }
+      ],
+      "counts": {
+        "claims": 15,
+        "proven": 0,
+        "failed": 0,
+        "stale": 0,
+        "unexercised": 0,
+        "error": 0,
+        "unproven": 15,
+        "withTests": 0
+      }
+    },
+    {
+      "id": "real-time-messaging",
+      "specKey": "capabilities/real-time-messaging",
+      "kind": "capability",
+      "title": "Real-Time Messaging & Collaboration",
+      "status": "active",
+      "value": "Connects learners with peers, mentors, and coordinators through real-time chat with channels, direct messages, threads, file attachments, and message editing.",
+      "parent": "system",
+      "unit": ".",
+      "ownedFiles": [
+        "projects/v3/src/app/pages/chat/attachment-popover/attachment-popover.component.html",
+        "projects/v3/src/app/pages/chat/attachment-popover/attachment-popover.component.scss",
+        "projects/v3/src/app/pages/chat/attachment-popover/attachment-popover.component.spec.ts",
+        "projects/v3/src/app/pages/chat/attachment-popover/attachment-popover.component.ts",
+        "projects/v3/src/app/pages/chat/chat-info/chat-info.component.html",
+        "projects/v3/src/app/pages/chat/chat-info/chat-info.component.scss",
+        "projects/v3/src/app/pages/chat/chat-info/chat-info.component.spec.ts",
+        "projects/v3/src/app/pages/chat/chat-info/chat-info.component.ts",
+        "projects/v3/src/app/pages/chat/chat-list/chat-list.component.html",
+        "projects/v3/src/app/pages/chat/chat-list/chat-list.component.scss",
+        "projects/v3/src/app/pages/chat/chat-list/chat-list.component.spec.ts",
+        "projects/v3/src/app/pages/chat/chat-list/chat-list.component.ts",
+        "projects/v3/src/app/pages/chat/chat-preview/chat-preview.component.html",
+        "projects/v3/src/app/pages/chat/chat-preview/chat-preview.component.scss",
+        "projects/v3/src/app/pages/chat/chat-preview/chat-preview.component.spec.ts",
+        "projects/v3/src/app/pages/chat/chat-preview/chat-preview.component.ts",
+        "projects/v3/src/app/pages/chat/chat-room/chat-room.component.html",
+        "projects/v3/src/app/pages/chat/chat-room/chat-room.component.scss",
+        "projects/v3/src/app/pages/chat/chat-room/chat-room.component.spec.ts",
+        "projects/v3/src/app/pages/chat/chat-room/chat-room.component.ts",
+        "projects/v3/src/app/pages/chat/chat-routing.module.ts",
+        "projects/v3/src/app/pages/chat/chat-view/chat-view.component.html",
+        "projects/v3/src/app/pages/chat/chat-view/chat-view.component.scss",
+        "projects/v3/src/app/pages/chat/chat-view/chat-view.component.spec.ts",
+        "projects/v3/src/app/pages/chat/chat-view/chat-view.component.ts",
+        "projects/v3/src/app/pages/chat/chat.module.ts",
+        "projects/v3/src/app/pages/chat/chat.page.ts",
+        "projects/v3/src/app/pages/chat/edit-message-popup/edit-message-popup.component.html",
+        "projects/v3/src/app/pages/chat/edit-message-popup/edit-message-popup.component.scss",
+        "projects/v3/src/app/pages/chat/edit-message-popup/edit-message-popup.component.spec.ts",
+        "projects/v3/src/app/pages/chat/edit-message-popup/edit-message-popup.component.ts",
+        "projects/v3/src/app/pages/chat/thread-panel/thread-panel.component.html",
+        "projects/v3/src/app/pages/chat/thread-panel/thread-panel.component.scss",
+        "projects/v3/src/app/pages/chat/thread-panel/thread-panel.component.ts",
+        "projects/v3/src/app/services/chat.service.ts",
+        "projects/v3/src/app/services/pusher.service.ts"
+      ],
+      "tests": [
+        "projects/v3/src/app/pages/chat/attachment-popover/attachment-popover.component.spec.ts",
+        "projects/v3/src/app/pages/chat/chat-info/chat-info.component.spec.ts",
+        "projects/v3/src/app/pages/chat/chat-list/chat-list.component.spec.ts",
+        "projects/v3/src/app/pages/chat/chat-preview/chat-preview.component.spec.ts",
+        "projects/v3/src/app/pages/chat/chat-room/chat-room.component.spec.ts",
+        "projects/v3/src/app/pages/chat/chat-view/chat-view.component.spec.ts",
+        "projects/v3/src/app/pages/chat/edit-message-popup/edit-message-popup.component.spec.ts",
+        "projects/v3/src/app/services/chat.service.spec.ts",
+        "projects/v3/src/app/services/pusher.service.spec.ts"
+      ],
+      "docs": [],
+      "history": [],
+      "claims": [
+        {
+          "id": "channel-list-display",
+          "ref": "capabilities/real-time-messaging#channel-list-display",
+          "text": "The Messages page displays a list of channels including announcements, group channels, and direct messages accessible to the authenticated learner.",
+          "proof": "unproven",
+          "tests": []
+        },
+        {
+          "id": "unread-message-counts",
+          "ref": "capabilities/real-time-messaging#unread-message-counts",
+          "text": "Each channel in the list shows an unread message count when new messages have arrived since the learner last viewed that channel.",
+          "proof": "unproven",
+          "tests": []
+        },
+        {
+          "id": "paginated-message-history",
+          "ref": "capabilities/real-time-messaging#paginated-message-history",
+          "text": "Opening a chat room loads recent message history with older messages loaded on demand when the learner scrolls upward.",
+          "proof": "unproven",
+          "tests": []
+        },
+        {
+          "id": "send-rich-text-messages",
+          "ref": "capabilities/real-time-messaging#send-rich-text-messages",
+          "text": "Learners can compose and send messages containing bold, italic, underline, strike-through formatting, lists, and hyperlinks that are automatically detected.",
+          "proof": "unproven",
+          "tests": []
+        },
+        {
+          "id": "edit-own-messages",
+          "ref": "capabilities/real-time-messaging#edit-own-messages",
+          "text": "Learners can edit their own previously sent messages; the updated message content replaces the original and is visible to all channel participants.",
+          "proof": "unproven",
+          "tests": []
+        },
+        {
+          "id": "real-time-message-delivery",
+          "ref": "capabilities/real-time-messaging#real-time-message-delivery",
+          "text": "New messages posted to a channel appear in all participants' chat rooms in real-time via Pusher without requiring a page refresh.",
+          "proof": "unproven",
+          "tests": []
+        },
+        {
+          "id": "file-attachments",
+          "ref": "capabilities/real-time-messaging#file-attachments",
+          "text": "Learners can attach and send files, photos, and videos by selecting the attachment type (file, photo, or video) and uploading content which is then embedded in the message.",
+          "proof": "unproven",
+          "tests": []
+        },
+        {
+          "id": "compact-chat-preview",
+          "ref": "capabilities/real-time-messaging#compact-chat-preview",
+          "text": "A chat preview component displays a compact view of channel information before the full chat room is opened.",
+          "proof": "unproven",
+          "tests": []
+        },
+        {
+          "id": "desktop-split-view",
+          "ref": "capabilities/real-time-messaging#desktop-split-view",
+          "text": "On desktop viewports, the interface displays a two-column layout with the channel list on the left and the active chat room or channel details on the right.",
+          "proof": "unproven",
+          "tests": []
+        },
+        {
+          "id": "mobile-full-screen",
+          "ref": "capabilities/real-time-messaging#mobile-full-screen",
+          "text": "On mobile viewports, the channel list and chat room each occupy the full screen with navigation between them.",
+          "proof": "unproven",
+          "tests": []
+        },
+        {
+          "id": "channel-details-panel",
+          "ref": "capabilities/real-time-messaging#channel-details-panel",
+          "text": "Learners can open a channel details panel displaying the channel name, announcement badge if applicable, and a list of members with their names, avatars, and roles.",
+          "proof": "unproven",
+          "tests": []
+        },
+        {
+          "id": "member-role-labels",
+          "ref": "capabilities/real-time-messaging#member-role-labels",
+          "text": "In the channel details member list, roles such as mentor and coordinator are displayed next to member names, while participant and admin roles are not labeled.",
+          "proof": "unproven",
+          "tests": []
+        },
+        {
+          "id": "image-video-preview",
+          "ref": "capabilities/real-time-messaging#image-video-preview",
+          "text": "Attachments of type image or browser-supported video (mp4, webm, ogg) can be previewed inline in a modal with download and close controls.",
+          "proof": "unproven",
+          "tests": []
+        },
+        {
+          "id": "unsupported-video-handling",
+          "ref": "capabilities/real-time-messaging#unsupported-video-handling",
+          "text": "Video files in formats not natively supported by the browser display a message indicating preview is unavailable with a download link provided.",
+          "proof": "unproven",
+          "tests": []
+        },
+        {
+          "id": "edit-message-modal",
+          "ref": "capabilities/real-time-messaging#edit-message-modal",
+          "text": "The edit message modal presents a rich text editor pre-populated with the original message content, an update button that submits changes, and a success confirmation screen after update.",
+          "proof": "unproven",
+          "tests": []
+        },
+        {
+          "id": "attachment-type-selection",
+          "ref": "capabilities/real-time-messaging#attachment-type-selection",
+          "text": "The attachment popover presents three options: File (any type), Photos (image), and Videos (video), each opening an uploader filtered to the selected media type.",
+          "proof": "unproven",
+          "tests": []
+        },
+        {
+          "id": "first-channel-auto-select",
+          "ref": "capabilities/real-time-messaging#first-channel-auto-select",
+          "text": "On desktop when the chat view loads, the first available channel is automatically selected and displayed in the chat room pane if no channel is already selected.",
+          "proof": "unproven",
+          "tests": []
+        },
+        {
+          "id": "keyboard-navigation",
+          "ref": "capabilities/real-time-messaging#keyboard-navigation",
+          "text": "Preview and close controls in the attachment preview modal respond to keyboard events including Space and Enter key presses for accessibility.",
+          "proof": "unproven",
+          "tests": []
+        }
+      ],
+      "counts": {
+        "claims": 18,
+        "proven": 0,
+        "failed": 0,
+        "stale": 0,
+        "unexercised": 0,
+        "error": 0,
+        "unproven": 18,
+        "withTests": 0
+      }
+    },
+    {
+      "id": "shared-infrastructure",
+      "specKey": "capabilities/shared-infrastructure",
+      "kind": "capability",
+      "title": "Shared Infrastructure & Utilities",
+      "status": "active",
+      "value": "Provides foundational services for API communication, file handling, media processing, analytics integration, and UI utilities used across all capabilities.",
+      "parent": "system",
+      "unit": ".",
+      "ownedFiles": [
+        "projects/v3/src/app/components/activity-complete-pop-up/activity-complete-pop-up.component.html",
+        "projects/v3/src/app/components/activity-complete-pop-up/activity-complete-pop-up.component.scss",
+        "projects/v3/src/app/components/activity-complete-pop-up/activity-complete-pop-up.component.spec.ts",
+        "projects/v3/src/app/components/activity-complete-pop-up/activity-complete-pop-up.component.ts",
+        "projects/v3/src/app/components/bottom-action-bar/bottom-action-bar.component.html",
+        "projects/v3/src/app/components/bottom-action-bar/bottom-action-bar.component.scss",
+        "projects/v3/src/app/components/bottom-action-bar/bottom-action-bar.component.spec.ts",
+        "projects/v3/src/app/components/bottom-action-bar/bottom-action-bar.component.ts",
+        "projects/v3/src/app/components/circle-progress/circle-progress.component.html",
+        "projects/v3/src/app/components/circle-progress/circle-progress.component.scss",
+        "projects/v3/src/app/components/circle-progress/circle-progress.component.spec.ts",
+        "projects/v3/src/app/components/circle-progress/circle-progress.component.ts",
+        "projects/v3/src/app/components/description/description.component.html",
+        "projects/v3/src/app/components/description/description.component.scss",
+        "projects/v3/src/app/components/description/description.component.spec.ts",
+        "projects/v3/src/app/components/description/description.component.ts",
+        "projects/v3/src/app/components/file-popup/file-popup.component.html",
+        "projects/v3/src/app/components/file-popup/file-popup.component.scss",
+        "projects/v3/src/app/components/file-popup/file-popup.component.spec.ts",
+        "projects/v3/src/app/components/file-popup/file-popup.component.ts",
+        "projects/v3/src/app/components/file-preview/file-preview.component.html",
+        "projects/v3/src/app/components/file-preview/file-preview.component.scss",
+        "projects/v3/src/app/components/file-preview/file-preview.component.spec.ts",
+        "projects/v3/src/app/components/file-preview/file-preview.component.ts",
+        "projects/v3/src/app/components/img/img.component.html",
+        "projects/v3/src/app/components/img/img.component.scss",
+        "projects/v3/src/app/components/img/img.component.spec.ts",
+        "projects/v3/src/app/components/img/img.component.ts",
+        "projects/v3/src/app/components/list-item/list-item.component.html",
+        "projects/v3/src/app/components/list-item/list-item.component.scss",
+        "projects/v3/src/app/components/list-item/list-item.component.spec.ts",
+        "projects/v3/src/app/components/list-item/list-item.component.ts",
+        "projects/v3/src/app/components/lock-team-assessment-pop-up/lock-team-assessment-pop-up.component.html",
+        "projects/v3/src/app/components/lock-team-assessment-pop-up/lock-team-assessment-pop-up.component.scss",
+        "projects/v3/src/app/components/lock-team-assessment-pop-up/lock-team-assessment-pop-up.component.spec.ts",
+        "projects/v3/src/app/components/lock-team-assessment-pop-up/lock-team-assessment-pop-up.component.ts",
+        "projects/v3/src/app/components/multi-team-member-selector/multi-team-member-selector.component.html",
+        "projects/v3/src/app/components/multi-team-member-selector/multi-team-member-selector.component.scss",
+        "projects/v3/src/app/components/multi-team-member-selector/multi-team-member-selector.component.spec.ts",
+        "projects/v3/src/app/components/multi-team-member-selector/multi-team-member-selector.component.ts",
+        "projects/v3/src/app/components/pop-up/pop-up.component.html",
+        "projects/v3/src/app/components/pop-up/pop-up.component.scss",
+        "projects/v3/src/app/components/pop-up/pop-up.component.spec.ts",
+        "projects/v3/src/app/components/pop-up/pop-up.component.ts",
+        "projects/v3/src/app/components/project-brief-modal/project-brief-modal.component.html",
+        "projects/v3/src/app/components/project-brief-modal/project-brief-modal.component.scss",
+        "projects/v3/src/app/components/project-brief-modal/project-brief-modal.component.spec.ts",
+        "projects/v3/src/app/components/project-brief-modal/project-brief-modal.component.ts",
+        "projects/v3/src/app/components/team-member-selector/team-member-selector.component.html",
+        "projects/v3/src/app/components/team-member-selector/team-member-selector.component.scss",
+        "projects/v3/src/app/components/team-member-selector/team-member-selector.component.spec.ts",
+        "projects/v3/src/app/components/team-member-selector/team-member-selector.component.ts",
+        "projects/v3/src/app/components/team-roster/team-roster.component.html",
+        "projects/v3/src/app/components/team-roster/team-roster.component.scss",
+        "projects/v3/src/app/components/team-roster/team-roster.component.spec.ts",
+        "projects/v3/src/app/components/team-roster/team-roster.component.ts",
+        "projects/v3/src/app/components/time-log/time-log.component.html",
+        "projects/v3/src/app/components/time-log/time-log.component.scss",
+        "projects/v3/src/app/components/time-log/time-log.component.ts",
+        "projects/v3/src/app/components/time-log/timesheet-approvals.component.html",
+        "projects/v3/src/app/components/time-log/timesheet-approvals.component.ts",
+        "projects/v3/src/app/components/time-log/timesheet-log.spec.ts",
+        "projects/v3/src/app/components/time-log/timesheet-log.ts",
+        "projects/v3/src/app/components/uppy-uploader/uppy-uploader.component.html",
+        "projects/v3/src/app/components/uppy-uploader/uppy-uploader.component.scss",
+        "projects/v3/src/app/components/uppy-uploader/uppy-uploader.component.spec.ts",
+        "projects/v3/src/app/components/uppy-uploader/uppy-uploader.component.ts",
+        "projects/v3/src/app/components/uppy-uploader/uppy-uploader.integration.spec.ts",
+        "projects/v3/src/app/components/uppy-uploader/uppy-uploader.service.spec.ts",
+        "projects/v3/src/app/components/uppy-uploader/uppy-uploader.service.ts",
+        "projects/v3/src/app/components/video-conversion/video-conversion.component.html",
+        "projects/v3/src/app/components/video-conversion/video-conversion.component.scss",
+        "projects/v3/src/app/components/video-conversion/video-conversion.component.spec.ts",
+        "projects/v3/src/app/components/video-conversion/video-conversion.component.ts",
+        "projects/v3/src/app/directives/autoresize/autoresize.directive.spec.ts",
+        "projects/v3/src/app/directives/autoresize/autoresize.directive.ts",
+        "projects/v3/src/app/directives/background-image/background-image.directive.spec.ts",
+        "projects/v3/src/app/directives/background-image/background-image.directive.ts",
+        "projects/v3/src/app/directives/drag-and-drop/drag-and-drop.directive.spec.ts",
+        "projects/v3/src/app/directives/drag-and-drop/drag-and-drop.directive.ts",
+        "projects/v3/src/app/directives/fallback-image/fallback-image.directive.spec.ts",
+        "projects/v3/src/app/directives/fallback-image/fallback-image.directive.ts",
+        "projects/v3/src/app/directives/toggle-label/toggle-label.directive.spec.ts",
+        "projects/v3/src/app/directives/toggle-label/toggle-label.directive.ts",
+        "projects/v3/src/app/guards/auth.guard.ts",
+        "projects/v3/src/app/guards/dev-only.guard.ts",
+        "projects/v3/src/app/guards/program-selected.guard.ts",
+        "projects/v3/src/app/guards/single-page-deactivate.guard.spec.ts",
+        "projects/v3/src/app/guards/single-page-deactivate.guard.ts",
+        "projects/v3/src/app/guards/unauthorized.guard.ts",
+        "projects/v3/src/app/models/api.model.ts",
+        "projects/v3/src/app/models/project-brief.model.spec.ts",
+        "projects/v3/src/app/models/project-brief.model.ts",
+        "projects/v3/src/app/models/topic-attention.model.spec.ts",
+        "projects/v3/src/app/models/topic-attention.model.ts",
+        "projects/v3/src/app/pages/devtool/devtool-routing.module.ts",
+        "projects/v3/src/app/pages/devtool/devtool.module.ts",
+        "projects/v3/src/app/pages/devtool/devtool.page.html",
+        "projects/v3/src/app/pages/devtool/devtool.page.scss",
+        "projects/v3/src/app/pages/devtool/devtool.page.ts",
+        "projects/v3/src/app/pages/page-not-found/page-not-found-routing.module.ts",
+        "projects/v3/src/app/pages/page-not-found/page-not-found.module.ts",
+        "projects/v3/src/app/pages/page-not-found/page-not-found.page.html",
+        "projects/v3/src/app/pages/page-not-found/page-not-found.page.scss",
+        "projects/v3/src/app/pages/page-not-found/page-not-found.page.ts",
+        "projects/v3/src/app/personalised-header/personalised-header.component.html",
+        "projects/v3/src/app/personalised-header/personalised-header.component.scss",
+        "projects/v3/src/app/personalised-header/personalised-header.component.spec.ts",
+        "projects/v3/src/app/personalised-header/personalised-header.component.ts",
+        "projects/v3/src/app/personalised-header/personalised-header.module.ts",
+        "projects/v3/src/app/pipes/language.pipe.ts",
+        "projects/v3/src/app/pipes/markdown.pipe.ts",
+        "projects/v3/src/app/pipes/project-brief-markdown.pipe.spec.ts",
+        "projects/v3/src/app/pipes/project-brief-markdown.pipe.ts",
+        "projects/v3/src/app/services/animations.service.ts",
+        "projects/v3/src/app/services/apollo.service.ts",
+        "projects/v3/src/app/services/component-cleanup.service.ts",
+        "projects/v3/src/app/services/demo.service.ts",
+        "projects/v3/src/app/services/ffmpeg.service.ts",
+        "projects/v3/src/app/services/file-preview.service.ts",
+        "projects/v3/src/app/services/hubspot.service.ts",
+        "projects/v3/src/app/services/modal.service.ts",
+        "projects/v3/src/app/services/network.service.ts",
+        "projects/v3/src/app/services/ngx-embed-video.service.ts",
+        "projects/v3/src/app/services/project-brief-pdf.service.ts",
+        "projects/v3/src/app/services/request.interceptor.ts",
+        "projects/v3/src/app/services/shared.service.ts",
+        "projects/v3/src/app/services/taxonomy.service.ts",
+        "projects/v3/src/app/services/types.ts",
+        "projects/v3/src/app/services/utils.service.ts",
+        "projects/v3/src/app/services/version-check.service.ts"
+      ],
+      "tests": [
+        "projects/v3/src/app/app.component.spec.ts",
+        "projects/v3/src/app/components/activity-complete-pop-up/activity-complete-pop-up.component.spec.ts",
+        "projects/v3/src/app/components/bottom-action-bar/bottom-action-bar.component.spec.ts",
+        "projects/v3/src/app/components/circle-progress/circle-progress.component.spec.ts",
+        "projects/v3/src/app/components/description/description.component.spec.ts",
+        "projects/v3/src/app/components/file-popup/file-popup.component.spec.ts",
+        "projects/v3/src/app/components/file-preview/file-preview.component.spec.ts",
+        "projects/v3/src/app/components/img/img.component.spec.ts",
+        "projects/v3/src/app/components/list-item/list-item.component.spec.ts",
+        "projects/v3/src/app/components/lock-team-assessment-pop-up/lock-team-assessment-pop-up.component.spec.ts",
+        "projects/v3/src/app/components/multi-team-member-selector/multi-team-member-selector.component.spec.ts",
+        "projects/v3/src/app/components/pop-up/pop-up.component.spec.ts",
+        "projects/v3/src/app/components/project-brief-modal/project-brief-modal.component.spec.ts",
+        "projects/v3/src/app/components/team-member-selector/team-member-selector.component.spec.ts",
+        "projects/v3/src/app/components/team-roster/team-roster.component.spec.ts",
+        "projects/v3/src/app/components/time-log/timesheet-log.spec.ts",
+        "projects/v3/src/app/components/uppy-uploader/uppy-uploader.component.spec.ts",
+        "projects/v3/src/app/components/uppy-uploader/uppy-uploader.integration.spec.ts",
+        "projects/v3/src/app/components/uppy-uploader/uppy-uploader.service.spec.ts",
+        "projects/v3/src/app/components/video-conversion/video-conversion.component.spec.ts",
+        "projects/v3/src/app/directives/autoresize/autoresize.directive.spec.ts",
+        "projects/v3/src/app/directives/background-image/background-image.directive.spec.ts",
+        "projects/v3/src/app/directives/drag-and-drop/drag-and-drop.directive.spec.ts",
+        "projects/v3/src/app/directives/fallback-image/fallback-image.directive.spec.ts",
+        "projects/v3/src/app/directives/toggle-label/toggle-label.directive.spec.ts",
+        "projects/v3/src/app/guards/single-page-deactivate.guard.spec.ts",
+        "projects/v3/src/app/models/project-brief.model.spec.ts",
+        "projects/v3/src/app/models/topic-attention.model.spec.ts",
+        "projects/v3/src/app/personalised-header/personalised-header.component.spec.ts",
+        "projects/v3/src/app/pipes/project-brief-markdown.pipe.spec.ts",
+        "projects/v3/src/app/services/animations.service.spec.ts",
+        "projects/v3/src/app/services/apollo.service.spec.ts",
+        "projects/v3/src/app/services/ffmpeg.service.spec.ts",
+        "projects/v3/src/app/services/hubspot.service.spec.ts",
+        "projects/v3/src/app/services/modal.service.spec.ts",
+        "projects/v3/src/app/services/network.service.spec.ts",
+        "projects/v3/src/app/services/ngx-embed-video.service.spec.ts",
+        "projects/v3/src/app/services/project-brief-pdf.service.spec.ts",
+        "projects/v3/src/app/services/request.interceptor.spec.ts",
+        "projects/v3/src/app/services/shared.service.spec.ts",
+        "projects/v3/src/app/services/taxonomy.service.spec.ts",
+        "projects/v3/src/app/services/utils.service.spec.ts",
+        "projects/v3/src/testing/ionic-attribute-watchers.spec.ts"
+      ],
+      "docs": [],
+      "history": [],
+      "claims": [
+        {
+          "id": "network-status-observable",
+          "ref": "capabilities/shared-infrastructure#network-status-observable",
+          "text": "The network service exposes an observable that emits true when the browser is online and the server is reachable, and false otherwise, checking server reachability when navigator.onLine is false.",
+          "proof": "unproven",
+          "tests": []
+        },
+        {
+          "id": "request-headers-injected",
+          "ref": "capabilities/shared-infrastructure#request-headers-injected",
+          "text": "The request interceptor adds appkey, apikey, timelineId, and teamId headers to outgoing HTTP requests, except for ipapi.co and api.hsforms.com, and refreshes the stored apikey when the API returns a new JWT in the response body.",
+          "proof": "unproven",
+          "tests": []
+        },
+        {
+          "id": "modal-queue-prevents-duplicates",
+          "ref": "capabilities/shared-infrastructure#modal-queue-prevents-duplicates",
+          "text": "The modal service queues modal configurations and shows them one at a time, preventing duplicate modals with the same modalId from being added to the queue or displayed simultaneously.",
+          "proof": "unproven",
+          "tests": []
+        },
+        {
+          "id": "ffmpeg-transcoding",
+          "ref": "capabilities/shared-infrastructure#ffmpeg-transcoding",
+          "text": "The FFmpeg service loads the FFmpeg WASM core and worker from local assets, writes an input video file, transcodes it to MP4 using the exec method, and returns a Blob of the output video.",
+          "proof": "unproven",
+          "tests": []
+        },
+        {
+          "id": "file-preview-modal-opens",
+          "ref": "capabilities/shared-infrastructure#file-preview-modal-opens",
+          "text": "The file preview service opens a modal displaying the file URL, warns the user if a non-image, non-PDF, non-Office document exceeds 10 MB, and offers a download button instead of inline preview.",
+          "proof": "unproven",
+          "tests": []
+        },
+        {
+          "id": "version-check-logout",
+          "ref": "capabilities/shared-infrastructure#version-check-logout",
+          "text": "The version check service polls version.json every 3 minutes, compares the hash against the build-time hash, and navigates to the logout route with a timestamp if the hash has changed.",
+          "proof": "unproven",
+          "tests": []
+        },
+        {
+          "id": "page-not-found-navigation",
+          "ref": "capabilities/shared-infrastructure#page-not-found-navigation",
+          "text": "The page-not-found component displays a 'Page Not Found' heading and a 'Go Home' button that navigates to /v3/home with replaceUrl set to true, and sets the page title to 'Page Not Found - Practera'.",
+          "proof": "unproven",
+          "tests": []
+        },
+        {
+          "id": "animation-enter-leave",
+          "ref": "capabilities/shared-infrastructure#animation-enter-leave",
+          "text": "The animations service provides an enterAnimation that slides the modal wrapper from 200% translateX to 0 and fades in the backdrop, and a leaveAnimation that reverses the enter animation.",
+          "proof": "unproven",
+          "tests": []
+        },
+        {
+          "id": "component-cleanup-observable",
+          "ref": "capabilities/shared-infrastructure#component-cleanup-observable",
+          "text": "The component cleanup service exposes a cleanup$ observable and a triggerCleanup method to emit cleanup events for subscribed components.",
+          "proof": "unproven",
+          "tests": []
+        },
+        {
+          "id": "devtool-page-routing",
+          "ref": "capabilities/shared-infrastructure#devtool-page-routing",
+          "text": "The devtool module lazy-loads the DevtoolPage component at the devtool route, accessible only in development builds.",
+          "proof": "unproven",
+          "tests": []
+        },
+        {
+          "id": "response-interface",
+          "ref": "capabilities/shared-infrastructure#response-interface",
+          "text": "The types module exports a Response interface with success boolean and message string fields, used by services to return operation results.",
+          "proof": "unproven",
+          "tests": []
+        },
+        {
+          "id": "server-reachability-check",
+          "ref": "capabilities/shared-infrastructure#server-reachability-check",
+          "text": "The network service checks server reachability by sending a GET request to https://practera.com and mapping a 200 status to true, or false on error.",
+          "proof": "unproven",
+          "tests": []
+        },
+        {
+          "id": "modal-callback-execution",
+          "ref": "capabilities/shared-infrastructure#modal-callback-execution",
+          "text": "The modal service executes an optional callback function after a modal is dismissed, removes the modalId from the active set, and triggers the next queued modal.",
+          "proof": "unproven",
+          "tests": []
+        },
+        {
+          "id": "file-preview-mime-detection",
+          "ref": "capabilities/shared-infrastructure#file-preview-mime-detection",
+          "text": "The file preview service determines whether a file is an image, PDF, or Office document by inspecting the mimetype or type field and the URL extension, applying size warnings only to non-previewable application files.",
+          "proof": "unproven",
+          "tests": []
+        },
+        {
+          "id": "version-check-retry",
+          "ref": "capabilities/shared-infrastructure#version-check-retry",
+          "text": "The version check service retries the version.json request up to 5 times with a 1-second delay if an error occurs, ignoring cache by appending a timestamp and setting Cache-Control headers.",
+          "proof": "unproven",
+          "tests": []
+        }
+      ],
+      "counts": {
+        "claims": 15,
+        "proven": 0,
+        "failed": 0,
+        "stale": 0,
+        "unexercised": 0,
+        "error": 0,
+        "unproven": 15,
+        "withTests": 0
+      }
+    },
+    {
+      "id": "task-deadline-tracking",
+      "specKey": "capabilities/task-deadline-tracking",
+      "kind": "capability",
+      "title": "Task & Deadline Tracking",
+      "status": "active",
+      "value": "Helps learners stay on track by surfacing all upcoming and overdue assessments, activities, and events in a unified timeline view with visual status indicators.",
+      "parent": "system",
+      "unit": ".",
+      "ownedFiles": [
+        "projects/v3/src/app/components/todo-card/todo-card.component.html",
+        "projects/v3/src/app/components/todo-card/todo-card.component.scss",
+        "projects/v3/src/app/components/todo-card/todo-card.component.spec.ts",
+        "projects/v3/src/app/components/todo-card/todo-card.component.ts",
+        "projects/v3/src/app/pages/due-dates/due-dates.component.html",
+        "projects/v3/src/app/pages/due-dates/due-dates.component.scss",
+        "projects/v3/src/app/pages/due-dates/due-dates.component.spec.ts",
+        "projects/v3/src/app/pages/due-dates/due-dates.component.ts",
+        "projects/v3/src/app/pages/due-dates/due-dates.module.ts",
+        "projects/v3/src/app/pages/due-dates/due-dates.service.spec.ts",
+        "projects/v3/src/app/pages/due-dates/due-dates.service.ts"
+      ],
+      "tests": [
+        "projects/v3/src/app/components/todo-card/todo-card.component.spec.ts",
+        "projects/v3/src/app/pages/due-dates/due-dates.component.spec.ts",
+        "projects/v3/src/app/pages/due-dates/due-dates.service.spec.ts"
+      ],
+      "docs": [],
+      "history": [],
+      "claims": [
+        {
+          "id": "all-due-items-listed",
+          "ref": "capabilities/task-deadline-tracking#all-due-items-listed",
+          "text": "All assessments with due dates in the learner's experience are listed on the due dates page.",
+          "proof": "unproven",
+          "tests": []
+        },
+        {
+          "id": "chronological-sorting",
+          "ref": "capabilities/task-deadline-tracking#chronological-sorting",
+          "text": "Assessments are sorted chronologically by due date, with items lacking a due date grouped last under \"No due date\".",
+          "proof": "unproven",
+          "tests": []
+        },
+        {
+          "id": "overdue-visual-indicator",
+          "ref": "capabilities/task-deadline-tracking#overdue-visual-indicator",
+          "text": "Overdue items are visually highlighted in red to draw attention.",
+          "proof": "unproven",
+          "tests": []
+        },
+        {
+          "id": "completion-status-shown",
+          "ref": "capabilities/task-deadline-tracking#completion-status-shown",
+          "text": "Completed assessments are displayed with a completion indicator.",
+          "proof": "unproven",
+          "tests": []
+        },
+        {
+          "id": "grouped-by-month",
+          "ref": "capabilities/task-deadline-tracking#grouped-by-month",
+          "text": "Assessments are grouped by month for easier scanning of upcoming and future tasks.",
+          "proof": "unproven",
+          "tests": []
+        },
+        {
+          "id": "search-by-name",
+          "ref": "capabilities/task-deadline-tracking#search-by-name",
+          "text": "Learners can search assessments by name with a 200ms debounce; only groups containing matching items are shown.",
+          "proof": "unproven",
+          "tests": []
+        },
+        {
+          "id": "whitespace-search-shows-all",
+          "ref": "capabilities/task-deadline-tracking#whitespace-search-shows-all",
+          "text": "A search query containing only whitespace returns all groups unchanged.",
+          "proof": "unproven",
+          "tests": []
+        },
+        {
+          "id": "skeleton-loading-state",
+          "ref": "capabilities/task-deadline-tracking#skeleton-loading-state",
+          "text": "While assessments are loading, skeleton placeholders are displayed in place of assessment names and dates.",
+          "proof": "unproven",
+          "tests": []
+        },
+        {
+          "id": "navigate-to-activity",
+          "ref": "capabilities/task-deadline-tracking#navigate-to-activity",
+          "text": "Tapping \"Go to\" on an assessment navigates to the route v3/activity-desktop/:contextId/:activityId/:assessmentId.",
+          "proof": "unproven",
+          "tests": []
+        },
+        {
+          "id": "ical-export",
+          "ref": "capabilities/task-deadline-tracking#ical-export",
+          "text": "Learners can download an iCal (.ics) file for any assessment with a due date, triggering a browser download named \"<AssessmentName>.ics\".",
+          "proof": "unproven",
+          "tests": []
+        },
+        {
+          "id": "google-calendar-export",
+          "ref": "capabilities/task-deadline-tracking#google-calendar-export",
+          "text": "Learners can open a Google Calendar URL in a new tab to add an assessment with its title, description, and due date.",
+          "proof": "unproven",
+          "tests": []
+        },
+        {
+          "id": "google-calendar-default-duration",
+          "ref": "capabilities/task-deadline-tracking#google-calendar-default-duration",
+          "text": "When generating a Google Calendar event, if no end time is provided, the event defaults to a one-hour duration.",
+          "proof": "unproven",
+          "tests": []
+        },
+        {
+          "id": "google-calendar-url-parameters",
+          "ref": "capabilities/task-deadline-tracking#google-calendar-url-parameters",
+          "text": "The Google Calendar URL includes encoded title, description, location (if provided), and reminder in minutes (if provided).",
+          "proof": "unproven",
+          "tests": []
+        },
+        {
+          "id": "date-format-compact-ics",
+          "ref": "capabilities/task-deadline-tracking#date-format-compact-ics",
+          "text": "Dates are formatted as compact ISO 8601 strings (YYYYMMDDTHHmmssZ) for iCal and Google Calendar URLs.",
+          "proof": "unproven",
+          "tests": []
+        },
+        {
+          "id": "ical-creation-error-alert",
+          "ref": "capabilities/task-deadline-tracking#ical-creation-error-alert",
+          "text": "If iCal event creation fails, an alert is shown to the user.",
+          "proof": "unproven",
+          "tests": []
+        },
+        {
+          "id": "google-calendar-popup-blocked-alert",
+          "ref": "capabilities/task-deadline-tracking#google-calendar-popup-blocked-alert",
+          "text": "If the Google Calendar URL cannot be opened (popup blocked), an alert instructs the user to allow pop-ups.",
+          "proof": "unproven",
+          "tests": []
+        },
+        {
+          "id": "google-calendar-generation-error-alert",
+          "ref": "capabilities/task-deadline-tracking#google-calendar-generation-error-alert",
+          "text": "If Google Calendar URL generation throws an error, an alert with the message \"Failed to generate Google calendar URL\" is shown.",
+          "proof": "unproven",
+          "tests": []
+        },
+        {
+          "id": "assessment-service-error-handling",
+          "ref": "capabilities/task-deadline-tracking#assessment-service-error-handling",
+          "text": "If the assessment service returns an error when fetching due dates, the page stops loading and displays an empty list.",
+          "proof": "unproven",
+          "tests": []
+        }
+      ],
+      "counts": {
+        "claims": 18,
+        "proven": 0,
+        "failed": 0,
+        "stale": 0,
+        "unexercised": 0,
+        "error": 0,
+        "unproven": 18,
+        "withTests": 0
+      }
+    },
+    {
+      "id": "wellbeing-pulse-checks",
+      "specKey": "capabilities/wellbeing-pulse-checks",
+      "kind": "capability",
+      "title": "Wellbeing & Pulse Checks",
+      "status": "active",
+      "value": "Supports learner wellbeing by collecting brief, periodic check-ins on learner sentiment and providing visual traffic-light status indicators.",
+      "parent": "system",
+      "unit": ".",
+      "ownedFiles": [
+        "projects/v3/src/app/components/traffic-light-group/traffic-light-group.component.html",
+        "projects/v3/src/app/components/traffic-light-group/traffic-light-group.component.scss",
+        "projects/v3/src/app/components/traffic-light-group/traffic-light-group.component.spec.ts",
+        "projects/v3/src/app/components/traffic-light-group/traffic-light-group.component.ts",
+        "projects/v3/src/app/components/traffic-light/traffic-light.component.html",
+        "projects/v3/src/app/components/traffic-light/traffic-light.component.scss",
+        "projects/v3/src/app/components/traffic-light/traffic-light.component.spec.ts",
+        "projects/v3/src/app/components/traffic-light/traffic-light.component.ts",
+        "projects/v3/src/app/services/pulsecheck.service.ts"
+      ],
+      "tests": [
+        "projects/v3/src/app/components/traffic-light-group/traffic-light-group.component.spec.ts",
+        "projects/v3/src/app/components/traffic-light/traffic-light.component.spec.ts",
+        "projects/v3/src/app/services/pulsecheck.service.spec.ts"
+      ],
+      "docs": [],
+      "history": [],
+      "claims": [
+        {
+          "id": "pulse-check-questions-shown-in-sequence",
+          "ref": "capabilities/wellbeing-pulse-checks#pulse-check-questions-shown-in-sequence",
+          "text": "Pulse check questions are presented to the learner in sequence based on the configured pulse check type and question set for the current period.",
+          "proof": "unproven",
+          "tests": []
+        },
+        {
+          "id": "learner-submits-rating-responses",
+          "ref": "capabilities/wellbeing-pulse-checks#learner-submits-rating-responses",
+          "text": "Learner submits a rating response for each pulse check question in the sequence.",
+          "proof": "unproven",
+          "tests": []
+        },
+        {
+          "id": "submission-updates-traffic-light",
+          "ref": "capabilities/wellbeing-pulse-checks#submission-updates-traffic-light",
+          "text": "On successful pulse check submission, the learner's pulse check status updates and the traffic light indicator on the home page refreshes to reflect the new data.",
+          "proof": "unproven",
+          "tests": []
+        },
+        {
+          "id": "duplicate-submission-prevented",
+          "ref": "capabilities/wellbeing-pulse-checks#duplicate-submission-prevented",
+          "text": "A learner cannot resubmit a pulse check they have already completed within the current configured period.",
+          "proof": "unproven",
+          "tests": []
+        },
+        {
+          "id": "answers-stored-via-graphql",
+          "ref": "capabilities/wellbeing-pulse-checks#answers-stored-via-graphql",
+          "text": "Pulse check answers are persisted by invoking the submitPulseCheck GraphQL mutation.",
+          "proof": "unproven",
+          "tests": []
+        },
+        {
+          "id": "skill-change-displayed-as-percentage",
+          "ref": "capabilities/wellbeing-pulse-checks#skill-change-displayed-as-percentage",
+          "text": "Skill change values returned from the API are converted to percentages (multiplied by 100 and rounded to one decimal place) for display.",
+          "proof": "unproven",
+          "tests": []
+        },
+        {
+          "id": "positive-change-formatting",
+          "ref": "capabilities/wellbeing-pulse-checks#positive-change-formatting",
+          "text": "Positive skill change percentages are prefixed with a plus sign and styled with the skill-change-positive CSS class.",
+          "proof": "unproven",
+          "tests": []
+        },
+        {
+          "id": "negative-change-formatting",
+          "ref": "capabilities/wellbeing-pulse-checks#negative-change-formatting",
+          "text": "Negative skill change percentages are displayed without a prefix and styled with the skill-change-negative CSS class.",
+          "proof": "unproven",
+          "tests": []
+        },
+        {
+          "id": "zero-change-hidden",
+          "ref": "capabilities/wellbeing-pulse-checks#zero-change-hidden",
+          "text": "When skill change value is zero, no change indicator is displayed to the learner.",
+          "proof": "unproven",
+          "tests": []
+        },
+        {
+          "id": "pulse-check-contributes-to-metrics",
+          "ref": "capabilities/wellbeing-pulse-checks#pulse-check-contributes-to-metrics",
+          "text": "Pulse check completion data contributes to skills growth metrics visible in the administrator reporting view.",
+          "proof": "unproven",
+          "tests": []
+        },
+        {
+          "id": "traffic-light-group-surfaces-status",
+          "ref": "capabilities/wellbeing-pulse-checks#traffic-light-group-surfaces-status",
+          "text": "Pulse check wellbeing status is surfaced on the home page via a traffic-light group indicator that provides visual health summary.",
+          "proof": "unproven",
+          "tests": []
+        }
+      ],
+      "counts": {
+        "claims": 11,
+        "proven": 0,
+        "failed": 0,
+        "stale": 0,
+        "unexercised": 0,
+        "error": 0,
+        "unproven": 11,
+        "withTests": 0
+      }
+    }
+  ],
+  "unowned": [
+    "projects/v3/src/app/services/achievement.service.spec.ts",
+    "projects/v3/src/app/services/activity.service.spec.ts",
+    "projects/v3/src/app/services/animations.service.spec.ts",
+    "projects/v3/src/app/services/apollo.service.spec.ts",
+    "projects/v3/src/app/services/assessment.service.spec.ts",
+    "projects/v3/src/app/services/auth.service.spec.ts",
+    "projects/v3/src/app/services/chat.service.spec.ts",
+    "projects/v3/src/app/services/event.service.spec.ts",
+    "projects/v3/src/app/services/experience.service.spec.ts",
+    "projects/v3/src/app/services/fast-feedback.service.spec.ts",
+    "projects/v3/src/app/services/ffmpeg.service.spec.ts",
+    "projects/v3/src/app/services/home.service.spec.ts",
+    "projects/v3/src/app/services/hubspot.service.spec.ts",
+    "projects/v3/src/app/services/modal.service.spec.ts",
+    "projects/v3/src/app/services/network.service.spec.ts",
+    "projects/v3/src/app/services/ngx-embed-video.service.spec.ts",
+    "projects/v3/src/app/services/notifications.service.spec.ts",
+    "projects/v3/src/app/services/project-brief-pdf.service.spec.ts",
+    "projects/v3/src/app/services/pulsecheck.service.spec.ts",
+    "projects/v3/src/app/services/pusher.service.spec.ts",
+    "projects/v3/src/app/services/request.interceptor.spec.ts",
+    "projects/v3/src/app/services/review-rating.service.spec.ts",
+    "projects/v3/src/app/services/shared.service.spec.ts",
+    "projects/v3/src/app/services/storage.service.spec.ts",
+    "projects/v3/src/app/services/taxonomy.service.spec.ts",
+    "projects/v3/src/app/services/topic.service.spec.ts",
+    "projects/v3/src/app/services/unlock-indicator.service.spec.ts",
+    "projects/v3/src/app/services/utils.service.spec.ts"
+  ],
+  "issues": [],
+  "totals": {
+    "claims": 218,
+    "proven": 0,
+    "failed": 0,
+    "stale": 0,
+    "unexercised": 0,
+    "error": 0,
+    "unproven": 218,
+    "withTests": 0,
+    "capabilities": 13,
+    "ownedFiles": 422,
+    "sourceFiles": 229
+  }
+}

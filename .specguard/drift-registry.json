@@ -53,7 +53,7 @@
     "specKey": "app-v3/app-routing.module",
     "specHash": "cbcd9b39628972857a633c950b6b94c58bd2509e11d9da3d0f31760b807dfb61",
     "files": {
-      "/Users/wessonnenreich/Code/practera/practera-app/projects/v3/src/app/app-routing.module.ts": {
+      "projects/v3/src/app/app-routing.module.ts": {
         "hash": "ff5081767052caca57842ae9a4831cd83df9ab5e8bf9eb52b4c2e8c5a9fb78c2",
         "lastChecked": "2026-10-06T02:58:26.972Z",
         "lastVerdict": "no-drift"
@@ -754,7 +754,7 @@
     "specKey": "app-v3/pages/activity-desktop/activity-desktop-routing.module",
     "specHash": "f7dc9b46be3caebf9a97726781e6d614986e71a111f1d332decc1a5536c0a92f",
     "files": {
-      "/Users/wessonnenreich/Code/practera/practera-app/projects/v3/src/app/pages/activity-desktop/activity-desktop-routing.module.ts": {
+      "projects/v3/src/app/pages/activity-desktop/activity-desktop-routing.module.ts": {
         "hash": "e1626450825c0640c0523c5f7003d756fbdc1c296d36100edb7cd5de6630bd82",
         "lastChecked": "2026-10-06T02:58:27.038Z",
         "lastVerdict": "no-drift"
@@ -765,7 +765,7 @@
     "specKey": "app-v3/pages/activity-desktop/activity-desktop.module",
     "specHash": "007dc741a143bfa372116cf8e329ed6cdee99342c25f3e5c1d2d03656b330fef",
     "files": {
-      "/Users/wessonnenreich/Code/practera/practera-app/projects/v3/src/app/pages/activity-desktop/activity-desktop.module.ts": {
+      "projects/v3/src/app/pages/activity-desktop/activity-desktop.module.ts": {
         "hash": "12e1354e0ffc374875ec7706d6aafc87ac85170762e15c9d67d47a5c348a3782",
         "lastChecked": "2026-10-06T02:58:27.038Z",
         "lastVerdict": "no-drift"
@@ -776,7 +776,7 @@
     "specKey": "app-v3/pages/activity-desktop/activity-desktop.page.html",
     "specHash": "476f0ab39bebf1923b9495c90ffcbe376f27072b8ad0ab3f89ba76c52747107d",
     "files": {
-      "/Users/wessonnenreich/Code/practera/practera-app/projects/v3/src/app/pages/activity-desktop/activity-desktop.page.html": {
+      "projects/v3/src/app/pages/activity-desktop/activity-desktop.page.html": {
         "hash": "e401b21ed231349e030f5654a33654f9d6467f4507fd15644c81f7cb9bfc4867",
         "lastChecked": "2026-10-06T02:58:27.039Z",
         "lastVerdict": "no-drift"
@@ -787,12 +787,12 @@
     "specKey": "app-v3/pages/activity-desktop/activity-desktop.page",
     "specHash": "a9d760718f2702af415626ca56c86a425c779c7fe40745e9a61399c9bb6772d9",
     "files": {
-      "/Users/wessonnenreich/Code/practera/practera-app/projects/v3/src/app/pages/activity-desktop/activity-desktop.page.spec.ts": {
+      "projects/v3/src/app/pages/activity-desktop/activity-desktop.page.spec.ts": {
         "hash": "bef3cbd09c81b7fa4131ad7c43e1e6e373a0d9af9ecd5d9a4317c4b9bc3a90a4",
         "lastChecked": "2026-10-06T02:58:27.040Z",
         "lastVerdict": "no-drift"
       },
-      "/Users/wessonnenreich/Code/practera/practera-app/projects/v3/src/app/pages/activity-desktop/activity-desktop.page.ts": {
+      "projects/v3/src/app/pages/activity-desktop/activity-desktop.page.ts": {
         "hash": "af93e80700e3490023735cddb52a35ae4824e1296b21da39c223989bea8cd300",
         "lastChecked": "2026-10-06T02:58:27.041Z",
         "lastVerdict": "no-drift"
@@ -803,7 +803,7 @@
     "specKey": "app-v3/pages/activity-mobile/activity-mobile-routing.module",
     "specHash": "50144eea515edca1c5352f81df7ecf3b4869ba528b39f47c08b61907f9c10c3e",
     "files": {
-      "/Users/wessonnenreich/Code/practera/practera-app/projects/v3/src/app/pages/activity-mobile/activity-mobile-routing.module.ts": {
+      "projects/v3/src/app/pages/activity-mobile/activity-mobile-routing.module.ts": {
         "hash": "3c7a079f7775ffef19d5f131db47c08a14ac5976812dab97ec0053044f121427",
         "lastChecked": "2026-10-06T02:58:27.041Z",
         "lastVerdict": "no-drift"
@@ -814,7 +814,7 @@
     "specKey": "app-v3/pages/activity-mobile/activity-mobile.module",
     "specHash": "78439f50dab8038f0146bce7096ac8752ac1035af08c8415b9e1e809c2e0614c",
     "files": {
-      "/Users/wessonnenreich/Code/practera/practera-app/projects/v3/src/app/pages/activity-mobile/activity-mobile.module.ts": {
+      "projects/v3/src/app/pages/activity-mobile/activity-mobile.module.ts": {
         "hash": "185abf487aff386501ed2a2f25bfa066502d9b4b91406211e813f572ea9b5d22",
         "lastChecked": "2026-10-06T02:58:27.042Z",
         "lastVerdict": "no-drift"
@@ -825,7 +825,7 @@
     "specKey": "app-v3/pages/activity-mobile/activity-mobile.page.html",
     "specHash": "d9bd3118a6cdba297f00d484d6edeb38ff6168167518b28c0c92fe5e5b62eedf",
     "files": {
-      "/Users/wessonnenreich/Code/practera/practera-app/projects/v3/src/app/pages/activity-mobile/activity-mobile.page.html": {
+      "projects/v3/src/app/pages/activity-mobile/activity-mobile.page.html": {
         "hash": "1771fa43a8d821aa0133e0a1adecc66220a83fedce597f687f574b1fb7b9f24b",
         "lastChecked": "2026-10-06T02:58:27.043Z",
         "lastVerdict": "no-drift"
@@ -836,12 +836,12 @@
     "specKey": "app-v3/pages/activity-mobile/activity-mobile.page",
     "specHash": "56a60118d0d07eea6771f7794c44bf30c0761596bd70a7e7bb1fad632ac2f020",
     "files": {
-      "/Users/wessonnenreich/Code/practera/practera-app/projects/v3/src/app/pages/activity-mobile/activity-mobile.page.spec.ts": {
+      "projects/v3/src/app/pages/activity-mobile/activity-mobile.page.spec.ts": {
         "hash": "8c3d91a6b0c2e97931f2a344ffc03e4109798d6da5aa334461205dea0e585200",
         "lastChecked": "2026-10-06T02:58:27.043Z",
         "lastVerdict": "no-drift"
       },
-      "/Users/wessonnenreich/Code/practera/practera-app/projects/v3/src/app/pages/activity-mobile/activity-mobile.page.ts": {
+      "projects/v3/src/app/pages/activity-mobile/activity-mobile.page.ts": {
         "hash": "874f592ca39f33e154c99d8a67d3786a2844cc5b98c8ec388778293b23afafd5",
         "lastChecked": "2026-10-06T02:58:27.044Z",
         "lastVerdict": "no-drift"
@@ -852,7 +852,7 @@
     "specKey": "app-v3/pages/assessment-mobile/assessment-mobile-routing.module",
     "specHash": "d0978020576347cb7b1081096f53b64c5ff1e6d97ae7fe6b5c64d064dda9be7b",
     "files": {
-      "/Users/wessonnenreich/Code/practera/practera-app/projects/v3/src/app/pages/assessment-mobile/assessment-mobile-routing.module.ts": {
+      "projects/v3/src/app/pages/assessment-mobile/assessment-mobile-routing.module.ts": {
         "hash": "47428d31ca5497bb3b3823f12e5850371d29bf0a679b16ac3da8aba1a53b99af",
         "lastChecked": "2026-10-06T02:58:27.044Z",
         "lastVerdict": "no-drift"
@@ -863,7 +863,7 @@
     "specKey": "app-v3/pages/assessment-mobile/assessment-mobile.module",
     "specHash": "5b7677d76ca1c5138670d17637a1bca524851b87bc65eb72a7a266500942cb1f",
     "files": {
-      "/Users/wessonnenreich/Code/practera/practera-app/projects/v3/src/app/pages/assessment-mobile/assessment-mobile.module.ts": {
+      "projects/v3/src/app/pages/assessment-mobile/assessment-mobile.module.ts": {
         "hash": "a32f1e7d78ba9b3d22c12d056f9acbd3c2961c7c8c147202eae3af982877011e",
         "lastChecked": "2026-10-06T02:58:27.045Z",
         "lastVerdict": "no-drift"
@@ -874,7 +874,7 @@
     "specKey": "app-v3/pages/assessment-mobile/assessment-mobile.page.html",
     "specHash": "e87beee302a763f2e7b8887ddcafb9dabc7397404a9274da097ac6da8558c0a4",
     "files": {
-      "/Users/wessonnenreich/Code/practera/practera-app/projects/v3/src/app/pages/assessment-mobile/assessment-mobile.page.html": {
+      "projects/v3/src/app/pages/assessment-mobile/assessment-mobile.page.html": {
         "hash": "903e3e8aba0167cc6a6b935178d917512af1a4463ecf9b03af868ad83dd98db8",
         "lastChecked": "2026-10-06T02:58:27.045Z",
         "lastVerdict": "no-drift"
@@ -885,12 +885,12 @@
     "specKey": "app-v3/pages/assessment-mobile/assessment-mobile.page",
     "specHash": "720612bbd8feed7201eb725f8dde2d2df747c1f281564b2b9ae8aa19b3a791f8",
     "files": {
-      "/Users/wessonnenreich/Code/practera/practera-app/projects/v3/src/app/pages/assessment-mobile/assessment-mobile.page.spec.ts": {
+      "projects/v3/src/app/pages/assessment-mobile/assessment-mobile.page.spec.ts": {
         "hash": "8a410df8faa084fdef03d1c4c9c53120c992447d86981b6857ee0a8cd89c7640",
         "lastChecked": "2026-10-06T02:58:27.046Z",
         "lastVerdict": "no-drift"
       },
-      "/Users/wessonnenreich/Code/practera/practera-app/projects/v3/src/app/pages/assessment-mobile/assessment-mobile.page.ts": {
+      "projects/v3/src/app/pages/assessment-mobile/assessment-mobile.page.ts": {
         "hash": "887d8cd5bd51c7985cccbc1893c5eccd0a7890398193691514f789b263d16a16",
         "lastChecked": "2026-10-06T02:58:27.046Z",
         "lastVerdict": "no-drift"
@@ -901,7 +901,7 @@
     "specKey": "app-v3/pages/auth/auth-direct-login/auth-direct-login.component.html",
     "specHash": "b4db613e0e9aeed3906570a5a815f64eae5ee4b001df0bc451b10658d59e1276",
     "files": {
-      "/Users/wessonnenreich/Code/practera/practera-app/projects/v3/src/app/pages/auth/auth-direct-login/auth-direct-login.component.html": {
+      "projects/v3/src/app/pages/auth/auth-direct-login/auth-direct-login.component.html": {
         "hash": "d7c2d6b1fd108c5ec867d2cda6acd7115c8f3729b67b9018fbfac3777eca3455",
         "lastChecked": "2026-10-06T02:58:27.047Z",
         "lastVerdict": "no-drift"
@@ -912,12 +912,12 @@
     "specKey": "app-v3/pages/auth/auth-direct-login/auth-direct-login.component",
     "specHash": "85eaec45829d206d7ce2db7691e1fb25c0439de9c2245df95c47e1db49db6466",
     "files": {
-      "/Users/wessonnenreich/Code/practera/practera-app/projects/v3/src/app/pages/auth/auth-direct-login/auth-direct-login.component.spec.ts": {
+      "projects/v3/src/app/pages/auth/auth-direct-login/auth-direct-login.component.spec.ts": {
         "hash": "4f9346d5d2fc255177f1b9d0dfb67898d2cc013d2bb34b1a214bb526d38d0e37",
         "lastChecked": "2026-10-06T02:58:27.048Z",
         "lastVerdict": "no-drift"
       },
-      "/Users/wessonnenreich/Code/practera/practera-app/projects/v3/src/app/pages/auth/auth-direct-login/auth-direct-login.component.ts": {
+      "projects/v3/src/app/pages/auth/auth-direct-login/auth-direct-login.component.ts": {
         "hash": "227291df2e278348cfaff167942d2f95fcb1b448b913dffe95d4f95695a55f86",
         "lastChecked": "2026-10-06T02:58:27.048Z",
         "lastVerdict": "no-drift"
@@ -928,7 +928,7 @@
     "specKey": "app-v3/pages/auth/auth-forgot-password/auth-forgot-password.component.html",
     "specHash": "84eda7141764e97a5cf131916fdc852ac3115334d1635292b5a5efdaf916a938",
     "files": {
-      "/Users/wessonnenreich/Code/practera/practera-app/projects/v3/src/app/pages/auth/auth-forgot-password/auth-forgot-password.component.html": {
+      "projects/v3/src/app/pages/auth/auth-forgot-password/auth-forgot-password.component.html": {
         "hash": "997746a65bd8d0c43565fc57e758a6df59224f3dc7c6a02028a906cb94be8217",
         "lastChecked": "2026-10-06T02:58:27.049Z",
         "lastVerdict": "no-drift"
@@ -939,12 +939,12 @@
     "specKey": "app-v3/pages/auth/auth-forgot-password/auth-forgot-password.component",
     "specHash": "f0e6100cfa2d361f79bde3f59dbb6de3b436e37940410b99a19275a2a28f234d",
     "files": {
-      "/Users/wessonnenreich/Code/practera/practera-app/projects/v3/src/app/pages/auth/auth-forgot-password/auth-forgot-password.component.spec.ts": {
+      "projects/v3/src/app/pages/auth/auth-forgot-password/auth-forgot-password.component.spec.ts": {
         "hash": "39eed6ab7130850156e47f9b1ecbf7741ec9558abf6576b36ab2d90511630e32",
         "lastChecked": "2026-10-06T02:58:27.049Z",
         "lastVerdict": "no-drift"
       },
-      "/Users/wessonnenreich/Code/practera/practera-app/projects/v3/src/app/pages/auth/auth-forgot-password/auth-forgot-password.component.ts": {
+      "projects/v3/src/app/pages/auth/auth-forgot-password/auth-forgot-password.component.ts": {
         "hash": "b922f20fa6e1de542d6b680346088595a258bb5b9fe4549a42ce22c6a262e586",
         "lastChecked": "2026-10-06T02:58:27.050Z",
         "lastVerdict": "no-drift"
@@ -955,7 +955,7 @@
     "specKey": "app-v3/pages/auth/auth-global-login/auth-global-login.component.html",
     "specHash": "985778b8f0d1aa4ff5372822fda72d733e9288da799fb58da4734dfaaad675f9",
     "files": {
-      "/Users/wessonnenreich/Code/practera/practera-app/projects/v3/src/app/pages/auth/auth-global-login/auth-global-login.component.html": {
+      "projects/v3/src/app/pages/auth/auth-global-login/auth-global-login.component.html": {
         "hash": "9a4f59bbf3613a7d8b5040f1d772479f6288fe955333e32a2161b6b60dd07b09",
         "lastChecked": "2026-10-06T02:58:27.050Z",
         "lastVerdict": "no-drift"

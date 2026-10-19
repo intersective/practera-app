@@ -1,0 +1,415 @@
+{
+  "system": {
+    "title": "Practera Learner App",
+    "problem": "Learners in work-integrated learning and experiential education programs need a unified platform to navigate their learning journey, complete assessments, collaborate with peers and mentors, and track their progress toward competencies. Without a cohesive mobile-first application, learners face fragmented experiences across multiple tools, making it difficult to stay engaged, submit work on time, communicate effectively with their team, and understand their development trajectory.",
+    "users": [
+      "Learners enrolled in experiential education programs",
+      "Peer reviewers providing feedback on submissions",
+      "Team members collaborating on group projects",
+      "Mentors and coordinators monitoring learner progress"
+    ],
+    "value": "Practera provides learners with a single, mobile-responsive interface to access all learning activities, submit assessments, communicate with peers and mentors, track deadlines, and view their skill development—supporting engagement and success throughout their experiential learning journey.",
+    "nonGoals": [
+      "Content authoring or curriculum design tools for coordinators",
+      "Administrative dashboards for program management",
+      "Backend API implementation",
+      "Learning management system (LMS) replacement for traditional classroom learning"
+    ]
+  },
+  "capabilities": [
+    {
+      "id": "identity-and-access",
+      "title": "Identity & Access Management",
+      "value": "Enables secure, flexible authentication so learners can access their personalized learning environment via multiple pathways including JWT token handoff, direct login, and federated identity.",
+      "rationale": "All authentication flows, password management, registration, and session handling belong together as they collectively manage user identity and system access.",
+      "sources": [
+        "projects/v3/src/app/pages/auth/**",
+        "projects/v3/src/app/services/auth.service.ts",
+        "projects/v3/src/app/services/oauth-pkce.ts",
+        "projects/v3/src/app/services/storage.service.ts"
+      ],
+      "tests": [
+        "projects/v3/src/app/pages/auth/**/*.spec.ts",
+        "projects/v3/src/app/services/auth.service.spec.ts",
+        "projects/v3/src/app/services/storage.service.spec.ts"
+      ],
+      "docs": [],
+      "specs": [
+        "auth/index"
+      ],
+      "components": []
+    },
+    {
+      "id": "learner-dashboard",
+      "title": "Learner Dashboard & Navigation",
+      "value": "Provides learners with a unified home view of their current experience, milestone progress, pulse check status, and quick access to all learning pathways.",
+      "rationale": "The home page, experience switcher, tabs navigation, and main routing collectively form the learner's primary navigation and dashboard interface.",
+      "sources": [
+        "projects/v3/src/app/pages/home/**",
+        "projects/v3/src/app/pages/experiences/**",
+        "projects/v3/src/app/pages/tabs/**",
+        "projects/v3/src/app/pages/v3/**",
+        "projects/v3/src/app/app-routing.module.ts",
+        "projects/v3/src/app/services/home.service.ts",
+        "projects/v3/src/app/services/experience.service.ts"
+      ],
+      "tests": [
+        "projects/v3/src/app/pages/home/**/*.spec.ts",
+        "projects/v3/src/app/pages/experiences/**/*.spec.ts",
+        "projects/v3/src/app/pages/tabs/**/*.spec.ts",
+        "projects/v3/src/app/pages/v3/**/*.spec.ts",
+        "projects/v3/src/app/services/home.service.spec.ts",
+        "projects/v3/src/app/services/experience.service.spec.ts"
+      ],
+      "docs": [],
+      "specs": [
+        "pages/home",
+        "index"
+      ],
+      "components": []
+    },
+    {
+      "id": "learning-activities",
+      "title": "Learning Activities & Content",
+      "value": "Delivers structured learning content through activities and topics, enabling learners to consume rich media, complete readings, and progress through their curriculum.",
+      "rationale": "Activity and topic pages (both mobile and desktop variants) along with their content rendering components form the core learning content delivery system.",
+      "sources": [
+        "projects/v3/src/app/pages/activity-mobile/**",
+        "projects/v3/src/app/pages/activity-desktop/**",
+        "projects/v3/src/app/pages/topic-mobile/**",
+        "projects/v3/src/app/components/activity/**",
+        "projects/v3/src/app/components/topic/**",
+        "projects/v3/src/app/services/activity.service.ts",
+        "projects/v3/src/app/services/topic.service.ts"
+      ],
+      "tests": [
+        "projects/v3/src/app/pages/activity-mobile/**/*.spec.ts",
+        "projects/v3/src/app/pages/activity-desktop/**/*.spec.ts",
+        "projects/v3/src/app/pages/topic-mobile/**/*.spec.ts",
+        "projects/v3/src/app/components/activity/**/*.spec.ts",
+        "projects/v3/src/app/components/topic/**/*.spec.ts",
+        "projects/v3/src/app/services/activity.service.spec.ts",
+        "projects/v3/src/app/services/topic.service.spec.ts"
+      ],
+      "docs": [],
+      "specs": [
+        "pages/activity",
+        "pages/topic"
+      ],
+      "components": []
+    },
+    {
+      "id": "assessments-and-submissions",
+      "title": "Assessments & Submissions",
+      "value": "Enables learners to complete and submit diverse assessment types (text, multiple-choice, file upload, H5P, SCORM) and receive feedback, demonstrating their competency and progress.",
+      "rationale": "Assessment submission pages, question type components, file handling, and H5P/SCORM players collectively support the assessment submission workflow.",
+      "sources": [
+        "projects/v3/src/app/pages/assessment-mobile/**",
+        "projects/v3/src/app/components/assessment/**",
+        "projects/v3/src/app/components/multiple/**",
+        "projects/v3/src/app/components/oneof/**",
+        "projects/v3/src/app/components/slider/**",
+        "projects/v3/src/app/components/text/**",
+        "projects/v3/src/app/components/file-upload/**",
+        "projects/v3/src/app/components/file-display/**",
+        "projects/v3/src/app/components/h5p-player/**",
+        "projects/v3/src/app/services/assessment.service.ts"
+      ],
+      "tests": [
+        "projects/v3/src/app/pages/assessment-mobile/**/*.spec.ts",
+        "projects/v3/src/app/components/assessment/**/*.spec.ts",
+        "projects/v3/src/app/components/multiple/**/*.spec.ts",
+        "projects/v3/src/app/components/oneof/**/*.spec.ts",
+        "projects/v3/src/app/components/slider/**/*.spec.ts",
+        "projects/v3/src/app/components/text/**/*.spec.ts",
+        "projects/v3/src/app/components/file-upload/**/*.spec.ts",
+        "projects/v3/src/app/components/file-display/**/*.spec.ts",
+        "projects/v3/src/app/components/h5p-player/**/*.spec.ts",
+        "projects/v3/src/app/services/assessment.service.spec.ts"
+      ],
+      "docs": [],
+      "specs": [
+        "pages/assessment",
+        "components/h5p-player",
+        "skills/passport"
+      ],
+      "components": []
+    },
+    {
+      "id": "peer-review-feedback",
+      "title": "Peer Review & Feedback",
+      "value": "Facilitates peer learning through structured review workflows where learners provide and receive feedback on submissions, contribution ratings, and fast feedback exchanges.",
+      "rationale": "Review pages, review components, contribution rating, fast feedback, and review rating services together enable the peer-to-peer feedback ecosystem.",
+      "sources": [
+        "projects/v3/src/app/pages/review-mobile/**",
+        "projects/v3/src/app/pages/review-desktop/**",
+        "projects/v3/src/app/pages/contribution-rating/**",
+        "projects/v3/src/app/components/review-list/**",
+        "projects/v3/src/app/components/review-rating/**",
+        "projects/v3/src/app/components/fast-feedback/**",
+        "projects/v3/src/app/services/review.service.ts",
+        "projects/v3/src/app/services/review-rating.service.ts",
+        "projects/v3/src/app/services/contribution.service.ts",
+        "projects/v3/src/app/services/fast-feedback.service.ts"
+      ],
+      "tests": [
+        "projects/v3/src/app/pages/review-mobile/**/*.spec.ts",
+        "projects/v3/src/app/pages/review-desktop/**/*.spec.ts",
+        "projects/v3/src/app/components/review-list/**/*.spec.ts",
+        "projects/v3/src/app/components/review-rating/**/*.spec.ts",
+        "projects/v3/src/app/components/fast-feedback/**/*.spec.ts",
+        "projects/v3/src/app/services/review-rating.service.spec.ts",
+        "projects/v3/src/app/services/fast-feedback.service.spec.ts"
+      ],
+      "docs": [],
+      "specs": [
+        "pages/review",
+        "pages/contribution-rating"
+      ],
+      "components": []
+    },
+    {
+      "id": "real-time-messaging",
+      "title": "Real-Time Messaging & Collaboration",
+      "value": "Connects learners with peers, mentors, and coordinators through real-time chat with channels, direct messages, threads, file attachments, and message editing.",
+      "rationale": "All chat UI components, Pusher integration, and chat service collectively deliver the messaging and collaboration experience.",
+      "sources": [
+        "projects/v3/src/app/pages/chat/**",
+        "projects/v3/src/app/services/chat.service.ts",
+        "projects/v3/src/app/services/pusher.service.ts"
+      ],
+      "tests": [
+        "projects/v3/src/app/pages/chat/**/*.spec.ts",
+        "projects/v3/src/app/services/chat.service.spec.ts",
+        "projects/v3/src/app/services/pusher.service.spec.ts"
+      ],
+      "docs": [],
+      "specs": [
+        "pages/chat"
+      ],
+      "components": []
+    },
+    {
+      "id": "events-and-attendance",
+      "title": "Events & Attendance Management",
+      "value": "Enables learners to discover, book, and attend scheduled events and meetings, with QR-based check-in for physical attendance tracking.",
+      "rationale": "Event listing, detail, booking, meeting polls, and QR check-in together manage the full event participation lifecycle.",
+      "sources": [
+        "projects/v3/src/app/pages/events/**",
+        "projects/v3/src/app/pages/meeting-poll/**",
+        "projects/v3/src/app/pages/checkin/**",
+        "projects/v3/src/app/services/event.service.ts",
+        "projects/v3/src/app/services/meeting-poll.service.ts"
+      ],
+      "tests": [
+        "projects/v3/src/app/pages/events/**/*.spec.ts",
+        "projects/v3/src/app/services/event.service.spec.ts"
+      ],
+      "docs": [],
+      "specs": [
+        "pages/events",
+        "pages/meeting-poll",
+        "pages/checkin"
+      ],
+      "components": []
+    },
+    {
+      "id": "task-deadline-tracking",
+      "title": "Task & Deadline Tracking",
+      "value": "Helps learners stay on track by surfacing all upcoming and overdue assessments, activities, and events in a unified timeline view with visual status indicators.",
+      "rationale": "Due dates page, service, and related todo components provide centralized deadline awareness and task management.",
+      "sources": [
+        "projects/v3/src/app/pages/due-dates/**",
+        "projects/v3/src/app/components/todo-card/**"
+      ],
+      "tests": [
+        "projects/v3/src/app/pages/due-dates/**/*.spec.ts",
+        "projects/v3/src/app/components/todo-card/**/*.spec.ts"
+      ],
+      "docs": [],
+      "specs": [
+        "pages/due-dates"
+      ],
+      "components": []
+    },
+    {
+      "id": "achievements-credentials",
+      "title": "Achievements & Credentials",
+      "value": "Recognizes learner accomplishments by displaying earned badges, certificates, and credentials with details and achievement unlock animations.",
+      "rationale": "Badges/certificates page, achievement components, popups, and service together manage credential display and celebration.",
+      "sources": [
+        "projects/v3/src/app/pages/badges-certificates/**",
+        "projects/v3/src/app/components/achievement-pop-up/**",
+        "projects/v3/src/app/components/badge-detail-modal/**",
+        "projects/v3/src/app/services/achievement.service.ts"
+      ],
+      "tests": [
+        "projects/v3/src/app/pages/badges-certificates/**/*.spec.ts",
+        "projects/v3/src/app/components/achievement-pop-up/**/*.spec.ts",
+        "projects/v3/src/app/components/badge-detail-modal/**/*.spec.ts",
+        "projects/v3/src/app/services/achievement.service.spec.ts"
+      ],
+      "docs": [],
+      "specs": [
+        "pages/badges-certificates"
+      ],
+      "components": []
+    },
+    {
+      "id": "wellbeing-pulse-checks",
+      "title": "Wellbeing & Pulse Checks",
+      "value": "Supports learner wellbeing by collecting brief, periodic check-ins on learner sentiment and providing visual traffic-light status indicators.",
+      "rationale": "Pulse check page, traffic light components, and pulse check service together deliver the wellbeing monitoring feature.",
+      "sources": [
+        "projects/v3/src/app/components/traffic-light/**",
+        "projects/v3/src/app/components/traffic-light-group/**",
+        "projects/v3/src/app/services/pulsecheck.service.ts"
+      ],
+      "tests": [
+        "projects/v3/src/app/components/traffic-light/**/*.spec.ts",
+        "projects/v3/src/app/components/traffic-light-group/**/*.spec.ts",
+        "projects/v3/src/app/services/pulsecheck.service.spec.ts"
+      ],
+      "docs": [],
+      "specs": [
+        "pages/pulse-check"
+      ],
+      "components": []
+    },
+    {
+      "id": "notifications-alerts",
+      "title": "Notifications & Alerts",
+      "value": "Keeps learners informed of important updates, feedback, milestone unlocks, and system announcements through in-app notifications and unlock indicators.",
+      "rationale": "Notifications page, unlock indicator service, and notification service manage all alerting and update communication.",
+      "sources": [
+        "projects/v3/src/app/pages/notifications/**",
+        "projects/v3/src/app/services/notifications.service.ts",
+        "projects/v3/src/app/services/unlock-indicator.service.ts"
+      ],
+      "tests": [
+        "projects/v3/src/app/pages/notifications/**/*.spec.ts",
+        "projects/v3/src/app/services/notifications.service.spec.ts",
+        "projects/v3/src/app/services/unlock-indicator.service.spec.ts"
+      ],
+      "docs": [],
+      "specs": [
+        "pages/notifications"
+      ],
+      "components": []
+    },
+    {
+      "id": "learner-profile-settings",
+      "title": "Learner Profile & Settings",
+      "value": "Allows learners to manage their personal information, notification preferences, contact details, and access support resources.",
+      "rationale": "Settings page, contact form, support popup, and timesheet approval collectively handle learner self-service and profile management.",
+      "sources": [
+        "projects/v3/src/app/pages/settings/**",
+        "projects/v3/src/app/pages/timesheet-approve/**",
+        "projects/v3/src/app/components/contact-number-form/**",
+        "projects/v3/src/app/components/support-popup/**",
+        "projects/v3/src/app/services/timesheet.service.ts"
+      ],
+      "tests": [
+        "projects/v3/src/app/pages/settings/**/*.spec.ts",
+        "projects/v3/src/app/components/contact-number-form/**/*.spec.ts",
+        "projects/v3/src/app/components/support-popup/**/*.spec.ts"
+      ],
+      "docs": [],
+      "specs": [
+        "pages/settings",
+        "pages/timesheet-approve"
+      ],
+      "components": []
+    },
+    {
+      "id": "shared-infrastructure",
+      "title": "Shared Infrastructure & Utilities",
+      "value": "Provides foundational services for API communication, file handling, media processing, analytics integration, and UI utilities used across all capabilities.",
+      "rationale": "Cross-cutting services (Apollo, network, storage, modal, utils, animations, file preview, video conversion, taxonomy) and shared components support all other capabilities.",
+      "sources": [
+        "projects/v3/src/app/services/apollo.service.ts",
+        "projects/v3/src/app/services/network.service.ts",
+        "projects/v3/src/app/services/shared.service.ts",
+        "projects/v3/src/app/services/modal.service.ts",
+        "projects/v3/src/app/services/utils.service.ts",
+        "projects/v3/src/app/services/animations.service.ts",
+        "projects/v3/src/app/services/file-preview.service.ts",
+        "projects/v3/src/app/services/ffmpeg.service.ts",
+        "projects/v3/src/app/services/ngx-embed-video.service.ts",
+        "projects/v3/src/app/services/hubspot.service.ts",
+        "projects/v3/src/app/services/taxonomy.service.ts",
+        "projects/v3/src/app/services/request.interceptor.ts",
+        "projects/v3/src/app/services/types.ts",
+        "projects/v3/src/app/services/component-cleanup.service.ts",
+        "projects/v3/src/app/services/demo.service.ts",
+        "projects/v3/src/app/services/version-check.service.ts",
+        "projects/v3/src/app/components/uppy-uploader/**",
+        "projects/v3/src/app/components/file-preview/**",
+        "projects/v3/src/app/components/file-popup/**",
+        "projects/v3/src/app/components/video-conversion/**",
+        "projects/v3/src/app/components/pop-up/**",
+        "projects/v3/src/app/components/description/**",
+        "projects/v3/src/app/components/circle-progress/**",
+        "projects/v3/src/app/components/img/**",
+        "projects/v3/src/app/components/list-item/**",
+        "projects/v3/src/app/components/bottom-action-bar/**",
+        "projects/v3/src/app/components/team-member-selector/**",
+        "projects/v3/src/app/components/multi-team-member-selector/**",
+        "projects/v3/src/app/components/team-roster/**",
+        "projects/v3/src/app/components/project-brief-modal/**",
+        "projects/v3/src/app/components/lock-team-assessment-pop-up/**",
+        "projects/v3/src/app/components/activity-complete-pop-up/**",
+        "projects/v3/src/app/components/time-log/**",
+        "projects/v3/src/app/directives/**",
+        "projects/v3/src/app/guards/**",
+        "projects/v3/src/app/models/**",
+        "projects/v3/src/app/pipes/**",
+        "projects/v3/src/app/personalised-header/**",
+        "projects/v3/src/app/pages/devtool/**",
+        "projects/v3/src/app/pages/page-not-found/**",
+        "projects/v3/src/app/services/project-brief-pdf.service.ts"
+      ],
+      "tests": [
+        "projects/v3/src/app/services/apollo.service.spec.ts",
+        "projects/v3/src/app/services/network.service.spec.ts",
+        "projects/v3/src/app/services/shared.service.spec.ts",
+        "projects/v3/src/app/services/modal.service.spec.ts",
+        "projects/v3/src/app/services/utils.service.spec.ts",
+        "projects/v3/src/app/services/animations.service.spec.ts",
+        "projects/v3/src/app/services/ffmpeg.service.spec.ts",
+        "projects/v3/src/app/services/ngx-embed-video.service.spec.ts",
+        "projects/v3/src/app/services/hubspot.service.spec.ts",
+        "projects/v3/src/app/services/taxonomy.service.spec.ts",
+        "projects/v3/src/app/services/request.interceptor.spec.ts",
+        "projects/v3/src/app/services/project-brief-pdf.service.spec.ts",
+        "projects/v3/src/app/components/uppy-uploader/**/*.spec.ts",
+        "projects/v3/src/app/components/file-preview/**/*.spec.ts",
+        "projects/v3/src/app/components/file-popup/**/*.spec.ts",
+        "projects/v3/src/app/components/video-conversion/**/*.spec.ts",
+        "projects/v3/src/app/components/pop-up/**/*.spec.ts",
+        "projects/v3/src/app/components/description/**/*.spec.ts",
+        "projects/v3/src/app/components/circle-progress/**/*.spec.ts",
+        "projects/v3/src/app/components/img/**/*.spec.ts",
+        "projects/v3/src/app/components/list-item/**/*.spec.ts",
+        "projects/v3/src/app/components/bottom-action-bar/**/*.spec.ts",
+        "projects/v3/src/app/components/team-member-selector/**/*.spec.ts",
+        "projects/v3/src/app/components/multi-team-member-selector/**/*.spec.ts",
+        "projects/v3/src/app/components/team-roster/**/*.spec.ts",
+        "projects/v3/src/app/components/project-brief-modal/**/*.spec.ts",
+        "projects/v3/src/app/components/lock-team-assessment-pop-up/**/*.spec.ts",
+        "projects/v3/src/app/components/activity-complete-pop-up/**/*.spec.ts",
+        "projects/v3/src/app/components/time-log/**/*.spec.ts",
+        "projects/v3/src/app/directives/**/*.spec.ts",
+        "projects/v3/src/app/guards/**/*.spec.ts",
+        "projects/v3/src/app/models/**/*.spec.ts",
+        "projects/v3/src/app/pipes/**/*.spec.ts",
+        "projects/v3/src/app/personalised-header/**/*.spec.ts",
+        "projects/v3/src/app/app.component.spec.ts",
+        "projects/v3/src/testing/**/*.spec.ts"
+      ],
+      "docs": [],
+      "specs": [],
+      "components": []
+    }
+  ]
+}

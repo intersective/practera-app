@@ -1,0 +1,32 @@
+{
+  "version": 1,
+  "generated": "2026-10-19T00:16:54.102Z",
+  "aliases": {
+    "pages/badges-certificates#earned-listed": "capabilities/achievements-credentials#all-earned-listed",
+    "pages/badges-certificates#achievement-fields": "capabilities/achievements-credentials#achievement-metadata-shown",
+    "pages/badges-certificates#certificate-url": "capabilities/achievements-credentials#certificate-url-available",
+    "pages/badges-certificates#sorted-by-earned": "capabilities/achievements-credentials#sorted-most-recent-first"
+  },
+  "specs": {
+    "auth/index": "capabilities/identity-and-access",
+    "pages/home": "capabilities/learner-dashboard",
+    "index": "capabilities/learner-dashboard",
+    "pages/activity": "capabilities/learning-activities",
+    "pages/topic": "capabilities/learning-activities",
+    "pages/assessment": "capabilities/assessments-and-submissions",
+    "components/h5p-player": "capabilities/assessments-and-submissions",
+    "skills/passport": "capabilities/assessments-and-submissions",
+    "pages/review": "capabilities/peer-review-feedback",
+    "pages/contribution-rating": "capabilities/peer-review-feedback",
+    "pages/chat": "capabilities/real-time-messaging",
+    "pages/events": "capabilities/events-and-attendance",
+    "pages/meeting-poll": "capabilities/events-and-attendance",
+    "pages/checkin": "capabilities/events-and-attendance",
+    "pages/due-dates": "capabilities/task-deadline-tracking",
+    "pages/badges-certificates": "capabilities/achievements-credentials",
+    "pages/pulse-check": "capabilities/wellbeing-pulse-checks",
+    "pages/notifications": "capabilities/notifications-alerts",
+    "pages/settings": "capabilities/learner-profile-settings",
+    "pages/timesheet-approve": "capabilities/learner-profile-settings"
+  }
+}
