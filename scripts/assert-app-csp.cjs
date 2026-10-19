@@ -9,8 +9,10 @@
  * clears the host-allowlist bypass check. 'unsafe-inline', 'self', and
  * https://acsbapp.com stay as fallbacks for older browsers.
  *
- * Every other directive stays exactly as deployed. This test fails if the
- * sandbox policy drifts into unrelated directive changes.
+ * frame-src allows the activity embeds that otherwise fall back to
+ * default-src 'self': YouTube, YouTube no-cookie (Plyr), Vimeo, and Canva.
+ * Every other directive stays as deployed. This test fails if the sandbox
+ * policy drifts into unrelated directive changes.
  */
 const assert = require('assert');
 const fs = require('fs');
@@ -48,14 +50,26 @@ for (const directive of unchangedDirectives) {
   assert.ok(rendered.includes(directive), `sandbox policy changed an unrelated directive: ${directive}`);
 }
 assert.equal(rendered.includes('media-src'), false);
-assert.equal(rendered.includes('frame-src'), false);
 assert.equal(rendered.includes('form-action'), false);
+
+const frameSrc = "frame-src 'self' https://www.youtube.com https://www.youtube-nocookie.com https://player.vimeo.com https://www.canva.com";
+assert.ok(rendered.includes(frameSrc), 'sandbox policy frame-src does not match the activity embed allowlist');
+assert.equal(rendered.match(/frame-src/g).length, 1);
+assert.equal(frameSrc.includes('*'), false);
 
 const scriptSrc = rendered.match(/script-src ([^;]+)/)[1];
 assert.ok(scriptSrc.includes(`'nonce-${nonce}'`));
 assert.ok(scriptSrc.includes("'strict-dynamic'"));
+assert.equal(scriptSrc.includes('youtube'), false);
+assert.equal(scriptSrc.includes('vimeo'), false);
+assert.equal(scriptSrc.includes('canva'), false);
 const hostWithoutStrictDynamic = scriptSrc.includes('https://acsbapp.com') && scriptSrc.includes("'strict-dynamic'");
 assert.equal(hostWithoutStrictDynamic, true);
+
+const connectSrc = rendered.match(/connect-src ([^;]+)/)[1];
+assert.equal(connectSrc.includes('youtube'), false);
+assert.equal(connectSrc.includes('vimeo'), false);
+assert.equal(connectSrc.includes('canva'), false);
 
 const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'app-csp-'));
 const tempTemplate = path.join(tempDir, 'serverless.yml');
@@ -68,6 +82,7 @@ execFileSync(process.execPath, [
 ], { stdio: 'inherit' });
 const applied = fs.readFileSync(tempTemplate, 'utf8');
 assert.ok(applied.includes(`script-src 'nonce-${nonce}' 'strict-dynamic' 'unsafe-inline' 'self' https://acsbapp.com`));
+assert.ok(applied.includes(frameSrc));
 assert.equal(applied.includes('__CSP_NONCE__'), false);
 
 const dist = path.join(tempDir, 'dist');
