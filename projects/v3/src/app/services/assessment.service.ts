@@ -674,7 +674,7 @@ export class AssessmentService {
     file?: FileInput,
   ) {
     const paramsFormat =
-      "$reviewId: Int!, $submissionId: Int! $questionId: Int!, $answer: Any!, $file: FileInput, $comment: String!";
+      "$reviewId: Int!, $submissionId: Int! $questionId: Int!, $answer: Any, $file: FileInput, $comment: String!";
     const params =
       "reviewId:$reviewId, submissionId:$submissionId, questionId:$questionId, answer:$answer, file:$file, comment:$comment";
     const variables = {
