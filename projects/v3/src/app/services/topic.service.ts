@@ -117,13 +117,14 @@ export class TopicService {
       state,
     };
 
-    if (attention) {
-      variables.meta = { attention };
-    }
+    // NOTE: Disabling attention metrics for now as it is not being used.
+    // if (attention) {
+    //   variables.meta = { attention };
+    // }
 
     return this.apolloService.graphQLMutate(
-      `mutation updateProgress($model: String!, $modelId: ID!, $state: String!, $meta: JSON) {
-        updateProgress(model: $model, modelId: $modelId, state: $state, meta: $meta) {
+      `mutation updateProgress($model: String!, $modelId: ID!, $state: String!) {
+        updateProgress(model: $model, modelId: $modelId, state: $state) {
           success
         }
       }`,
