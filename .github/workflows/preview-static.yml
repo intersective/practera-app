@@ -54,8 +54,10 @@ jobs:
           test "$account" = "836884247349"
           test "$account" != "977349090554"
           if [ -d dist/v3/browser ]; then src=dist/v3/browser; else src=dist/v3; fi
-          aws s3 sync "$src/" "s3://${BUCKET}/"
-          aws cloudfront create-invalidation --distribution-id "$DISTRIBUTION" --paths "/*"
+          aws s3 sync "$src/" "s3://${BUCKET}/" --exclude "index.html" --exclude "*.js" --exclude "*.css" --cache-control "public, max-age=300"
+          aws s3 sync "$src/" "s3://${BUCKET}/" --exclude "*" --include "*.js" --include "*.css" --cache-control "public, max-age=31536000, immutable"
+          aws s3 cp "$src/index.html" "s3://${BUCKET}/index.html" --cache-control "no-cache, must-revalidate" --content-type "text/html; charset=utf-8"
+          aws cloudfront create-invalidation --distribution-id "$DISTRIBUTION" --paths "/index.html" "/"
           code="$(curl -sS -o /dev/null -w "%{http_code}" --max-time 20 "https://d1fq9unzustd9r.cloudfront.net/")"
           echo "learner=$code commit=${GITHUB_SHA} run=${GITHUB_RUN_ID}"
           test "$code" = "200"
