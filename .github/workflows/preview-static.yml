@@ -1,0 +1,61 @@
+name: Preview learner frontend
+
+on:
+  push:
+    branches:
+      - feature/2.6-infra
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: preview-learner
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    environment: practera-preview
+    permissions:
+      contents: read
+      id-token: write
+    env:
+      BUCKET: practera-preview-learner-836884247349
+      DISTRIBUTION: E2VI8OZJ9WIBHH
+    steps:
+      - name: Require the learner repository
+        run: |
+          set -eu
+          test "${{ github.repository }}" = "intersective/practera-app"
+          test "${{ github.ref }}" = "refs/heads/feature/2.6-infra"
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version: 22
+          cache: npm
+      - name: Install and build the preview configuration
+        run: |
+          set -eu
+          npm ci
+          npx ng build v3 --configuration=preview
+          test -s dist/v3/browser/index.html || test -s dist/v3/index.html
+      - uses: aws-actions/configure-aws-credentials@7474bc4690e29a8392af63c5b98e7449536d5c3a
+        with:
+          role-to-assume: arn:aws:iam::836884247349:role/github-practera-preview-learner-web-deploy
+          aws-region: us-east-1
+          role-session-name: GitHubActions-${{ github.run_id }}
+          role-duration-seconds: 900
+      - name: Publish the existing learner distribution
+        run: |
+          set -eu
+          account="$(aws sts get-caller-identity --query Account --output text)"
+          test "$account" = "836884247349"
+          test "$account" != "977349090554"
+          if [ -d dist/v3/browser ]; then src=dist/v3/browser; else src=dist/v3; fi
+          aws s3 sync "$src/" "s3://${BUCKET}/"
+          aws cloudfront create-invalidation --distribution-id "$DISTRIBUTION" --paths "/*"
+          code="$(curl -sS -o /dev/null -w "%{http_code}" --max-time 20 "https://d1fq9unzustd9r.cloudfront.net/")"
+          echo "learner=$code commit=${GITHUB_SHA} run=${GITHUB_RUN_ID}"
+          test "$code" = "200"

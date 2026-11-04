@@ -148,6 +148,28 @@
               "sourceMap": true,
               "namedChunks": true
             },
+            "preview": {
+              "localize": false,
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "4mb",
+                  "maximumError": "5mb"
+                },
+                {
+                  "type": "anyComponentStyle",
+                  "maximumWarning": "12kb",
+                  "maximumError": "20kb"
+                }
+              ],
+              "fileReplacements": [
+                {
+                  "replace": "projects/v3/src/environments/environment.ts",
+                  "with": "projects/v3/src/environments/environment.preview.ts"
+                }
+              ],
+              "outputHashing": "all"
+            },
             "production": {
               "budgets": [
                 {
