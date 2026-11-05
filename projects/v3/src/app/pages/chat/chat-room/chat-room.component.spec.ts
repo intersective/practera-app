@@ -712,6 +712,7 @@ describe('ChatRoomComponent', () => {
 
     it('should return false for a message with only empty html tags', () => {
       const message: any = { uuid: '1', message: '<p></p>' };
+      (utils as any).isQuillContentEmpty.and.returnValue(true);
       expect(component.hasEditableText(message)).toBeFalse();
     });
   });
@@ -766,7 +767,6 @@ describe('ChatRoomComponent', () => {
     });
 
     it('should call notificationsService.alert for confirmation', () => {
-      spyOn(notificationsService, 'alert');
       component.deleteMessage('msg-1');
       expect(notificationsService.alert).toHaveBeenCalled();
     });

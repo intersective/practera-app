@@ -99,7 +99,7 @@ describe('ProjectBriefPdfService', () => {
       title: 'Ordered Brief',
       organisationName: 'Example Organisation',
       organisationType: 'Social enterprise',
-      description: 'Overview',
+      description: 'Example overview body',
       industry: [],
     };
 
