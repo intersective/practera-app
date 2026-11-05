@@ -151,9 +151,25 @@ test('concurrent callbacks perform one token exchange', async () => {
   const first = app.exchangeAuthorizationCode('code-1', 'state-1');
   const second = app.exchangeAuthorizationCode('code-1', 'state-1');
   assert.equal(first, second);
-  assert.equal(await first, 'test-token');
+  assert.equal((await first).accessToken, 'test-token');
   assert.equal(app.tokenRequests.length, 1);
   assert.equal(app.storage.has(PKCE_STORAGE_KEY), false);
+});
+
+test('exchange returns the page target saved with the verifier', async () => {
+  const app = createOAuthHarness();
+  app.storage.set(PKCE_STORAGE_KEY, JSON.stringify({
+    verifier: 'test-verifier',
+    state: 'state-1',
+    redirectUri: `${APP_ORIGIN}/`,
+    destination: { redirect: 'event', tl: '9', evt: '5', verifier: 'must-not-leak' },
+  }));
+  const exchanged = await app.exchangeAuthorizationCode('code-1', 'state-1');
+  assert.equal(exchanged.accessToken, 'test-token');
+  assert.equal(exchanged.destination.redirect, 'event');
+  assert.equal(exchanged.destination.tl, '9');
+  assert.equal(exchanged.destination.evt, '5');
+  assert.equal(exchanged.destination.verifier, undefined);
 });
 
 test('mismatched state rejects before contacting token endpoint', async () => {
@@ -210,7 +226,7 @@ test('a fresh authorization attempt can exchange after an earlier rejected attem
 
   app.storeAuthorizationAttempt('state-2');
   app.setTokenResponse(async () => jsonResponse(true, { access_token: 'fresh-token' }));
-  assert.equal(await app.exchangeAuthorizationCode('code-2', 'state-2'), 'fresh-token');
+  assert.equal((await app.exchangeAuthorizationCode('code-2', 'state-2')).accessToken, 'fresh-token');
   assert.equal(app.tokenRequests.length, 2, 'a fresh code must not reuse an old rejected promise');
 });
 

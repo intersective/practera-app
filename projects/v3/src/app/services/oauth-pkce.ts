@@ -44,6 +44,34 @@ async function s256(verifier: string): Promise<string> {
   return base64url(new Uint8Array(digest));
 }
 
+/** Query keys that choose a page after login. They stay in this browser; login-api does not echo them. */
+export const OAUTH_DESTINATION_KEYS = [
+  'redirect',
+  'tl',
+  'act',
+  'ctxt',
+  'asmt',
+  'sm',
+  'top',
+  'evt',
+  'experienceUuid',
+  'brandColor',
+  'brandLogo',
+  'one_page_only',
+  'return_url',
+  'activity_task_referrer_url',
+  'assessment_referrer_url',
+] as const;
+
+export function destinationFromSearchParams(params: URLSearchParams): Record<string, string> {
+  const destination: Record<string, string> = {};
+  for (const key of OAUTH_DESTINATION_KEYS) {
+    const value = params.get(key);
+    if (value) destination[key] = value;
+  }
+  return destination;
+}
+
 export interface PkceStart {
   stackUuid: string;
   email?: string;
@@ -51,6 +79,13 @@ export interface PkceStart {
   experienceUuid?: string;
   brandColor?: string;
   brandLogo?: string;
+  /** Page target copied from the ?oauth=1 URL. Returned with the access token. */
+  destination?: Record<string, string>;
+}
+
+export interface ExchangedAuthorizationCode {
+  accessToken: string;
+  destination: Record<string, string>;
 }
 
 /** The login guard can run while this is still starting. A second call must not replace the verifier. */
@@ -91,27 +126,43 @@ async function startAuthorizationCode(start: PkceStart): Promise<void> {
   window.location.assign(url.toString());
 }
 
-/**
- * Trade ?code= for an access token. Returns the token, or null when this page
- * load is not an authorization-code callback.
- */
-let authorizationExchange: Promise<string | null> | null = null;
+function readDestination(stored: { destination?: unknown }): Record<string, string> {
+  const raw = stored.destination;
+  if (!raw || typeof raw !== 'object') return {};
+  const destination: Record<string, string> = {};
+  const source = raw as Record<string, unknown>;
+  for (const key of OAUTH_DESTINATION_KEYS) {
+    const value = source[key];
+    if (typeof value === 'string' && value) destination[key] = value;
+  }
+  return destination;
+}
 
-export function exchangeAuthorizationCode(code: string, state: string | null): Promise<string | null> {
+/**
+ * Trade ?code= for an access token. Returns the token and the page target saved
+ * before the browser left for login-api, or null when this page load is not a callback.
+ */
+let authorizationExchange: Promise<ExchangedAuthorizationCode | null> | null = null;
+
+export function exchangeAuthorizationCode(
+  code: string,
+  state: string | null,
+): Promise<ExchangedAuthorizationCode | null> {
   if (authorizationExchange) return authorizationExchange;
   authorizationExchange = exchangeOnce(code, state);
   return authorizationExchange;
 }
 
-async function exchangeOnce(code: string, state: string | null): Promise<string | null> {
+async function exchangeOnce(code: string, state: string | null): Promise<ExchangedAuthorizationCode | null> {
   const raw = sessionStorage.getItem(STORE_KEY);
   if (!raw || !code) return null;
-  const stored = JSON.parse(raw) as { verifier?: string; state?: string; redirectUri?: string };
+  const stored = JSON.parse(raw) as { verifier?: string; state?: string; redirectUri?: string; destination?: unknown };
   if (!stored.verifier) return null;
   if (!state || stored.state !== state) {
     sessionStorage.removeItem(STORE_KEY);
     throw new Error('OAuth state mismatch');
   }
+  const destination = readDestination(stored);
   const body = new URLSearchParams({
     grant_type: 'authorization_code',
     code,
@@ -129,5 +180,5 @@ async function exchangeOnce(code: string, state: string | null): Promise<string 
   if (!res.ok || !json.access_token) {
     throw new Error(json.error_description || 'Token request failed');
   }
-  return json.access_token as string;
+  return { accessToken: json.access_token as string, destination };
 }

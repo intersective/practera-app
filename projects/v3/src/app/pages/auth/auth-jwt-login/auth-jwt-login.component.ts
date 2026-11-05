@@ -207,7 +207,15 @@ export class AuthJwtLoginComponent implements OnInit {
       this.storage.setConfig({ logo: rawLogo });
     }
 
-    this.authService.authenticate({ forceRefresh: true }).subscribe({
+    const experienceUuid = this.route.snapshot.paramMap.get('experienceUuid') || undefined;
+    const timelineRaw = Number(this.route.snapshot.paramMap.get('tl'));
+    const timelineId = Number.isInteger(timelineRaw) && timelineRaw > 0 ? timelineRaw : undefined;
+
+    this.authService.authenticate({
+      forceRefresh: true,
+      ...(experienceUuid ? { experienceUuid } : {}),
+      ...(timelineId ? { timelineId } : {}),
+    }).subscribe({
       next: async (res) => {
         const data = res?.data?.auth;
         if (data) {
@@ -261,6 +269,7 @@ export class AuthJwtLoginComponent implements OnInit {
     const assessmentId = +this.route.snapshot.paramMap.get('asmt');
     const submissionId = +this.route.snapshot.paramMap.get('sm');
     const topicId = +this.route.snapshot.paramMap.get('top');
+    const eventId = +this.route.snapshot.paramMap.get('evt');
     const timelineId = +this.route.snapshot.paramMap.get('tl');
 
     await this.authService.clearCache();
@@ -360,6 +369,11 @@ export class AuthJwtLoginComponent implements OnInit {
         return this._saveOrRedirect(['v3', 'messages'], redirectConfig);
       case 'settings':
         return this._saveOrRedirect(['v3', 'settings'], redirectConfig);
+      case 'event':
+        if (!eventId) {
+          return this._saveOrRedirect(['v3', 'events'], redirectConfig);
+        }
+        return this._saveOrRedirect(['v3', 'events', { event_id: eventId }], redirectConfig);
       default:
         return this._saveOrRedirect(['v3', 'home'], redirectConfig);
     }

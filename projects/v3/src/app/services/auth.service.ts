@@ -140,6 +140,7 @@ interface AuthQuery {
   apikey?: string;
   service?: string;
   experienceUuid?: string;
+  timelineId?: number;
   forceRefresh?: boolean;
 }
 
@@ -190,6 +191,7 @@ export class AuthService {
       variables?: {
         authToken?: string;
         experienceUuid?: string;
+        timelineId?: number;
       };
       context?: {
         headers?: {
@@ -201,7 +203,7 @@ export class AuthService {
 
     if (data) {
       // Initialize options.variables
-      if (data.authToken || data.experienceUuid) {
+      if (data.authToken || data.experienceUuid || data.timelineId) {
         options.variables = {};
       }
 
@@ -211,6 +213,10 @@ export class AuthService {
 
       if (data.experienceUuid) {
         options.variables.experienceUuid = data.experienceUuid;
+      }
+
+      if (data.timelineId) {
+        options.variables.timelineId = data.timelineId;
       }
 
       // Initialize options.headers
@@ -229,8 +235,8 @@ export class AuthService {
     }
 
     return this.apolloService.graphQLFetch(`
-      query auth($authToken: String, $experienceUuid: ID) {
-        auth(authToken: $authToken, experienceUuid: $experienceUuid) {
+      query auth($authToken: String, $experienceUuid: ID, $timelineId: Int) {
+        auth(authToken: $authToken, experienceUuid: $experienceUuid, timelineId: $timelineId) {
           apikey
           experience {
             id

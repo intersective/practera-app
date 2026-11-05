@@ -16,7 +16,7 @@ import { VersionCheckService } from "@v3/services/version-check.service";
 import { Subject } from "rxjs";
 import { takeUntil } from "rxjs/operators";
 import { ComponentCleanupService } from "./services/component-cleanup.service";
-import { beginAuthorizationCode, exchangeAuthorizationCode } from "./services/oauth-pkce";
+import { beginAuthorizationCode, destinationFromSearchParams, exchangeAuthorizationCode } from "./services/oauth-pkce";
 
 @Component({
   standalone: false,
@@ -130,10 +130,11 @@ export class AppComponent implements OnInit, OnDestroy {
       const code = searchParams.get('code');
       const state = searchParams.get('state');
       history.replaceState(null, '', window.location.pathname);
-      exchangeAuthorizationCode(code, state).then((token) => {
-        if (!token) return;
-        try { sessionStorage.setItem('pending_jwt_token', token); } catch { /* private browsing */ }
-        this.navigate(['auth', 'jwt']);
+      exchangeAuthorizationCode(code, state).then((exchanged) => {
+        if (!exchanged?.accessToken) return;
+        try { sessionStorage.setItem('pending_jwt_token', exchanged.accessToken); } catch { /* private browsing */ }
+        const destination = exchanged.destination || {};
+        this.navigate(Object.keys(destination).length ? ['auth', 'jwt', destination] : ['auth', 'jwt']);
       }).catch((err) => {
         console.error('OAuth token exchange failed', err);
       });
@@ -141,13 +142,15 @@ export class AppComponent implements OnInit, OnDestroy {
     }
 
     if (searchParams.get('oauth') === '1' && searchParams.has('stack_uuid')) {
+      const destination = destinationFromSearchParams(searchParams);
       beginAuthorizationCode({
         stackUuid: searchParams.get('stack_uuid'),
         email: searchParams.get('email') || undefined,
-        redirect: searchParams.get('redirect') || undefined,
-        experienceUuid: searchParams.get('experienceUuid') || undefined,
-        brandColor: searchParams.get('brandColor') || undefined,
-        brandLogo: searchParams.get('brandLogo') || undefined,
+        redirect: destination.redirect,
+        experienceUuid: destination.experienceUuid,
+        brandColor: destination.brandColor,
+        brandLogo: destination.brandLogo,
+        destination,
       }).catch((err) => console.error('OAuth authorize failed', err));
       return;
     }

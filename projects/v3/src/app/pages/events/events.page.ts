@@ -44,11 +44,22 @@ export class EventsPage implements OnInit {
     return this.utils.isMobile();
   }
 
+  /** Matrix params from a magic-link login sit on the parent `events` segment. */
+  private routeParam(name: string): string | null {
+    let current: ActivatedRoute | null = this.route;
+    while (current) {
+      const value = current.snapshot.paramMap.get(name);
+      if (value) return value;
+      current = current.parent;
+    }
+    return this.route.snapshot.queryParamMap?.get(name) ?? null;
+  }
+
   ngOnInit() {
     this.utils.setPageTitle('Events - Practera');
     // get activity and event id from route
-    this.activityId = +this.route.snapshot.paramMap.get('activity_id');
-    this.eventId = +this.route.snapshot.paramMap.get('event_id');
+    this.activityId = +this.routeParam('activity_id');
+    this.eventId = +this.routeParam('event_id');
     // don't display assessment component by default
     this.assessmentId = null;
     this.currentEvent = null;
