@@ -160,13 +160,13 @@ describe('ProjectBriefModalComponent', () => {
       expect(fixture.nativeElement.textContent).toContain('Social enterprise');
       expect(Array.from(fixture.nativeElement.querySelectorAll('.accordion-header'))
         .map((element: Element) => element.textContent?.trim())).toEqual([
-        'Project Overview',
+        'Overview',
         'Scope of Work',
         'Organisational Context',
         'Problem Statement',
         'Focus Area',
         'Project Outcomes',
-        'Industry',
+        'Sector',
         'Project Type',
         'Duration',
         'Location',

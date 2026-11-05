@@ -3002,7 +3002,10 @@ describe('AssessmentComponent', () => {
         scrollToTop: (duration?: number) => Promise<void>;
       };
       const scrollToTopSpy = jasmine.createSpy('scrollToTop').and.resolveTo();
-      scrollContainer.scrollToTop = scrollToTopSpy;
+      Object.defineProperty(scrollContainer, 'scrollToTop', {
+        configurable: true,
+        value: scrollToTopSpy,
+      });
       scrollContainer.appendChild(fixture.nativeElement);
 
       component.goToPage(2);
@@ -3945,7 +3948,8 @@ describe('AssessmentComponent', () => {
       it('requires the first peer group, not completion of every later peer group', () => {
         component.task = { assessmentType: 'team360' } as any;
         const groups = Array.from({ length: 5 }, (_, i) => selectorGroup(100 + i));
-        // group 0 (key {"userId":100}) excluded; groups 1-4 have unique keys → memberCount = 4
+        // Use an explicit non-peer group before the four peer groups.
+        groups[0] = textGroup(100);
         component.assessment = { groups } as any;
         component.pagesGroups = groups.map(g => [g]);
         component.questionsForm = new FormGroup({

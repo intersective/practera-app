@@ -6,6 +6,7 @@ import { UtilsService } from '@v3/services/utils.service';
 import { BrowserStorageService } from '@v3/services/storage.service';
 import { ModalController } from '@ionic/angular';
 import { DemoService } from './demo.service';
+import { environment } from '@v3/environments/environment';
 
 describe('HubspotService', () => {
   let service: HubspotService;
@@ -160,6 +161,16 @@ describe('HubspotService', () => {
   }
 
   describe('when testing submitDataToHubspot()', () => {
+    let originalRegion: string;
+
+    beforeEach(() => {
+      originalRegion = environment.hubspot.liveServerRegion;
+      environment.hubspot.liveServerRegion = 'AU';
+    });
+
+    afterEach(() => {
+      environment.hubspot.liveServerRegion = originalRegion;
+    });
 
     beforeEach(() => {
       requestSpy.post.and.returnValue(of({}));

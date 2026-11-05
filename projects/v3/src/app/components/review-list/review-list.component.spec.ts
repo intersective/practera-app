@@ -1,5 +1,5 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
-import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
+import { CUSTOM_ELEMENTS_SCHEMA, SimpleChange } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { IonicModule } from '@ionic/angular';
 
@@ -62,7 +62,9 @@ describe('ReviewListComponent', () => {
       component.currentReview = component.reviews[0];
       component.goToFirstOnSwitch = true;
       const spy = spyOn(component.navigate, 'emit');
-      component.switchStatus();
+      component.switchStatus(new CustomEvent('ionChange', {
+        detail: { value: 'completed' },
+      }));
       expect(spy).toHaveBeenCalledWith(component.reviews[1]);
       expect(component.showDone).toBeTrue();
       expect(component.segmentValue).toBe('completed');
