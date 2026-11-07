@@ -145,7 +145,6 @@ export class ExperiencesPage implements OnInit, OnDestroy {
         console.error('Error refreshing notifications after switching experience', refreshError);
       }
 
-      await loading.dismiss();
       if (environment.demo) {
         destination = ['v3','home'];
       }
@@ -158,6 +157,8 @@ export class ExperiencesPage implements OnInit, OnDestroy {
         header: $localize`Error switching program`,
         message: err.msg || JSON.stringify(err)
       });
+    } finally {
+      await loading.dismiss();
     }
 
     return this.router.navigate(destination);

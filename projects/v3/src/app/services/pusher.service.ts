@@ -239,6 +239,12 @@ export class PusherService {
       return undefined;
     }
 
+    // Preview does not publish Soketi. An empty key must not open a Pusher Cloud
+    // connection or throw while an experience is opening.
+    if (!this.pusherKey) {
+      return undefined;
+    }
+
     try {
       const useTLS = this.resolveUseTLS();
       // cluster is required by the pusher-js Options type but is conditionally set below;
