@@ -8,7 +8,8 @@ const CLIENT_ID = 'practera-app';
 const STORE_KEY = 'oauth_pkce';
 
 export function loginApiBase(): string {
-  const configured = (environment as { loginApiUrl?: string }).loginApiUrl;
+  const configured = environment.loginAPIUrl
+    || (environment as { loginApiUrl?: string }).loginApiUrl;
   if (configured) return configured.replace(/\/$/, '');
   try {
     const u = new URL(environment.globalLoginUrl);
