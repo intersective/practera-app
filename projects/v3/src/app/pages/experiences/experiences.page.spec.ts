@@ -123,11 +123,13 @@ describe('ExperiencesPage', () => {
       loadingCtrlSpy.create = jasmine.createSpy('create').and.returnValue(Promise.resolve({
         present: presentLoading,
         dismiss: dismissLoading,
+        remove: jasmine.createSpy('remove'),
       }));
     });
 
-    it('opens the experience when the loading overlay does not finish presenting', fakeAsync(() => {
+    it('navigates when the loading animation never settles', fakeAsync(() => {
       presentLoading.and.returnValue(new Promise(() => undefined));
+      dismissLoading.and.returnValue(new Promise(() => undefined));
 
       component.switchProgram({ testing: true } as any);
 
@@ -135,7 +137,7 @@ describe('ExperiencesPage', () => {
       expect(experienceServiceSpy.switchProgramAndNavigate).toHaveBeenCalledWith({
         testing: true
       });
-      expect(component['router'].navigate).toHaveBeenCalled();
+      expect(component['router'].navigate).toHaveBeenCalledWith(['v3', 'home']);
       expect(dismissLoading).toHaveBeenCalled();
     }));
 

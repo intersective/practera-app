@@ -132,8 +132,9 @@ export class ExperiencesPage implements OnInit, OnDestroy {
     const loading = await this.loadingController.create({
       message: $localize`loading...`
     });
-    // The overlay animation can fail to report completion on a fresh session.
-    // The experience switch must not wait for that animation.
+    // Ionic's present() promise waits for a Web Animation onfinish event.
+    // In this browser that event does not fire, and dismiss() waits on the
+    // same animation. The route change must not wait for either promise.
     void loading.present();
     try {
       this.unlockIndicatorService.clearAllTasks(); // reset indicators
@@ -160,9 +161,19 @@ export class ExperiencesPage implements OnInit, OnDestroy {
         message: err.msg || JSON.stringify(err)
       });
     } finally {
-      await loading.dismiss();
+      this.releaseLoading(loading);
     }
 
     return this.router.navigate(destination);
+  }
+
+  /**
+   * Ask Ionic to dismiss the overlay, then remove the element.
+   * dismiss() never settles when the enter animation does not finish,
+   * so the caller must not wait for it.
+   */
+  private releaseLoading(loading: HTMLIonLoadingElement): void {
+    void loading.dismiss().catch(() => undefined);
+    loading.remove();
   }
 }
