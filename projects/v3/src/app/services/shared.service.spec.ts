@@ -159,6 +159,24 @@ describe('SharedService', () => {
       expect(storageSpy.setUser).not.toHaveBeenCalled();
       expect(result).toEqual(SAMPLE_RESULT);
     }));
+
+    it('does not refresh the session when a fresh user has no team', fakeAsync(() => {
+      storageSpy.getUser = jasmine.createSpy('getUser').and.returnValue({});
+      apolloSpy.graphQLFetch.and.returnValue(of({
+        data: {
+          user: {
+            teams: []
+          }
+        }
+      }));
+      const refresh = spyOn(service, 'refreshJWT').and.returnValue(Promise.resolve());
+
+      service.getTeamInfo().subscribe();
+      tick();
+
+      expect(refresh).not.toHaveBeenCalled();
+      expect(storageSpy.setUser).toHaveBeenCalledWith({ teamId: null });
+    }));
   });
 
   describe('onPageLoad()', () => {

@@ -362,11 +362,13 @@ export class ExperienceService {
       experienceUuid: experience.uuid,
     }));
     const scopedAuth = authResponse?.data?.auth;
+    const selected = scopedAuth?.experience || experience;
+    const timelineId = selected?.timelineId ?? experience?.timelineId;
     await this.switchProgram({
-      experience: scopedAuth?.experience || experience,
+      experience: { ...selected, timelineId },
       apikey: scopedAuth?.apikey,
     });
-    this.storage.setTabExperience((scopedAuth?.experience || experience).uuid);
+    this.storage.setTabExperience((selected?.uuid || experience?.uuid));
 
     const apikey = authResponse?.data?.auth?.apikey;
     if (apikey) {

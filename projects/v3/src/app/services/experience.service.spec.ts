@@ -226,5 +226,31 @@ describe('ExperienceService', () => {
         jasmine.any(Error)
       );
     });
+
+    it('keeps the selected experience timeline when auth omits it', async () => {
+      const authService = TestBed.inject(AuthService) as jasmine.SpyObj<AuthService>;
+      const storageService = TestBed.inject(BrowserStorageService) as jasmine.SpyObj<BrowserStorageService>;
+      const experience = {
+        id: 3,
+        uuid: 'experience-3',
+        timelineId: 333,
+        name: 'Preview QA Experience',
+      };
+      storageService.get.and.returnValue(null);
+      authService.authenticate.and.returnValue(of({
+        data: {
+          auth: {
+            apikey: 'scoped-key',
+            experience: { id: 3, uuid: 'experience-3', name: 'Preview QA Experience' },
+          },
+        },
+      } as any));
+
+      await service.switchProgramAndNavigate(experience as any);
+
+      expect(storageService.setUser).toHaveBeenCalledWith(jasmine.objectContaining({
+        timelineId: 333,
+      }));
+    });
   });
 });

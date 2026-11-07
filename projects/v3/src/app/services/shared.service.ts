@@ -131,10 +131,17 @@ export class SharedService {
           const thisUser = response.data.user;
           const teams: Team[] = thisUser.teams || [];
           const newTeamId: number | null = teams.length > 0 ? teams[0].id : null;
-          const currentTeamId: number = this.storage.getUser().teamId;
+          // A fresh session has no team id. That is the same as an empty team
+          // list, and must not start a second auth request before navigation.
+          const storedTeamId = this.storage.getUser().teamId;
+          const currentTeamId = storedTeamId === undefined || storedTeamId === null ? null : storedTeamId;
 
           if (currentTeamId !== newTeamId) {
-            await this.refreshJWT();
+            try {
+              await this.refreshJWT();
+            } catch (error) {
+              console.error('Failed to refresh the session after a team change', error);
+            }
           }
 
           if (teams.length > 0) {
