@@ -623,9 +623,10 @@ export class AuthService {
   // need to clear all Subject for cache
   async clearCache(): Promise<void> {
     const apolloClient = this.apolloService.getClient();
-    // clear cache before initialised
+    // Drop cached GraphQL results without stopping the client. stop() makes
+    // every later query wait forever, so a fresh sign-in can show the
+    // experience list and then never leave the loading state.
     if (apolloClient) {
-      apolloClient.stop();
       await apolloClient.clearStore();
     }
     //   // initialise the Subject for caches
