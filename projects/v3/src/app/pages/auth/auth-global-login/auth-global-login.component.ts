@@ -52,7 +52,7 @@ export class AuthGlobalLoginComponent implements OnInit {
         if (currentLocation.indexOf('localhost') === -1) {
           const locale = authed.experience.locale;
           // if current locale is not in the current location, redirect to the locale
-          if (currentLocation.indexOf(locale) === -1) {
+          if (environment.env !== 'preview' && currentLocation.indexOf(locale) === -1) {
             const routeArray = [`/${locale}`, ...homePath];
             const newUrl = `${window.location.origin}${routeArray.join('/')}`;
             return this.utils.redirectToUrl(newUrl);

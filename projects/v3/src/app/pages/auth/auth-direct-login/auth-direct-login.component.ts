@@ -217,7 +217,7 @@ export class AuthDirectLoginComponent implements OnInit {
   }): Promise<boolean | void> {
     const currentLocation = window.location.href;
     const locale = options?.experience?.locale;
-    if (currentLocation.indexOf('localhost') === -1 && locale && currentLocation.indexOf(locale) === -1) {
+    if (environment.env !== 'preview' && currentLocation.indexOf('localhost') === -1 && locale && currentLocation.indexOf(locale) === -1) {
       route = [`/${locale}`, ...route];
       return this.utils.redirectToUrl(`${window.location.origin}${route.join('/')}`);
     } else { // Info: This block is only for development purpose

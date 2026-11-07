@@ -6,6 +6,7 @@ import { Experience, ExperienceService } from '@v3/services/experience.service';
 import { UtilsService } from '@v3/services/utils.service';
 import { BrowserStorageService } from '@v3/services/storage.service';
 import { SharedService } from '@v3/services/shared.service';
+import { environment } from '@v3/environments/environment';
 
 /**
  * Handles ?token=<jwt> login flow.
@@ -380,7 +381,8 @@ export class AuthJwtLoginComponent implements OnInit {
       hostname.endsWith('.local') ||
       /^(?:\d{1,3}\.){3}\d{1,3}$/.test(hostname) || // IP address
       !hostname.includes('.'); // bare hostname (e.g. Docker service name)
-    if (!isLocalDev && locale && window.location.href.indexOf(locale) === -1) {
+    // The Preview build sets localize:false, so /en-US/... is not a route.
+    if (environment.env !== 'preview' && !isLocalDev && locale && window.location.href.indexOf(locale) === -1) {
       route = [`/${locale}`, ...route];
       return this.utils.redirectToUrl(`${window.location.origin}${route.join('/')}`);
     } else {
