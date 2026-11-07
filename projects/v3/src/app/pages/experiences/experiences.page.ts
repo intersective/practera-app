@@ -132,7 +132,9 @@ export class ExperiencesPage implements OnInit, OnDestroy {
     const loading = await this.loadingController.create({
       message: $localize`loading...`
     });
-    await loading.present();
+    // The overlay animation can fail to report completion on a fresh session.
+    // The experience switch must not wait for that animation.
+    void loading.present();
     try {
       this.unlockIndicatorService.clearAllTasks(); // reset indicators
       const route = await this.experienceService.switchProgramAndNavigate(experience);

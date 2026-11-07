@@ -126,6 +126,19 @@ describe('ExperiencesPage', () => {
       }));
     });
 
+    it('opens the experience when the loading overlay does not finish presenting', fakeAsync(() => {
+      presentLoading.and.returnValue(new Promise(() => undefined));
+
+      component.switchProgram({ testing: true } as any);
+
+      flushMicrotasks();
+      expect(experienceServiceSpy.switchProgramAndNavigate).toHaveBeenCalledWith({
+        testing: true
+      });
+      expect(component['router'].navigate).toHaveBeenCalled();
+      expect(dismissLoading).toHaveBeenCalled();
+    }));
+
     it('should redirect user', fakeAsync(() => {
       const operationOrder: string[] = [];
       experienceServiceSpy.switchProgramAndNavigate.and.callFake(async () => {
