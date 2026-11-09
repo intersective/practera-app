@@ -3,7 +3,7 @@ name: Preview learner frontend
 on:
   push:
     branches:
-      - feature/2.6-infra
+      - feature/2.6
   workflow_dispatch:
 
 permissions:
@@ -29,7 +29,7 @@ jobs:
         run: |
           set -eu
           test "${{ github.repository }}" = "intersective/practera-app"
-          test "${{ github.ref }}" = "refs/heads/feature/2.6-infra"
+          test "${{ github.ref }}" = "refs/heads/feature/2.6"
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
       - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
         with:
