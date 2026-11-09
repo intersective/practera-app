@@ -79,6 +79,8 @@ export interface PkceStart {
   experienceUuid?: string;
   brandColor?: string;
   brandLogo?: string;
+  /** Opaque magic-link token for this tab. Not stored, and not a page target. */
+  magicToken?: string;
   /** Page target copied from the ?oauth=1 URL. Returned with the access token. */
   destination?: Record<string, string>;
 }
@@ -102,13 +104,14 @@ export function beginAuthorizationCode(start: PkceStart): Promise<void> {
 }
 
 async function startAuthorizationCode(start: PkceStart): Promise<void> {
+  const { magicToken, ...stored } = start;
   // Marker first, so the login guard can see the handoff before the digest finishes.
-  sessionStorage.setItem(STORE_KEY, JSON.stringify({ pending: true, ...start }));
+  sessionStorage.setItem(STORE_KEY, JSON.stringify({ pending: true, ...stored }));
   const verifier = randomVerifier();
   const state = randomVerifier();
   const challenge = await s256(verifier);
   const redirectUri = `${window.location.origin}/`;
-  sessionStorage.setItem(STORE_KEY, JSON.stringify({ verifier, state, redirectUri, ...start }));
+  sessionStorage.setItem(STORE_KEY, JSON.stringify({ verifier, state, redirectUri, ...stored }));
 
   const url = new URL(`${loginApiBase()}/oauth2/authorize`);
   url.searchParams.set('response_type', 'code');
@@ -123,6 +126,14 @@ async function startAuthorizationCode(start: PkceStart): Promise<void> {
   if (start.experienceUuid) url.searchParams.set('experienceUuid', start.experienceUuid);
   if (start.brandColor) url.searchParams.set('brandColor', start.brandColor);
   if (start.brandLogo) url.searchParams.set('brandLogo', start.brandLogo);
+  if (magicToken) {
+    try {
+      const cleaned = new URL(window.location.href);
+      cleaned.searchParams.delete('magic_token');
+      history.replaceState(null, '', `${cleaned.pathname}${cleaned.search}${cleaned.hash}`);
+    } catch { /* keep going; the token is still only on this authorize request */ }
+    url.searchParams.set('magic_token', magicToken);
+  }
   window.location.assign(url.toString());
 }
 

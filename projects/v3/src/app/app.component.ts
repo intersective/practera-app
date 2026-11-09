@@ -150,6 +150,7 @@ export class AppComponent implements OnInit, OnDestroy {
         experienceUuid: destination.experienceUuid,
         brandColor: destination.brandColor,
         brandLogo: destination.brandLogo,
+        magicToken: searchParams.get('magic_token') || undefined,
         destination,
       }).catch((err) => console.error('OAuth authorize failed', err));
       return;
