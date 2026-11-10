@@ -1,3 +1,10 @@
+.milestone-heading {
+  margin: 0;
+  font-size: inherit;
+  font-weight: inherit;
+  line-height: inherit;
+}
+
 .milestone-name {
   &.locked {
     cursor: pointer;

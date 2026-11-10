@@ -148,4 +148,17 @@ export class ChatListComponent implements OnDestroy {
     return this.utils.timeFormatter(date);
   }
 
+  /**
+   * Accessible names must be text. Last messages and channel names are stored as HTML.
+   */
+  plainText(value: string): string {
+    if (!value) {
+      return '';
+    }
+    const withBreaks = value
+      .replace(/<br\s*\/?>/gi, ' ')
+      .replace(/<\/(p|div|li|h[1-6])>/gi, ' ');
+    return this.utils.decodeHtmlEntities(withBreaks).replace(/\s+/g, ' ').trim();
+  }
+
 }

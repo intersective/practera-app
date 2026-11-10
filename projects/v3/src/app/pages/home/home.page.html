@@ -134,25 +134,22 @@
             [value]="display"
             role="tablist"
             aria-label="Content navigation tabs" i18n-aria-label>
-            <ion-segment-button value="activities"
+            <ion-segment-button id="activities-tab"
+              value="activities"
               mode="ios"
-              role="tab"
-              [attr.aria-selected]="display === 'activities'"
               [attr.aria-controls]="'activities-panel'">
               <ion-label i18n>Activities</ion-label>
             </ion-segment-button>
-            <ion-segment-button value="badges"
+            <ion-segment-button id="badges-tab"
+              value="badges"
               mode="ios"
-              role="tab"
-              [attr.aria-selected]="display === 'badges'"
               [attr.aria-controls]="'badges-panel'">
               <ion-label i18n>{ getIsPointsConfigured, select, true {Badges & Points} false {Badges} }</ion-label>
             </ion-segment-button>
             @if (pulseCheckIndicatorEnabled === true && !isExpertWithoutTeam) {
-              <ion-segment-button value="pulse-checks"
+              <ion-segment-button id="pulse-checks-tab"
+                value="pulse-checks"
                 mode="ios"
-                role="tab"
-                [attr.aria-selected]="display === 'pulse-checks'"
                 [attr.aria-controls]="'pulse-checks-panel'">
                 <ion-label i18n>Skill & Progress Surveys</ion-label>
               </ion-segment-button>
@@ -190,14 +187,15 @@
   i18n>Activity list</h3>
 
   <div class="activity-search-container">
-    <ion-searchbar [(ngModel)]="activitySearchText"
+    <ion-searchbar #activityFilter
+      [(ngModel)]="activitySearchText"
       (ionInput)="filterActivities()"
       (ionClear)="clearSearch()"
       placeholder="Filter by activity title or description"
       i18n-placeholder
       mode="md"
       animated="true"
-      aria-label="Filter activities by title or description"
+      aria-label="Filter by activity title or description"
       i18n-aria-label>
     </ion-searchbar>
     @if (activitySearchText && filteredMilestones) {
@@ -219,27 +217,30 @@
       i18n-aria-label>
       @if ((activitySearchText ? filteredMilestones : milestones)?.length > 0) {
         @for (milestone of (activitySearchText ? filteredMilestones : milestones)!; track milestone) {
-          <ion-item class="headline-4 milestone-name"
-            [ngClass]="{'locked': milestone.isLocked}"
-            lines="none"
-            (click)="showGuideline(milestone)"
-            (keydown.enter)="showGuideline(milestone)"
-            (keydown.space)="showGuideline(milestone); $event.preventDefault()"
-            tabindex="0"
-            role="button"
-            [attr.aria-label]="milestone.name + (milestone.isLocked ? ' (locked)' : '')"
-            aria-describedby="milestone-description">
-            <div [innerHTML]="milestone.name"></div>
-            @if (milestone.isLocked) {
-              <ion-icon
-                color="medium"
-                name="lock-closed"
-                slot="end"
-              aria-hidden="true"></ion-icon>
-            }
-          </ion-item>
+          <h3 class="milestone-heading">
+            <ion-item class="headline-4 milestone-name"
+              [ngClass]="{'locked': milestone.isLocked}"
+              lines="none"
+              (click)="showGuideline(milestone)"
+              (keydown.enter)="showGuideline(milestone)"
+              (keydown.space)="showGuideline(milestone); $event.preventDefault()"
+              tabindex="0"
+              role="button"
+              [attr.aria-label]="milestone.name + (milestone.isLocked ? ' (locked)' : '')"
+              [attr.aria-describedby]="milestone.description ? 'milestone-description-' + milestone.id : null">
+              <div [innerHTML]="milestone.name"></div>
+              @if (milestone.isLocked) {
+                <ion-icon
+                  color="medium"
+                  name="lock-closed"
+                  slot="end"
+                aria-hidden="true"></ion-icon>
+              }
+            </ion-item>
+          </h3>
           @if (milestone?.description) {
-            <ion-item id="milestone-description"
+            <ion-item
+              [id]="'milestone-description-' + milestone.id"
               class="body-3"
               lines="none"
               color="light">

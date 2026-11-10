@@ -357,8 +357,12 @@ export class ChatRoomComponent implements OnInit, OnDestroy, AfterViewInit {
 
     // Set aria-labels for Quill toolbar elements (WCAG 4.1.2)
     setTimeout(() => {
-      this._setQuillToolbarAriaLabels();
+      this.labelMessageEditor();
     }, 500);
+  }
+
+  labelMessageEditor(): void {
+    this._setQuillToolbarAriaLabels();
   }
 
   /**
@@ -396,6 +400,16 @@ export class ChatRoomComponent implements OnInit, OnDestroy, AfterViewInit {
     const videoInput = componentElement.querySelector('input[data-video]') as HTMLInputElement;
     if (videoInput && !videoInput.getAttribute('aria-label')) {
       videoInput.setAttribute('aria-label', 'Enter video embed URL');
+    }
+
+    // Quill's contenteditable is not exposed as a named textbox unless these are set on .ql-editor.
+    const messageEditor = componentElement.querySelector('.ql-editor') as HTMLElement;
+    if (messageEditor) {
+      messageEditor.setAttribute('role', 'textbox');
+      messageEditor.setAttribute('aria-multiline', 'true');
+      if (!messageEditor.getAttribute('aria-label')) {
+        messageEditor.setAttribute('aria-label', $localize`Enter your message`);
+      }
     }
   }
 

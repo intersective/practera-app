@@ -399,14 +399,23 @@ describe('HomePage', () => {
     });
 
     it('should set page title with experience name', async () => {
+      (TestBed.inject(Router) as unknown as { url: string }).url = '/v3/home';
       await component.updateDashboard();
       expect(utilsService.setPageTitle).toHaveBeenCalledWith('Test Experience');
     });
 
     it('should set page title with default when experience has no name', async () => {
+      (TestBed.inject(Router) as unknown as { url: string }).url = '/v3/home';
       storageService.get.and.returnValue({});
       await component.updateDashboard();
       expect(utilsService.setPageTitle).toHaveBeenCalledWith('Practera');
+    });
+
+    it('should not replace another page title when the dashboard refreshes off Home', async () => {
+      (TestBed.inject(Router) as unknown as { url: string }).url = '/v3/messages';
+      utilsService.setPageTitle.calls.reset();
+      await component.updateDashboard();
+      expect(utilsService.setPageTitle).not.toHaveBeenCalled();
     });
 
     it('should set default lead image from experience card URL', async () => {
