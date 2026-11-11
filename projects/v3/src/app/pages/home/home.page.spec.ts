@@ -487,4 +487,52 @@ describe('HomePage', () => {
     });
   });
 
+  describe('content tab accessibility', () => {
+    beforeEach(() => {
+      component.achievements = [];
+      fixture.changeDetectorRef.markForCheck();
+    });
+    it('links focusable tabs and their panels within the same DOM', () => {
+      const tabs: HTMLElement[] = Array.from(fixture.nativeElement.querySelectorAll('button[role="tab"]'));
+      expect(tabs.length).toBe(2);
+      tabs.forEach(tab => {
+        const panel = fixture.nativeElement.querySelector('#' + tab.getAttribute('aria-controls'));
+        expect(panel).not.toBeNull();
+        expect(panel?.getRootNode()).toBe(tab.getRootNode());
+        expect(panel?.getAttribute('aria-labelledby')).toBe(tab.id);
+      });
+    });
+
+    it('moves focus and selection with arrows, wrapping across available tabs', () => {
+      const tabs: HTMLButtonElement[] = Array.from(fixture.nativeElement.querySelectorAll('button[role="tab"]'));
+      expect(tabs.length).toBe(2);
+      if (tabs.length !== 2) { return; }
+      tabs[0].dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowRight', bubbles: true, cancelable: true }));
+      fixture.detectChanges();
+      expect(component.display).toBe('badges');
+      expect(document.activeElement).toBe(tabs[1]);
+      expect(tabs[1].getAttribute('aria-selected')).toBe('true');
+      expect(tabs[1].tabIndex).toBe(0);
+      expect(tabs[0].tabIndex).toBe(-1);
+      tabs[1].dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowRight', bubbles: true, cancelable: true }));
+      fixture.detectChanges();
+      expect(component.display).toBe('activities');
+    });
+
+    it('includes the survey tab and supports Home and End keys', () => {
+      component.pulseCheckIndicatorEnabled = true;
+      component.isExpertWithoutTeam = false;
+      fixture.changeDetectorRef.markForCheck();
+      fixture.detectChanges();
+      const tabs: HTMLButtonElement[] = Array.from(fixture.nativeElement.querySelectorAll('button[role="tab"]'));
+      expect(tabs.length).toBe(3);
+      if (tabs.length !== 3) { return; }
+      tabs[0].dispatchEvent(new KeyboardEvent('keydown', { key: 'End', bubbles: true, cancelable: true }));
+      fixture.detectChanges();
+      expect(component.display).toBe('pulse-checks');
+      tabs[2].dispatchEvent(new KeyboardEvent('keydown', { key: 'Home', bubbles: true, cancelable: true }));
+      fixture.detectChanges();
+      expect(component.display).toBe('activities');
+    });
+  });
 });

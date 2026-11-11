@@ -14,17 +14,39 @@
   }
 }
 
-ion-segment-button.ion-focused {
-  border: 1px solid var(--ion-color-primary);
-}
 img {
   width: 100%;
 }
-ion-segment {
-  --background: var(--ion-color-light);
+.content-tabs {
+  display: flex;
+  gap: 2px;
   padding: 10px;
-  z-index: 1;
+  background: var(--ion-color-light);
+
+  button {
+    flex: 1;
+    min-width: 0;
+    padding: 8px 4px;
+    border: 0;
+    border-radius: 7px;
+    background: transparent;
+    color: var(--ion-text-color);
+    font: inherit;
+    font-size: 14px;
+    cursor: pointer;
+
+    &[aria-selected='true'] {
+      background: var(--ion-background-color);
+      box-shadow: 0 2px 5px rgb(0 0 0 / 12%);
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--ion-color-primary);
+      outline-offset: 2px;
+    }
+  }
 }
+
 .milestone-name {
   --color: var(--ion-color-primary);
   --background: var(--ion-color-primary-tint);
@@ -39,10 +61,6 @@ ion-segment {
 .activity-col {
   border-left: 1px solid var(--practera-grey-25);
   padding: 0 18px;
-
-  ion-segment {
-    border-radius: 0;
-  }
 
   &.mobile {
     border-left: none;

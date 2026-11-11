@@ -114,7 +114,6 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
     }
 
     this.labelActivityFilter();
-    this.linkContentTabs();
   }
 
   private isHomeUrl(): boolean {
@@ -135,7 +134,7 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
       return;
     }
     this.activityFilterLabelRequested = true;
-    this.activityFilter.getInputElement().then((input) => {
+    Promise.resolve().then(() => this.activityFilter?.getInputElement?.()).then((input) => {
       if (!input) {
         this.activityFilterLabelRequested = false;
         return;
@@ -143,28 +142,6 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
       input.setAttribute('aria-label', $localize`Filter by activity title or description`);
     }).catch(() => {
       this.activityFilterLabelRequested = false;
-    });
-  }
-
-  /**
-   * ion-segment-button already exposes an inner tab. Copy the panel relationship onto that tab.
-   * The host id stays in light DOM so the tab panel aria-labelledby can still find it.
-   */
-  private linkContentTabs(): void {
-    const host = this.activityCol?.el;
-    if (!host) {
-      return;
-    }
-    host.querySelectorAll('ion-segment-button').forEach((button: Element) => {
-      const segmentButton = button as HTMLElement;
-      const native = segmentButton.shadowRoot?.querySelector('button');
-      if (!native) {
-        return;
-      }
-      const controls = segmentButton.getAttribute('aria-controls');
-      if (controls && native.getAttribute('aria-controls') !== controls) {
-        native.setAttribute('aria-controls', controls);
-      }
     });
   }
 
@@ -387,13 +364,33 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
     this.isExpertWithoutTeam = this.isExpert && !teamId;
   }
 
-  switchContent(event) {
+  switchContent(value: string) {
     // update points upon switching to badges tab
-    if (event.detail.value === "badges") {
+    if (value === 'badges') {
       this.getIsPointsConfigured = this.achievementService.isPointsConfigured;
       this.getEarnedPoints = this.achievementService.earnedPoints;
     }
-    this.display = event.detail.value;
+    this.display = value;
+  }
+
+  navigateContentTabs(event: KeyboardEvent): void {
+    const current = event.target as HTMLElement;
+    const tabs = Array.from(current.closest('[role="tablist"]')?.querySelectorAll<HTMLButtonElement>('[role="tab"]') || []);
+    const index = tabs.indexOf(current as HTMLButtonElement);
+    if (index < 0) {
+      return;
+    }
+    let next: number;
+    switch (event.key) {
+      case 'ArrowRight': next = (index + 1) % tabs.length; break;
+      case 'ArrowLeft': next = (index + tabs.length - 1) % tabs.length; break;
+      case 'Home': next = 0; break;
+      case 'End': next = tabs.length - 1; break;
+      default: return;
+    }
+    event.preventDefault();
+    tabs[next].click();
+    tabs[next].focus();
   }
 
   endingIcon(activity) {

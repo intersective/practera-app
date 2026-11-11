@@ -130,49 +130,47 @@
           [ngClass]="{'mobile': isMobile}">
           <h2 class="for-accessibility"
           i18n>Activities</h2>
-          <ion-segment (ionChange)="switchContent($event)"
-            [value]="display"
+          <div class="content-tabs"
             role="tablist"
+            (keydown)="navigateContentTabs($event)"
             aria-label="Content navigation tabs" i18n-aria-label>
-            <ion-segment-button id="activities-tab"
-              value="activities"
-              mode="ios"
-              [attr.aria-controls]="'activities-panel'">
-              <ion-label i18n>Activities</ion-label>
-            </ion-segment-button>
-            <ion-segment-button id="badges-tab"
-              value="badges"
-              mode="ios"
-              [attr.aria-controls]="'badges-panel'">
-              <ion-label i18n>{ getIsPointsConfigured, select, true {Badges & Points} false {Badges} }</ion-label>
-            </ion-segment-button>
+            <button id="activities-tab" type="button" role="tab"
+              [attr.aria-selected]="display === 'activities'"
+              [tabIndex]="display === 'activities' ? 0 : -1"
+              aria-controls="activities-panel"
+              (click)="switchContent('activities')" i18n>Activities</button>
+            <button id="badges-tab" type="button" role="tab"
+              [attr.aria-selected]="display === 'badges'"
+              [tabIndex]="display === 'badges' ? 0 : -1"
+              aria-controls="badges-panel"
+              (click)="switchContent('badges')" i18n>{ getIsPointsConfigured, select, true {Badges & Points} false {Badges} }</button>
             @if (pulseCheckIndicatorEnabled === true && !isExpertWithoutTeam) {
-              <ion-segment-button id="pulse-checks-tab"
-                value="pulse-checks"
-                mode="ios"
-                [attr.aria-controls]="'pulse-checks-panel'">
-                <ion-label i18n>Skill & Progress Surveys</ion-label>
-              </ion-segment-button>
+              <button id="pulse-checks-tab" type="button" role="tab"
+                [attr.aria-selected]="display === 'pulse-checks'"
+                [tabIndex]="display === 'pulse-checks' ? 0 : -1"
+                aria-controls="pulse-checks-panel"
+                (click)="switchContent('pulse-checks')" i18n>Skill & Progress Surveys</button>
             }
-          </ion-segment>
+          </div>
 
-          @switch (display) {
-            @case ('activities') {
-              <div role="tabpanel" id="activities-panel" [attr.aria-labelledby]="'activities-tab'">
-                <ng-container *ngTemplateOutlet="activityList"></ng-container>
-              </div>
+          <div role="tabpanel" id="activities-panel" aria-labelledby="activities-tab" [hidden]="display !== 'activities'">
+            @if (display === 'activities') {
+              <ng-container *ngTemplateOutlet="activityList"></ng-container>
             }
-            @case ('badges') {
-              <div role="tabpanel" id="badges-panel" [attr.aria-labelledby]="'badges-tab'">
-                <ng-container *ngTemplateOutlet="badgePoints"></ng-container>
-              </div>
+          </div>
+          <div role="tabpanel" id="badges-panel" aria-labelledby="badges-tab" [hidden]="display !== 'badges'">
+            @if (display === 'badges') {
+              <ng-container *ngTemplateOutlet="badgePoints"></ng-container>
             }
-            @case ('pulse-checks') {
-              <div role="tabpanel" id="pulse-checks-panel" [attr.aria-labelledby]="'pulse-checks-tab'">
+          </div>
+          @if (pulseCheckIndicatorEnabled === true && !isExpertWithoutTeam) {
+            <div role="tabpanel" id="pulse-checks-panel" aria-labelledby="pulse-checks-tab" [hidden]="display !== 'pulse-checks'">
+              @if (display === 'pulse-checks') {
                 <ng-container *ngTemplateOutlet="pulseChecks"></ng-container>
-              </div>
-            }
+              }
+            </div>
           }
+
         </ion-col>
 
       </ion-row>

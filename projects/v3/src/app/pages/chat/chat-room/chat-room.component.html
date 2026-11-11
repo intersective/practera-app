@@ -182,7 +182,7 @@
     <ion-grid class="white-bg">
       <ion-row nowrap class="ion-no-padding">
         <ion-col [size]="12" class="ion-align-self-center ion-no-padding">
-          <quill-editor aria-label="Enter your message" i18n-aria-label
+          <quill-editor
             customToolbarPosition="top"
             [modules]="editorModules"
             [classes]="isMobile ? 'editor-class' : 'editor-class desktop'"
@@ -192,7 +192,7 @@
             placeholder="Enter your message"
             [(ngModel)]="typingMessage"
             (ngModelChange)="typing()"
-            (onEditorCreated)="labelMessageEditor()"
+            (onEditorCreated)="labelMessageEditor($event)"
             i18n-placeholder
           ></quill-editor>
         </ion-col>
