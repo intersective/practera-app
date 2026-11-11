@@ -39,7 +39,7 @@ describe('TopicComponent', () => {
     sharedSpy = jasmine.createSpyObj('SharedService', ['stopPlayingVideos']);
     routerSpy = jasmine.createSpyObj('Router', ['navigate']);
     notificationSpy = jasmine.createSpyObj('NotificationsService', ['alert', 'presentToast']);
-    storageSpy = jasmine.createSpyObj('BrowserStorageService', ['getUser', 'get', 'remove']);
+    storageSpy = jasmine.createSpyObj('BrowserStorageService', ['getUser', 'get', 'set', 'remove']);
     activitySpy = jasmine.createSpyObj('ActivityService', ['gotoNextTask']);
 
     await TestBed.configureTestingModule({
@@ -67,7 +67,7 @@ describe('TopicComponent', () => {
     utilsSpy = TestBed.inject(UtilsService) as jasmine.SpyObj<UtilsService>;
 
     storageSpy.getUser.and.returnValue({ teamId: 1, projectId: 2 });
-    storageSpy.get.and.returnValue({});
+    storageSpy.get.and.returnValue(null);
   });
 
   it('should create', () => {
@@ -79,6 +79,187 @@ describe('TopicComponent', () => {
     component.ionViewWillLeave();
     expect(sharedSpy.stopPlayingVideos).toHaveBeenCalledTimes(1);
   });
+
+  it('should emit topic and attention metrics when continuing', fakeAsync(() => {
+    const topic = {
+      id: 1,
+      title: 'Topic',
+      rawContent: '<p>Topic body</p>',
+      files: [],
+    } as any;
+    const attention = {
+      version: 1,
+      score: 20,
+      confidence: 'low',
+      activeMs: 1000,
+      visibleMs: 1000,
+      estimatedReadMs: 300,
+      textWordCount: 1,
+      contentExposureRatio: 1,
+      mediaProgressRatio: 0,
+      mediaPlayedMs: 0,
+      filePreviewCount: 0,
+      fileDownloadCount: 0,
+      quickComplete: true,
+    } as any;
+    spyOn<any>(component, 'getAttentionMetrics').and.returnValue(attention);
+    const emitSpy = spyOn(component.continue, 'emit');
+
+    component.ngOnInit();
+    component.actionBarContinue(topic);
+    tick();
+
+    expect(emitSpy).toHaveBeenCalledWith({ topic, attention });
+  }));
+
+  it('should reset attention tracking when topic changes', () => {
+    const stopSpy = spyOn<any>(component, 'stopAttentionTracking').and.callThrough();
+    const startSpy = spyOn<any>(component, 'startAttentionTracking').and.callThrough();
+    component.topic = {
+      id: 2,
+      title: 'New topic',
+      rawContent: '<p>New topic body</p>',
+      files: [],
+    } as any;
+
+    component.ngOnChanges({
+      topic: {
+        currentValue: component.topic,
+        previousValue: { id: 1 },
+        firstChange: false,
+        isFirstChange: () => false
+      }
+    });
+
+    expect(stopSpy).toHaveBeenCalled();
+    expect(startSpy).toHaveBeenCalledWith(component.topic);
+  });
+
+  it('should include file interactions in attention metrics', () => {
+    component.topic = {
+      id: 3,
+      title: 'File topic',
+      rawContent: '',
+      files: [{ url: 'https://example.com/file.pdf', name: 'file.pdf' }],
+    } as any;
+    component['startAttentionTracking'](component.topic);
+
+    component.actionBtnClick(component.topic.files[0], 0);
+
+    expect(component['getAttentionMetrics']().fileDownloadCount).toBe(1);
+  });
+
+  it('should clean up attention listeners', () => {
+    component.topic = {
+      id: 4,
+      title: 'Cleanup topic',
+      rawContent: '<p>Cleanup body</p>',
+      files: [],
+    } as any;
+
+    component['startAttentionTracking'](component.topic);
+    expect(component['attentionListeners'].length).toBeGreaterThan(0);
+
+    component['stopAttentionTracking']();
+    expect(component['attentionListeners'].length).toBe(0);
+  });
+
+  it('should resume persisted topic time from local storage', () => {
+    storageSpy.get.withArgs('topicTimeSpent:5').and.returnValue(61000);
+
+    component['startTopicTimeTracking'](5);
+
+    expect(component.formattedTopicTimeSpent).toBe('1:01');
+  });
+
+  it('should persist topic time when tracking stops', () => {
+    component.topic = { id: 6, title: 'Timed topic', files: [] } as any;
+    storageSpy.get.withArgs('topicTimeSpent:6').and.returnValue(0);
+    spyOn(Date, 'now').and.returnValues(1000, 1000, 4000, 4000);
+
+    component['startTopicTimeTracking'](6);
+    component['stopTopicTimeTracking']();
+
+    expect(storageSpy.set).toHaveBeenCalledWith('topicTimeSpent:6', 3000);
+  });
+
+  it('should switch timer storage when selected task changes before topic data updates', () => {
+    component.topic = { id: 8, title: 'Old topic', files: [] } as any;
+    component.task = { id: 8, type: 'Topic', status: 'in progress' } as any;
+    storageSpy.get.withArgs('topicTimeSpent:8').and.returnValue(0);
+    storageSpy.get.withArgs('topicTimeSpent:9').and.returnValue(120000);
+    spyOn(Date, 'now').and.returnValues(1000, 1000, 5000, 5000, 5000, 5000);
+
+    component['startTopicTimeTracking'](8);
+    component.task = { id: 9, type: 'Topic', status: 'in progress' } as any;
+    component.ngOnChanges({
+      task: {
+        currentValue: component.task,
+        previousValue: { id: 8, type: 'Topic', status: 'in progress' },
+        firstChange: false,
+        isFirstChange: () => false
+      }
+    });
+
+    expect(storageSpy.set).toHaveBeenCalledWith('topicTimeSpent:8', 4000);
+    expect(storageSpy.get).toHaveBeenCalledWith('topicTimeSpent:9');
+    expect(component.formattedTopicTimeSpent).toBe('2:00');
+  });
+
+  it('should remove topic time when marking an incomplete topic complete', fakeAsync(() => {
+    const topic = { id: 7, title: 'Complete topic', files: [] } as any;
+    component.topic = topic;
+    component.task = { id: 7, type: 'Topic', status: 'in progress' } as any;
+    spyOn<any>(component, 'getAttentionMetrics').and.returnValue({
+      version: 1,
+      score: 0,
+      confidence: 'low',
+      activeMs: 0,
+      visibleMs: 0,
+      estimatedReadMs: 0,
+      textWordCount: 0,
+      contentExposureRatio: 0,
+      mediaProgressRatio: 0,
+      mediaPlayedMs: 0,
+      filePreviewCount: 0,
+      fileDownloadCount: 0,
+      quickComplete: true,
+    });
+
+    component.ngOnInit();
+    component.actionBarContinue(topic);
+    tick();
+
+    expect(storageSpy.remove).toHaveBeenCalledWith('topicTimeSpent:7');
+    expect(component.formattedTopicTimeSpent).toBe('0:00');
+  }));
+
+  it('should remove timer using selected task id instead of stale topic id', fakeAsync(() => {
+    const topic = { id: 10, title: 'Stale topic', files: [] } as any;
+    component.topic = topic;
+    component.task = { id: 11, type: 'Topic', status: 'in progress' } as any;
+    spyOn<any>(component, 'getAttentionMetrics').and.returnValue({
+      version: 1,
+      score: 0,
+      confidence: 'low',
+      activeMs: 0,
+      visibleMs: 0,
+      estimatedReadMs: 0,
+      textWordCount: 0,
+      contentExposureRatio: 0,
+      mediaProgressRatio: 0,
+      mediaPlayedMs: 0,
+      filePreviewCount: 0,
+      fileDownloadCount: 0,
+      quickComplete: true,
+    });
+
+    component.ngOnInit();
+    component.actionBarContinue(topic);
+    tick();
+
+    expect(storageSpy.remove).toHaveBeenCalledWith('topicTimeSpent:11');
+  }));
 
   describe('ngOnChanges', () => {
     it('should embed video when video element found', fakeAsync(() => {
