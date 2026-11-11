@@ -791,4 +791,16 @@ describe('ChatRoomComponent', () => {
     });
   });
 
+  it('labels the created editable root rather than a message preview', () => {
+    const preview = document.createElement('div');
+    preview.className = 'ql-editor';
+    fixture.nativeElement.prepend(preview);
+    const root = document.createElement('div');
+    root.contentEditable = 'true';
+    (component.labelMessageEditor as any)({ root });
+    expect(root.getAttribute('role')).toBe('textbox');
+    expect(root.getAttribute('aria-multiline')).toBe('true');
+    expect(root.getAttribute('aria-label')).toBe('Enter your message');
+    expect(preview.hasAttribute('role')).toBeFalse();
+  });
 });

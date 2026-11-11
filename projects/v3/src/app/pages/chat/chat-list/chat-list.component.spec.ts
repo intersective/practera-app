@@ -190,4 +190,27 @@ describe('ChatListComponent', () => {
     });
   });
 
+  describe('accessible chat text', () => {
+    beforeEach(() => {
+      (utils.decodeHtmlEntities as jasmine.Spy).and.callFake((value: string) =>
+        UtilsService.prototype.decodeHtmlEntities.call({ document }, value));
+    });
+
+    it('decodes entities and separates HTML blocks', () => {
+      expect(component.plainText('<p>A &amp; B</p><div>Next<br>line</div>')).toBe('A & B Next line');
+      expect(component.plainText('')).toBe('');
+    });
+
+    it('keeps HTML event handlers inert when extracting a message label', async () => {
+      const marker = '__pr2808MessageExecuted';
+      (window as any)[marker] = false;
+      try {
+        expect(component.plainText(`<p>Hello</p><img src="data:image/png;base64,invalid" onerror="window.${marker}=true">`)).toBe('Hello');
+        await new Promise(resolve => setTimeout(resolve, 100));
+        expect((window as any)[marker]).toBeFalse();
+      } finally {
+        delete (window as any)[marker];
+      }
+    });
+  });
 });

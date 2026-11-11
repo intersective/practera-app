@@ -89,7 +89,7 @@ describe('ExperienceService', () => {
     expect(service).toBeTruthy();
   });
 
-  it('should initialise Pusher only after the selected experience is authenticated', async () => {
+  it('should authenticate the selected timeline before initialising Pusher', async () => {
     const callOrder: string[] = [];
     const sharedService = TestBed.inject(SharedService) as jasmine.SpyObj<SharedService>;
     const authService = TestBed.inject(AuthService) as jasmine.SpyObj<AuthService>;
@@ -119,6 +119,10 @@ describe('ExperienceService', () => {
 
     await service.switchProgramAndNavigate(experience as any);
 
+    expect(authService.authenticate).toHaveBeenCalledWith({
+      experienceUuid: 'experience-2',
+      timelineId: 222,
+    });
     expect(callOrder).toEqual(['authenticate', 'pusher']);
     expect(storageService.setUser).toHaveBeenCalledWith({ apikey: 'new-api-key' });
     expect(sharedService.initWebServices).toHaveBeenCalledTimes(1);

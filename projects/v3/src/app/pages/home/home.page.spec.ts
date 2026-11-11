@@ -487,4 +487,87 @@ describe('HomePage', () => {
     });
   });
 
+  describe('Ionic content tab accessibility', () => {
+    it('keeps Ionic segment controls and light DOM panel labels', () => {
+      const segment = fixture.nativeElement.querySelector('ion-segment');
+      expect(segment).not.toBeNull();
+      const tabs: HTMLElement[] = Array.from(fixture.nativeElement.querySelectorAll('ion-segment-button'));
+      expect(tabs.length).toBe(2);
+      tabs.forEach(tab => {
+        const panel = fixture.nativeElement.querySelector('#' + tab.getAttribute('aria-controls'));
+        expect(panel).not.toBeNull();
+        expect(panel?.getAttribute('aria-labelledby')).toBe(tab.id);
+      });
+      expect(fixture.nativeElement.querySelector('.content-tabs')).toBeNull();
+    });
+
+    it('switches content through Ionic ionChange and refreshes badge points', () => {
+      const segment = fixture.nativeElement.querySelector('ion-segment');
+      expect(segment).not.toBeNull();
+      if (!segment) { return; }
+      component.achievements = [];
+      (achievementService as any).isPointsConfigured = true;
+      (achievementService as any).earnedPoints = 12;
+      segment.dispatchEvent(new CustomEvent('ionChange', { detail: { value: 'badges' } }));
+      fixture.detectChanges();
+      expect(component.display).toBe('badges');
+      expect(component.getEarnedPoints).toBe(12);
+      expect(component.getIsPointsConfigured).toBeTrue();
+      expect(fixture.nativeElement.querySelector('#badges-panel').hidden).toBeFalse();
+      expect(fixture.nativeElement.querySelector('#activities-panel').hidden).toBeTrue();
+    });
+
+    describe('shadow DOM panel references', () => {
+      let host: HTMLIonColElement;
+      let tab: HTMLElement;
+      let native: HTMLButtonElement;
+      let panel: HTMLElement;
+
+      beforeEach(() => {
+        host = document.createElement('ion-col');
+        tab = document.createElement('ion-segment-button');
+        tab.setAttribute('aria-controls', 'review-panel');
+        native = document.createElement('button');
+        (tab.shadowRoot || tab.attachShadow({ mode: 'open' })).append(native);
+        panel = document.createElement('div');
+        panel.id = 'review-panel';
+        host.append(tab, panel);
+        document.body.append(host);
+        component.activityCol = { el: host };
+      });
+
+      afterEach(() => host.remove());
+
+      it('links the inner Ionic button to its light DOM panel by element reference', () => {
+        (component as any).linkContentTabs?.();
+        expect(Array.from(native.ariaControlsElements || [])).toEqual([panel]);
+        expect(native.getAttribute('aria-controls')).not.toBe('review-panel');
+      });
+
+      it('waits for Ionic hydration before linking a newly created button', async () => {
+        native.remove();
+        (tab as any).componentOnReady = () => Promise.resolve().then(() => {
+          tab.shadowRoot!.append(native);
+          return tab;
+        });
+        (component as any).linkContentTabs?.();
+        await Promise.resolve();
+        await Promise.resolve();
+        expect(Array.from(native.ariaControlsElements || [])).toEqual([panel]);
+      });
+
+      it('keeps older browsers free of invalid shadow DOM ID references', () => {
+        const descriptor = Object.getOwnPropertyDescriptor(Element.prototype, 'ariaControlsElements')!;
+        Reflect.deleteProperty(Element.prototype, 'ariaControlsElements');
+        try {
+          (component as any).linkContentTabs?.();
+          expect(native.hasAttribute('aria-controls')).toBeFalse();
+          expect(Object.hasOwn(native, 'ariaControlsElements')).toBeFalse();
+          expect(tab.getAttribute('aria-controls')).toBe('review-panel');
+        } finally {
+          Object.defineProperty(Element.prototype, 'ariaControlsElements', descriptor);
+        }
+      });
+    });
+  });
 });

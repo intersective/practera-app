@@ -76,6 +76,7 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
   activitySearchText = '';
   filteredMilestones: Milestone[] | null = null;
   private activityFilterLabelRequested = false;
+  private pendingContentTabs = new WeakSet<HTMLElement>();
 
   // Expose Math to template
   Math = Math;
@@ -135,7 +136,7 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
       return;
     }
     this.activityFilterLabelRequested = true;
-    this.activityFilter.getInputElement().then((input) => {
+    Promise.resolve().then(() => this.activityFilter?.getInputElement?.()).then((input) => {
       if (!input) {
         this.activityFilterLabelRequested = false;
         return;
@@ -147,23 +148,35 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
   }
 
   /**
-   * ion-segment-button already exposes an inner tab. Copy the panel relationship onto that tab.
-   * The host id stays in light DOM so the tab panel aria-labelledby can still find it.
+   * ID references cannot cross Ionic's shadow boundary. Newer browsers can
+   * link the native tab directly to a light DOM panel through element references.
+   * Older browsers retain Ionic's tab semantics without an invalid shadow IDREF.
    */
   private linkContentTabs(): void {
     const host = this.activityCol?.el;
     if (!host) {
       return;
     }
-    host.querySelectorAll('ion-segment-button').forEach((button: Element) => {
-      const segmentButton = button as HTMLElement;
-      const native = segmentButton.shadowRoot?.querySelector('button');
-      if (!native) {
-        return;
-      }
-      const controls = segmentButton.getAttribute('aria-controls');
-      if (controls && native.getAttribute('aria-controls') !== controls) {
-        native.setAttribute('aria-controls', controls);
+    host.querySelectorAll<HTMLIonSegmentButtonElement>('ion-segment-button').forEach(button => {
+      const linkPanel = () => {
+        const native = button.shadowRoot?.querySelector('button');
+        const controls = button.getAttribute('aria-controls');
+        const panel = controls ? host.querySelector<HTMLElement>(`#${controls}`) : null;
+        if (native && panel && 'ariaControlsElements' in native && native.ariaControlsElements?.[0] !== panel) {
+          native.ariaControlsElements = [panel];
+        }
+      };
+      if (button.shadowRoot?.querySelector('button')) {
+        linkPanel();
+      } else if (button.componentOnReady && !this.pendingContentTabs.has(button)) {
+        // A newly rendered Ionic element may hydrate after Angular checks the view.
+        this.pendingContentTabs.add(button);
+        button.componentOnReady().then(() => {
+          this.pendingContentTabs.delete(button);
+          if (host.isConnected) {
+            linkPanel();
+          }
+        }).catch(() => this.pendingContentTabs.delete(button));
       }
     });
   }

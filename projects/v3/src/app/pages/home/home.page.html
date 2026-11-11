@@ -156,23 +156,24 @@
             }
           </ion-segment>
 
-          @switch (display) {
-            @case ('activities') {
-              <div role="tabpanel" id="activities-panel" [attr.aria-labelledby]="'activities-tab'">
-                <ng-container *ngTemplateOutlet="activityList"></ng-container>
-              </div>
+          <div role="tabpanel" id="activities-panel" aria-labelledby="activities-tab" [hidden]="display !== 'activities'">
+            @if (display === 'activities') {
+              <ng-container *ngTemplateOutlet="activityList"></ng-container>
             }
-            @case ('badges') {
-              <div role="tabpanel" id="badges-panel" [attr.aria-labelledby]="'badges-tab'">
-                <ng-container *ngTemplateOutlet="badgePoints"></ng-container>
-              </div>
+          </div>
+          <div role="tabpanel" id="badges-panel" aria-labelledby="badges-tab" [hidden]="display !== 'badges'">
+            @if (display === 'badges') {
+              <ng-container *ngTemplateOutlet="badgePoints"></ng-container>
             }
-            @case ('pulse-checks') {
-              <div role="tabpanel" id="pulse-checks-panel" [attr.aria-labelledby]="'pulse-checks-tab'">
+          </div>
+          @if (pulseCheckIndicatorEnabled === true && !isExpertWithoutTeam) {
+            <div role="tabpanel" id="pulse-checks-panel" aria-labelledby="pulse-checks-tab" [hidden]="display !== 'pulse-checks'">
+              @if (display === 'pulse-checks') {
                 <ng-container *ngTemplateOutlet="pulseChecks"></ng-container>
-              </div>
-            }
+              }
+            </div>
           }
+
         </ion-col>
 
       </ion-row>

@@ -14,6 +14,7 @@ import { EditMessagePopupComponent } from '../edit-message-popup/edit-message-po
 import { Subject, Subscription, timer } from 'rxjs';
 import { debounceTime, switchMap, takeUntil, tap } from 'rxjs/operators';
 import { QuillModules } from 'ngx-quill';
+import type Quill from 'quill';
 import { UppyFileData, UppyUploaderResponse, UppyUploaderService } from '../../../components/uppy-uploader/uppy-uploader.service';
 
 enum ScrollPosition {
@@ -357,11 +358,14 @@ export class ChatRoomComponent implements OnInit, OnDestroy, AfterViewInit {
 
     // Set aria-labels for Quill toolbar elements (WCAG 4.1.2)
     setTimeout(() => {
-      this.labelMessageEditor();
+      this._setQuillToolbarAriaLabels();
     }, 500);
   }
 
-  labelMessageEditor(): void {
+  labelMessageEditor(editor: Quill): void {
+    editor.root.setAttribute('role', 'textbox');
+    editor.root.setAttribute('aria-multiline', 'true');
+    editor.root.setAttribute('aria-label', $localize`Enter your message`);
     this._setQuillToolbarAriaLabels();
   }
 
@@ -400,16 +404,6 @@ export class ChatRoomComponent implements OnInit, OnDestroy, AfterViewInit {
     const videoInput = componentElement.querySelector('input[data-video]') as HTMLInputElement;
     if (videoInput && !videoInput.getAttribute('aria-label')) {
       videoInput.setAttribute('aria-label', 'Enter video embed URL');
-    }
-
-    // Quill's contenteditable is not exposed as a named textbox unless these are set on .ql-editor.
-    const messageEditor = componentElement.querySelector('.ql-editor') as HTMLElement;
-    if (messageEditor) {
-      messageEditor.setAttribute('role', 'textbox');
-      messageEditor.setAttribute('aria-multiline', 'true');
-      if (!messageEditor.getAttribute('aria-label')) {
-        messageEditor.setAttribute('aria-label', $localize`Enter your message`);
-      }
     }
   }
 
