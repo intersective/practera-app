@@ -355,6 +355,7 @@ export class ExperienceService {
     await this.switchProgram({ experience });
     const authResponse = await firstValueFrom(this.authService.authenticate({
       experienceUuid: experience.uuid,
+      timelineId: experience.timelineId,
     }));
 
     const apikey = authResponse?.data?.auth?.apikey;

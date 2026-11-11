@@ -14,6 +14,7 @@ import { EditMessagePopupComponent } from '../edit-message-popup/edit-message-po
 import { Subject, Subscription, timer } from 'rxjs';
 import { debounceTime, switchMap, takeUntil, tap } from 'rxjs/operators';
 import { QuillModules } from 'ngx-quill';
+import type Quill from 'quill';
 import { UppyFileData, UppyUploaderResponse, UppyUploaderService } from '../../../components/uppy-uploader/uppy-uploader.service';
 
 enum ScrollPosition {
@@ -359,6 +360,13 @@ export class ChatRoomComponent implements OnInit, OnDestroy, AfterViewInit {
     setTimeout(() => {
       this._setQuillToolbarAriaLabels();
     }, 500);
+  }
+
+  labelMessageEditor(editor: Quill): void {
+    editor.root.setAttribute('role', 'textbox');
+    editor.root.setAttribute('aria-multiline', 'true');
+    editor.root.setAttribute('aria-label', $localize`Enter your message`);
+    this._setQuillToolbarAriaLabels();
   }
 
   /**

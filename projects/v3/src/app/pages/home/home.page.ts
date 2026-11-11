@@ -65,6 +65,7 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
 
   @ViewChild('activityCol') activityCol: { el: HTMLIonColElement };
   @ViewChild('activities', { static: false }) activities!: ElementRef;
+  @ViewChild('activityFilter') activityFilter?: { getInputElement?: () => Promise<HTMLInputElement | undefined> };
   pulseCheckSkills: PulseCheckSkill[] = [];
 
   // project brief data from team storage
@@ -74,6 +75,8 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
   // activity search/filter
   activitySearchText = '';
   filteredMilestones: Milestone[] | null = null;
+  private activityFilterLabelRequested = false;
+  private pendingContentTabs = new WeakSet<HTMLElement>();
 
   // Expose Math to template
   Math = Math;
@@ -110,6 +113,72 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
     if (this.activities && this.isElementVisible(this.activities.nativeElement) && id !== null && this.milestones?.length > 0) {
       this.scrollToElement(id);
     }
+
+    this.labelActivityFilter();
+    this.linkContentTabs();
+  }
+
+  private isHomeUrl(): boolean {
+    const path = (this.router.url || '').split('?')[0].split('#')[0];
+    return path.endsWith('/home');
+  }
+
+  /**
+   * Ionic's searchbar names its inner input "search text" and does not use the host aria-label.
+   * Point that input at the visible placeholder.
+   */
+  private labelActivityFilter(): void {
+    if (!this.activityFilter?.getInputElement) {
+      this.activityFilterLabelRequested = false;
+      return;
+    }
+    if (this.activityFilterLabelRequested) {
+      return;
+    }
+    this.activityFilterLabelRequested = true;
+    Promise.resolve().then(() => this.activityFilter?.getInputElement?.()).then((input) => {
+      if (!input) {
+        this.activityFilterLabelRequested = false;
+        return;
+      }
+      input.setAttribute('aria-label', $localize`Filter by activity title or description`);
+    }).catch(() => {
+      this.activityFilterLabelRequested = false;
+    });
+  }
+
+  /**
+   * ID references cannot cross Ionic's shadow boundary. Newer browsers can
+   * link the native tab directly to a light DOM panel through element references.
+   * Older browsers retain Ionic's tab semantics without an invalid shadow IDREF.
+   */
+  private linkContentTabs(): void {
+    const host = this.activityCol?.el;
+    if (!host) {
+      return;
+    }
+    host.querySelectorAll<HTMLIonSegmentButtonElement>('ion-segment-button').forEach(button => {
+      const linkPanel = () => {
+        const native = button.shadowRoot?.querySelector('button');
+        const controls = button.getAttribute('aria-controls');
+        const panel = controls ? host.querySelector<HTMLElement>(`#${controls}`) : null;
+        if (native && panel && 'ariaControlsElements' in native && native.ariaControlsElements?.[0] !== panel) {
+          native.ariaControlsElements = [panel];
+        }
+      };
+      if (button.shadowRoot?.querySelector('button')) {
+        linkPanel();
+      } else if (button.componentOnReady && !this.pendingContentTabs.has(button)) {
+        // A newly rendered Ionic element may hydrate after Angular checks the view.
+        this.pendingContentTabs.add(button);
+        button.componentOnReady().then(() => {
+          this.pendingContentTabs.delete(button);
+          if (host.isConnected) {
+            linkPanel();
+          }
+        }).catch(() => this.pendingContentTabs.delete(button));
+      }
+    });
   }
 
   ngOnInit() {
@@ -285,7 +354,10 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
       });
     }
 
-    this.utils.setPageTitle(this.experience?.name || 'Practera');
+    // Home stays mounted and can refresh after other navigations. Only retitle while Home is current.
+    if (this.isHomeUrl()) {
+      this.utils.setPageTitle(this.experience?.name || 'Practera');
+    }
     this.defaultLeadImage = this.experience.cardUrl || 'assets/default-experience-image.svg';
 
     // reset & load bookmarks

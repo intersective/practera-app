@@ -1,4 +1,5 @@
-import { ChangeDetectorRef, Component, Output, EventEmitter, NgZone, Input, OnDestroy } from '@angular/core';
+import { DOCUMENT } from '@angular/common';
+import { Inject, ChangeDetectorRef, Component, Output, EventEmitter, NgZone, Input, OnDestroy } from '@angular/core';
 import { Router, NavigationExtras } from '@angular/router';
 import { BrowserStorageService } from '@v3/services/storage.service';
 import { UtilsService } from '@v3/services/utils.service';
@@ -32,7 +33,8 @@ export class ChatListComponent implements OnDestroy {
     private storage: BrowserStorageService,
     private ngZone: NgZone,
     private cdr: ChangeDetectorRef,
-    private pusherService: PusherService
+    private pusherService: PusherService,
+    @Inject(DOCUMENT) private document: Document
   ) {
     this.isMobile = this.utils.isMobile();
     this.utils.getEvent('chat:new-message')
@@ -146,6 +148,22 @@ export class ChatListComponent implements OnDestroy {
     */
   getChatDate(date) {
     return this.utils.timeFormatter(date);
+  }
+
+  /**
+   * Accessible names must be text. Last messages and channel names are stored as HTML.
+   */
+  plainText(value: string): string {
+    if (!value) {
+      return '';
+    }
+    const withBreaks = value
+      .replace(/<br\s*\/?>/gi, ' ')
+      .replace(/<\/(p|div|li|h[1-6])>/gi, ' ');
+    // Template contents are inert: message images and event handlers never activate.
+    const template = this.document.createElement('template');
+    template.innerHTML = withBreaks;
+    return (template.content.textContent || '').replace(/\s+/g, ' ').trim();
   }
 
 }
