@@ -76,6 +76,7 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
   activitySearchText = '';
   filteredMilestones: Milestone[] | null = null;
   private activityFilterLabelRequested = false;
+  private pendingContentTabs = new WeakSet<HTMLElement>();
 
   // Expose Math to template
   Math = Math;
@@ -114,6 +115,7 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
     }
 
     this.labelActivityFilter();
+    this.linkContentTabs();
   }
 
   private isHomeUrl(): boolean {
@@ -142,6 +144,40 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
       input.setAttribute('aria-label', $localize`Filter by activity title or description`);
     }).catch(() => {
       this.activityFilterLabelRequested = false;
+    });
+  }
+
+  /**
+   * ID references cannot cross Ionic's shadow boundary. Newer browsers can
+   * link the native tab directly to a light DOM panel through element references.
+   * Older browsers retain Ionic's tab semantics without an invalid shadow IDREF.
+   */
+  private linkContentTabs(): void {
+    const host = this.activityCol?.el;
+    if (!host) {
+      return;
+    }
+    host.querySelectorAll<HTMLIonSegmentButtonElement>('ion-segment-button').forEach(button => {
+      const linkPanel = () => {
+        const native = button.shadowRoot?.querySelector('button');
+        const controls = button.getAttribute('aria-controls');
+        const panel = controls ? host.querySelector<HTMLElement>(`#${controls}`) : null;
+        if (native && panel && 'ariaControlsElements' in native && native.ariaControlsElements?.[0] !== panel) {
+          native.ariaControlsElements = [panel];
+        }
+      };
+      if (button.shadowRoot?.querySelector('button')) {
+        linkPanel();
+      } else if (button.componentOnReady && !this.pendingContentTabs.has(button)) {
+        // A newly rendered Ionic element may hydrate after Angular checks the view.
+        this.pendingContentTabs.add(button);
+        button.componentOnReady().then(() => {
+          this.pendingContentTabs.delete(button);
+          if (host.isConnected) {
+            linkPanel();
+          }
+        }).catch(() => this.pendingContentTabs.delete(button));
+      }
     });
   }
 
@@ -364,33 +400,13 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
     this.isExpertWithoutTeam = this.isExpert && !teamId;
   }
 
-  switchContent(value: string) {
+  switchContent(event) {
     // update points upon switching to badges tab
-    if (value === 'badges') {
+    if (event.detail.value === "badges") {
       this.getIsPointsConfigured = this.achievementService.isPointsConfigured;
       this.getEarnedPoints = this.achievementService.earnedPoints;
     }
-    this.display = value;
-  }
-
-  navigateContentTabs(event: KeyboardEvent): void {
-    const current = event.target as HTMLElement;
-    const tabs = Array.from(current.closest('[role="tablist"]')?.querySelectorAll<HTMLButtonElement>('[role="tab"]') || []);
-    const index = tabs.indexOf(current as HTMLButtonElement);
-    if (index < 0) {
-      return;
-    }
-    let next: number;
-    switch (event.key) {
-      case 'ArrowRight': next = (index + 1) % tabs.length; break;
-      case 'ArrowLeft': next = (index + tabs.length - 1) % tabs.length; break;
-      case 'Home': next = 0; break;
-      case 'End': next = tabs.length - 1; break;
-      default: return;
-    }
-    event.preventDefault();
-    tabs[next].click();
-    tabs[next].focus();
+    this.display = event.detail.value;
   }
 
   endingIcon(activity) {
