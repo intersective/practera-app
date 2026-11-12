@@ -88,8 +88,6 @@ export class ReviewRatingComponent implements OnInit {
 
     try {
       await firstValueFrom(this.reviewRatingService.submitRating(this.ratingData));
-      this.isSubmitting = false;
-      this.ratingSessionEnd = true;
     } catch (err) {
       this.isSubmitting = false;
 
@@ -101,11 +99,15 @@ export class ReviewRatingComponent implements OnInit {
       await this.notificationsService.alert({
         header: $localize`Error submitting rating`,
         subHeader: $localize`Apologies for the inconvenience caused. Something went wrong.`,
-        message: err.msg || error.msg || JSON.stringify(error),
+        message: err?.msg || error?.msg || JSON.stringify(error ?? err),
       });
 
       throw new Error(err);
     }
+
+    this.isSubmitting = false;
+    this.ratingSessionEnd = true;
+    await this.dismissModal();
   }
 
   private async fastFeedbackOrRedirect(): Promise<any> {
@@ -154,7 +156,15 @@ export class ReviewRatingComponent implements OnInit {
   }
 
   async dismissModal(): Promise<void> {
-    await this.modalController.dismiss(null, 'cancel', `review-popup-${this.reviewId}`);
+    const modalId = `review-popup-${this.reviewId}`;
+    const dismissed = await this.modalController
+      .dismiss(null, 'cancel', modalId)
+      .catch(() => false);
+
+    if (dismissed !== true) {
+      await this.modalController.dismiss().catch(() => false);
+    }
+
     await this.fastFeedbackOrRedirect();
   }
 }
