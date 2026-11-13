@@ -103,7 +103,10 @@ export class SettingsPage implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.utils.setPageTitle('Settings - Practera');
+    // The drawer overlays the current route, which keeps ownership of its title.
+    if (this.mode !== 'modal') {
+      this.utils.setPageTitle('Settings - Practera');
+    }
     this._retrieveUserInfo();
     this.utils.getEvent('support-email-checked')
     .pipe(takeUntil(this.unsubscribe$))
