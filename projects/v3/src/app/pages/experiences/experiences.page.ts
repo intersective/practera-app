@@ -23,6 +23,7 @@ export class ExperiencesPage implements OnInit, OnDestroy {
     [key: number]: number;
   } = {};
   isMobile: boolean = false;
+  redirectingToHome = false;
   unsubscribe$: Subject<void> = new Subject<void>();
 
   constructor(
@@ -55,21 +56,17 @@ export class ExperiencesPage implements OnInit, OnDestroy {
         takeUntil(this.unsubscribe$),
       )
       .subscribe(experiences => {
-        const ids = experiences.map(experience => experience.projectId);
-        this.experienceService.getProgresses(ids).subscribe(res => {
-          this.ngZone.run(() => {
-            res.forEach(progress => {
-              if (Array.isArray(progress)) {
-                progress.forEach(project => {
-                  this.progresses[project.id] = Math.round(project.progress * 100);
-                });
-                return;
-              }
-              this.progresses[progress.id] = Math.round(progress.progress * 100);
-            });
-            this.cdr.markForCheck();
-          });
-        });
+        // A single experience has nothing to choose, so enter it and leave this page.
+        if (this.redirectingToHome) {
+          return;
+        }
+        if (!environment.demo && experiences.length === 1) {
+          this.redirectingToHome = true;
+          void this.enterOnlyExperience(experiences);
+          return;
+        }
+
+        this.trackProgress(experiences);
       });
 
     this.isMobile = this.utils.isMobile();
@@ -84,6 +81,39 @@ export class ExperiencesPage implements OnInit, OnDestroy {
     return this.experienceService.getProgresses([projectId]).toPromise();
   }
 
+  private async enterOnlyExperience(experiences: any[]): Promise<void> {
+    try {
+      const navigated = await this.switchProgram(experiences[0], undefined, { replaceUrl: true });
+      if (navigated) {
+        return;
+      }
+    } catch (err) {
+      console.error('Error opening the only experience', err);
+    }
+
+    this.redirectingToHome = false;
+    this.trackProgress(experiences);
+    this.cdr.markForCheck();
+  }
+
+  private trackProgress(experiences: any[]): void {
+    const ids = experiences.map(experience => experience.projectId);
+    this.experienceService.getProgresses(ids).subscribe(res => {
+      this.ngZone.run(() => {
+        res.forEach(progress => {
+          if (Array.isArray(progress)) {
+            progress.forEach(project => {
+              this.progresses[project.id] = Math.round(project.progress * 100);
+            });
+            return;
+          }
+          this.progresses[progress.id] = Math.round(progress.progress * 100);
+        });
+        this.cdr.markForCheck();
+      });
+    });
+  }
+
   // display experience tile in compact UI
   isCompactLayout(experienceCount: number): boolean {
     return experienceCount <= 2;
@@ -93,7 +123,11 @@ export class ExperiencesPage implements OnInit, OnDestroy {
     return this.storage.getConfig().logo || this.storage.getUser()?.institutionLogo;
   }
 
-  async switchProgram(experience: ProgramObj, keyEvent?: KeyboardEvent) {
+  async switchProgram(
+    experience: ProgramObj,
+    keyEvent?: KeyboardEvent,
+    navigationExtras?: { replaceUrl?: boolean },
+  ) {
     if (keyEvent && (keyEvent.code === 'Enter' || keyEvent.code === 'Space')) {
       keyEvent.preventDefault();
     } else if (keyEvent) {
@@ -130,8 +164,16 @@ export class ExperiencesPage implements OnInit, OnDestroy {
         header: $localize`Error switching program`,
         message: err.msg || JSON.stringify(err)
       });
+      // Automatic entry must not navigate away. Home would bounce back here
+      // when no experience was selected, and this page would try again.
+      if (navigationExtras?.replaceUrl) {
+        await loading.dismiss();
+        return false;
+      }
     }
 
-    return this.router.navigate(destination);
+    return this.router.navigate(destination, {
+      replaceUrl: !!navigationExtras?.replaceUrl,
+    });
   }
 }
