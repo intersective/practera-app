@@ -301,6 +301,7 @@ describe('SettingsPage', () => {
 
     expect(authSpy.updateUserProfile).toHaveBeenCalledWith({
       url: 'https://cdn/profile.png',
+      directUrl: 'https://files/profile.png',
       name: 'profile.png',
       extension: 'png',
       type: 'image/png',
@@ -409,6 +410,38 @@ describe('SettingsPage', () => {
 
     expect(utilsSpy.setPageTitle).toHaveBeenCalledWith('Settings - Practera');
     expect(utilsSpy.checkIsPracteraSupportEmail).toHaveBeenCalled();
+  });
+
+  for (const pageTitle of ['Local Test Experience', 'Events - Practera', 'Peer feedback']) {
+    it(`preserves ${pageTitle} while the Settings drawer opens and closes`, () => {
+      const originalTitle = document.title;
+      utilsSpy.setPageTitle.and.callFake(value => { document.title = value; });
+      document.title = pageTitle;
+      component.mode = 'modal';
+      try {
+        component.ngOnInit();
+        expect(document.title).toBe(pageTitle);
+        component.ngOnDestroy();
+        expect(document.title).toBe(pageTitle);
+      } finally {
+        document.title = originalTitle;
+      }
+    });
+  }
+
+  it('keeps a new destination title when the Settings drawer is destroyed after navigation', () => {
+    const originalTitle = document.title;
+    utilsSpy.setPageTitle.and.callFake(value => { document.title = value; });
+    component.mode = 'modal';
+    try {
+      document.title = 'Local Test Experience';
+      component.ngOnInit();
+      document.title = 'Events - Practera';
+      component.ngOnDestroy();
+      expect(document.title).toBe('Events - Practera');
+    } finally {
+      document.title = originalTitle;
+    }
   });
 
   it('should complete unsubscribe subject on destroy', () => {
