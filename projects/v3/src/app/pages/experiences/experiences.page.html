@@ -22,6 +22,11 @@
 
 <ion-content class="experience-page">
   @if ((experiences$ | async); as experiences) {
+    @if (redirectingToHome) {
+      <div class="exp-loading" role="status" aria-live="polite" aria-label="Loading experiences" i18n-aria-label>
+        <ion-spinner name="bubbles" aria-hidden="true"></ion-spinner>
+      </div>
+    } @else {
     <div class="exp-page-body">
 
       <!-- Hero strip -->
@@ -98,6 +103,7 @@
         </div>
       </main>
     </div>
+    }
   } @else {
     <div class="exp-loading" role="status" aria-live="polite" aria-label="Loading experiences" i18n-aria-label>
       <ion-spinner name="bubbles" aria-hidden="true"></ion-spinner>
