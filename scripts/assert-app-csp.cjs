@@ -11,6 +11,7 @@
  *
  * frame-src allows the activity embeds that otherwise fall back to
  * default-src 'self': YouTube, YouTube no-cookie (Plyr), Vimeo, and Canva.
+ * media-src allows videos hosted in the sandbox Practera media library.
  * Every other directive stays as deployed. This test fails if the sandbox
  * policy drifts into unrelated directive changes.
  */
@@ -49,7 +50,10 @@ assert.equal(rendered.includes('unsafe-eval'), false);
 for (const directive of unchangedDirectives) {
   assert.ok(rendered.includes(directive), `sandbox policy changed an unrelated directive: ${directive}`);
 }
-assert.equal(rendered.includes('media-src'), false);
+const mediaSrc = "media-src 'self' https://files.p2-sandbox.practera.com";
+assert.equal(rendered.match(/(?:^|;\s*)media-src [^;]+/)?.[0].replace(/^;\s*/, ''), mediaSrc,
+  'sandbox policy must allow media-library playback without allowing unrelated media hosts');
+assert.equal((rendered.match(/\bmedia-src\b/g) || []).length, 1);
 assert.equal(rendered.includes('form-action'), false);
 
 const frameSrc = "frame-src 'self' https://www.youtube.com https://www.youtube-nocookie.com https://player.vimeo.com https://www.canva.com";
@@ -83,6 +87,7 @@ execFileSync(process.execPath, [
 const applied = fs.readFileSync(tempTemplate, 'utf8');
 assert.ok(applied.includes(`script-src 'nonce-${nonce}' 'strict-dynamic' 'unsafe-inline' 'self' https://acsbapp.com`));
 assert.ok(applied.includes(frameSrc));
+assert.ok(applied.includes(mediaSrc), 'deployment must preserve the media-library allowlist');
 assert.equal(applied.includes('__CSP_NONCE__'), false);
 
 const dist = path.join(tempDir, 'dist');
@@ -106,4 +111,4 @@ const sharedDefault = fs.readFileSync(templatePath, 'utf8');
 assert.ok(sharedDefault.includes("script-src 'self' 'unsafe-inline' https://acsbapp.com"));
 assert.equal(sharedDefault.includes('strict-dynamic'), false);
 
-console.log('p2-sandbox script-src CSP assertions passed');
+console.log('p2-sandbox CSP assertions passed');
