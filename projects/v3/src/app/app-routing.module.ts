@@ -10,6 +10,7 @@ const routes: Routes = [
   },
   {
     path: 'experiences',
+    title: 'Experiences - Practera',
     loadChildren: () => import('./pages/experiences/experiences.module').then(m => m.ExperiencesPageModule),
     canLoad: [AuthGuard],
   },
