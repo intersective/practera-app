@@ -20,14 +20,14 @@ describe('ReviewDesktopPage', () => {
   let originalTitle: string;
 
   const createComponent = ({
-    submissionId = 0,
+    submissionId = undefined as number | undefined,
     reviews = [] as any[],
     assessment = { id: 99, pulseCheck: false } as any,
     submission = { id: 100, status: 'pending review' } as any,
     review = { id: 101 } as any,
   } = {}) => {
-    const paramMap$ = new Subject<any>();
-    const params$ = new Subject<any>();
+    const paramMap$ = new BehaviorSubject(convertToParamMap(submissionId ? { submissionId: String(submissionId) } : {}));
+    const params$ = new BehaviorSubject(submissionId ? { submissionId: String(submissionId) } : {});
     routerEvents = new Subject<RouterEvent>();
     routerState = {
       url: '/v3/review-desktop',
@@ -82,8 +82,6 @@ describe('ReviewDesktopPage', () => {
     );
 
     component.ngOnInit();
-    paramMap$.next({});
-    params$.next({ submissionId });
   };
 
   beforeEach(() => {
@@ -133,6 +131,44 @@ describe('ReviewDesktopPage', () => {
     expect(document.title).toBe('Events - Practera');
     navigate('/v3/review-desktop');
     expect(document.title).toBe('Background review');
+  });
+
+  it('selects a pending review when the base route has no submissionId parameter', () => {
+    const pendingReview = { assessmentId: 11, contextId: 22, submissionId: 3, name: 'Review A', isDone: false };
+    reviewsSource.next([pendingReview]);
+    expect(component.currentReview).toEqual(pendingReview as any);
+    expect(document.title).toBe('Review A');
+  });
+
+  it('keeps the selected review when a cached base route refreshes its reviews', () => {
+    const first = { assessmentId: 11, contextId: 22, submissionId: 3, name: 'Review A', isDone: false };
+    const selected = { assessmentId: 12, contextId: 23, submissionId: 4, name: 'Review B', isDone: false };
+    reviewsSource.next([first, selected]);
+    component.goto(selected as any);
+    navigate('/v3/home', 'Local Test Experience');
+    const refreshed = { ...selected, name: 'Review B refreshed' };
+    reviewsSource.next([first, refreshed]);
+    expect(document.title).toBe('Local Test Experience');
+    navigate('/v3/review-desktop');
+    expect(component.currentReview).toEqual(refreshed as any);
+    expect(document.title).toBe('Review B refreshed');
+  });
+
+  it('advances to the next pending review when the selected review becomes completed', () => {
+    const first = { assessmentId: 11, contextId: 22, submissionId: 3, name: 'Review A', isDone: false };
+    const selected = { assessmentId: 12, contextId: 23, submissionId: 4, name: 'Review B', isDone: false };
+    reviewsSource.next([first, selected]);
+    component.goto(selected as any);
+    reviewsSource.next([first, { ...selected, isDone: true }]);
+    expect(component.currentReview).toEqual(first as any);
+    expect(document.title).toBe('Review A');
+  });
+
+  it('clears the selected review when refreshed data no longer contains reviews', () => {
+    component.goto({ assessmentId: 12, contextId: 23, submissionId: 4, name: 'Review B', isDone: false } as any);
+    reviewsSource.next([]);
+    expect(component.currentReview).toBeUndefined();
+    expect(document.title).toBe('Reviews - Practera');
   });
 
   it('clears a stale selected-review title when no review remains', () => {

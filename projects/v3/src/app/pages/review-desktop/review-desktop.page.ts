@@ -65,7 +65,7 @@ export class ReviewDesktopPage implements OnInit, OnDestroy {
     });
     this.route.params.pipe(takeUntil(this.destroy$)).subscribe(params => {
       this.ngZone.run(() => {
-        this.submissionId = +params?.submissionId;
+        this.submissionId = +params?.submissionId || 0;
         this.cdr.markForCheck();
       });
     });
@@ -73,7 +73,14 @@ export class ReviewDesktopPage implements OnInit, OnDestroy {
       this.ngZone.run(() => {
         this.reviews = reviews;
         if (this.utils.isEmpty(this.submissionId) || this.submissionId === 0) {
-          this.gotoFirstReview(reviews);
+          // Preserve a cached selection, but advance after completing a review.
+          const selectedReview = reviews.find(review => review.submissionId === this.currentReview?.submissionId
+            && review.isDone === this.currentReview.isDone);
+          if (selectedReview) {
+            this.goto(selectedReview);
+          } else {
+            this.gotoFirstReview(reviews);
+          }
         } else {
           this.goto(reviews.find(re => re.submissionId === this.submissionId));
         }
