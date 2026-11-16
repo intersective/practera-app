@@ -1,10 +1,11 @@
-import { ChangeDetectorRef, Component, NgZone, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ChangeDetectorRef, Component, NgZone, OnDestroy, OnInit } from '@angular/core';
+import { ActivatedRoute, NavigationEnd, PRIMARY_OUTLET, Router } from '@angular/router';
 import { Assessment, AssessmentReview, AssessmentService, Submission } from '@v3/app/services/assessment.service';
 import { NotificationsService } from '@v3/app/services/notifications.service';
 import { Review, ReviewService } from '@v3/app/services/review.service';
 import { UtilsService } from '@v3/services/utils.service';
-import { BehaviorSubject, firstValueFrom } from 'rxjs';
+import { BehaviorSubject, firstValueFrom, Subject } from 'rxjs';
+import { filter, takeUntil } from 'rxjs/operators';
 
 @Component({
   standalone: false,
@@ -12,7 +13,8 @@ import { BehaviorSubject, firstValueFrom } from 'rxjs';
   templateUrl: './review-desktop.page.html',
   styleUrls: ['./review-desktop.page.scss'],
 })
-export class ReviewDesktopPage implements OnInit {
+export class ReviewDesktopPage implements OnInit, OnDestroy {
+  private readonly destroy$ = new Subject<void>();
   loading: boolean; // loading indicator (true = loading | false = done loaded)
   savingText$: BehaviorSubject<string> = new BehaviorSubject<string>('');
   btnDisabled$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
@@ -35,36 +37,66 @@ export class ReviewDesktopPage implements OnInit {
     private notificationsService: NotificationsService,
     private cdr: ChangeDetectorRef,
     private ngZone: NgZone,
+    private router: Router,
   ) { }
 
   ngOnInit(): void {
-    this.utils.setPageTitle('Reviews - Practera');
-    this.assessmentService.assessment$.subscribe(res => {
-      this.ngZone.run(() => { this.assessment = res; this.cdr.markForCheck(); });
-    });
-    this.assessmentService.submission$.subscribe(res => {
-      this.ngZone.run(() => { this.submission = res; this.cdr.markForCheck(); });
-    });
-    this.assessmentService.review$.subscribe(res => {
-      this.ngZone.run(() => { this.review = res; this.cdr.markForCheck(); });
-    });
-    this.route.paramMap.subscribe(_params => {
-      this.reviewService.getReviews();
-    });
-    this.route.params.subscribe(params => {
-      this.submissionId = +params?.submissionId;
-    });
-    this.reviewService.reviews$.subscribe(reviews => {
+    this.updatePageTitle();
+    this.router.events.pipe(
+      filter(event => event instanceof NavigationEnd),
+      takeUntil(this.destroy$),
+    ).subscribe(() => {
       this.ngZone.run(() => {
-        this.reviews = reviews;
+        this.updatePageTitle();
         this.cdr.markForCheck();
       });
-      if (this.utils.isEmpty(this.submissionId) || this.submissionId === 0) {
-        this.gotoFirstReview(reviews);
-      } else if (reviews.length > 0) { // handle directlink
-        this.goto(reviews.find(re => re.submissionId === this.submissionId));
-      }
     });
+    this.assessmentService.assessment$.pipe(takeUntil(this.destroy$)).subscribe(res => {
+      this.ngZone.run(() => { this.assessment = res; this.cdr.markForCheck(); });
+    });
+    this.assessmentService.submission$.pipe(takeUntil(this.destroy$)).subscribe(res => {
+      this.ngZone.run(() => { this.submission = res; this.cdr.markForCheck(); });
+    });
+    this.assessmentService.review$.pipe(takeUntil(this.destroy$)).subscribe(res => {
+      this.ngZone.run(() => { this.review = res; this.cdr.markForCheck(); });
+    });
+    this.route.paramMap.pipe(takeUntil(this.destroy$)).subscribe(_params => {
+      this.reviewService.getReviews();
+    });
+    this.route.params.pipe(takeUntil(this.destroy$)).subscribe(params => {
+      this.ngZone.run(() => {
+        this.submissionId = +params?.submissionId;
+        this.cdr.markForCheck();
+      });
+    });
+    this.reviewService.reviews$.pipe(takeUntil(this.destroy$)).subscribe(reviews => {
+      this.ngZone.run(() => {
+        this.reviews = reviews;
+        if (this.utils.isEmpty(this.submissionId) || this.submissionId === 0) {
+          this.gotoFirstReview(reviews);
+        } else {
+          this.goto(reviews.find(re => re.submissionId === this.submissionId));
+        }
+        this.cdr.markForCheck();
+      });
+    });
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
+
+  private updatePageTitle(): void {
+    // Ionic keeps this page subscribed while another tab is active.
+    const segments = this.router.parseUrl(this.router.url).root.children[PRIMARY_OUTLET]?.segments || [];
+    const routeSubmissionId = this.route.snapshot.paramMap.get('submissionId');
+    const currentSubmissionId = segments[2]?.path || null;
+    if (segments.length >= 2 && segments.length <= 3
+      && segments[0].path === 'v3' && segments[1].path === 'review-desktop'
+      && currentSubmissionId === routeSubmissionId) {
+      this.utils.setPageTitle(this.currentReview ? this.currentReview.name || 'Review' : 'Reviews - Practera');
+    }
   }
 
   /**
@@ -87,13 +119,12 @@ export class ReviewDesktopPage implements OnInit {
   }
 
   goto(review: Review) {
+    this.currentReview = review;
+    this.noReview = !review;
+    this.updatePageTitle();
     if (!review) {
-      this.noReview = true;
       return;
     }
-    this.noReview = false;
-    this.currentReview = review;
-    this.utils.setPageTitle(review?.name || 'Review');
     this.assessmentService.getAssessment(review.assessmentId, 'review', 0, review.contextId, review.submissionId);
   }
 

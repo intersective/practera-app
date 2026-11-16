@@ -371,6 +371,39 @@ describe('SettingsPage', () => {
   });
 
   describe('openBadgeApp()', () => {
+    for (const event of [
+      new Event('click'),
+      new KeyboardEvent('keydown', { key: 'Enter' }),
+      new KeyboardEvent('keydown', { key: ' ' }),
+    ]) {
+      it(`waits for the Settings drawer to close before navigation (${event.type}, ${(event as KeyboardEvent).key || 'click'})`, async () => {
+        component.mode = 'modal';
+        let finishDismiss: (value: boolean) => void;
+        modalControllerSpy.dismiss.and.returnValue(new Promise<boolean>(resolve => { finishDismiss = resolve; }));
+        routerSpy.navigate.and.returnValue(Promise.resolve(true));
+
+        const navigation = component.openBadgeApp(event);
+        expect(routerSpy.navigate).not.toHaveBeenCalled();
+        finishDismiss(true);
+        await navigation;
+        expect(routerSpy.navigate).toHaveBeenCalledWith(['v3', 'badges-certificates']);
+      });
+    }
+
+    it('does not dismiss an overlay when Settings is a routed page', async () => {
+      await component.openBadgeApp(new Event('click'));
+      expect(routerSpy.navigate).toHaveBeenCalledWith(['v3', 'badges-certificates']);
+      expect(modalControllerSpy.dismiss).not.toHaveBeenCalled();
+    });
+
+    it('does not navigate if drawer dismissal rejects', async () => {
+      component.mode = 'modal';
+      const error = new Error('Dismissal failed');
+      modalControllerSpy.dismiss.and.callFake(() => Promise.reject(error));
+      await expectAsync(Promise.resolve().then(() => component.openBadgeApp(new Event('click')))).toBeRejectedWith(error);
+      expect(routerSpy.navigate).not.toHaveBeenCalled();
+    });
+
     it('navigates to badges-certificates on click', () => {
       component.openBadgeApp(new Event('click'));
 

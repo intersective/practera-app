@@ -1,6 +1,6 @@
 import { ChangeDetectorRef, Component, Inject, Input, NgZone, OnDestroy, OnInit } from '@angular/core';
 import { DOCUMENT } from '@angular/common';
-import { Router } from '@angular/router';
+import { PRIMARY_OUTLET, Router } from '@angular/router';
 import { NotificationsService, TodoItem } from '@v3/app/services/notifications.service';
 import { UtilsService } from '@v3/app/services/utils.service';
 import { trigger, transition, useAnimation } from '@angular/animations';
@@ -49,7 +49,9 @@ export class NotificationsPage implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.utils.setPageTitle('Notifications - Practera');
+    if (this.mode !== 'modal') {
+      this.utils.setPageTitle('Notifications - Practera');
+    }
     this.subscriptions.push(this.homeService.milestones$.subscribe(async milestones => {
       if (milestones === null) {
         this.homeService.getMilestones();
@@ -217,9 +219,22 @@ export class NotificationsPage implements OnInit, OnDestroy {
       return;
     }
 
-    if (!this.isMobile) {
+    if (this.mode === 'modal') {
       return this.dismiss();
     }
-    return this.window.history.back();
+    const returnUrl = this.window.history.state?.notificationsReturnUrl;
+    if (typeof returnUrl === 'string' && returnUrl.startsWith('/') && !returnUrl.startsWith('//')) {
+      try {
+        const segments = this.router.parseUrl(returnUrl).root.children[PRIMARY_OUTLET]?.segments || [];
+        const root = segments[0]?.path;
+        const allowedRoot = ['v3', 'experiences', 'topic-mobile', 'assessment-mobile'].includes(root);
+        if (allowedRoot && !(root === 'v3' && segments[1]?.path === 'notifications')) {
+          return this.router.navigateByUrl(returnUrl, { replaceUrl: true });
+        }
+      } catch {
+        // Invalid or stale navigation state should still provide a way back to Home.
+      }
+    }
+    return this.router.navigate(['v3', 'home'], { replaceUrl: true });
   }
 }

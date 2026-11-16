@@ -3,13 +3,13 @@
   <ion-toolbar>
     <ion-buttons slot="start">
       @if (mode === 'modal') {
-        <ion-button (keydown)="dismiss($event)" (click)="dismiss()">
+        <ion-button (keydown)="dismiss($event)" (click)="dismiss()" aria-label="Close notifications" i18n-aria-label>
           <ion-icon slot="icon-only" color="grey-75" name="arrow-back-outline"></ion-icon>
         </ion-button>
       }
 
       @if (!mode) {
-        <ion-button (keydown)="goBack($event)" (click)="goBack()">
+        <ion-button (keydown)="goBack($event)" (click)="goBack()" aria-label="Go back" i18n-aria-label>
           <ion-icon slot="icon-only" color="grey-75" name="arrow-back-outline"></ion-icon>
         </ion-button>
       }
