@@ -124,7 +124,7 @@ export class SettingsPage implements OnInit, OnDestroy {
   }
 
   dismiss() {
-    this.modalController.dismiss({
+    return this.modalController.dismiss({
       'dismissed': true
     });
   }
@@ -296,10 +296,13 @@ export class SettingsPage implements OnInit, OnDestroy {
     return this.mailTo(event);
   }
 
-  openBadgeApp(event) {
+  async openBadgeApp(event): Promise<boolean | void> {
     if (event instanceof KeyboardEvent && event.key !== 'Enter' && event.key !== ' ') {
       return;
     }
-    this.router.navigate(['v3', 'badges-certificates']);
+    if (this.mode === 'modal') {
+      await this.dismiss();
+    }
+    return this.router.navigate(['v3', 'badges-certificates']);
   }
 }

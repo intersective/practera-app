@@ -5,6 +5,7 @@ import { provideRouter, Router } from '@angular/router';
 import { RouterTestingHarness } from '@angular/router/testing';
 import { BrowserStorageService } from '@v3/services/storage.service';
 import { UtilsService } from '@v3/services/utils.service';
+import { AppRoutingModule } from '../../app-routing.module';
 import { ChatPage } from '../chat/chat.page';
 import { TabsPageRoutingModule } from './tabs-routing.module';
 
@@ -20,7 +21,7 @@ describe('Tab page titles', () => {
   beforeEach(async () => {
     experience = { name: 'Learning &amp; Practice' };
     TestBed.configureTestingModule({
-      imports: [TabsPageRoutingModule],
+      imports: [AppRoutingModule, TabsPageRoutingModule],
       declarations: [ChatPage],
       schemas: [CUSTOM_ELEMENTS_SCHEMA],
       providers: [
@@ -37,7 +38,14 @@ describe('Tab page titles', () => {
     // Keep the production tab routes and title resolvers, replacing page data
     // loading with an empty page so navigation needs no backend or learner login.
     const tabs = router.config.find(route => route.children)?.children || [];
-    router.resetConfig([{ path: 'v3', children: tabs.map(route => ({
+    const experiences = router.config.find(route => route.path === 'experiences');
+    router.resetConfig([{
+      ...experiences,
+      path: 'experiences',
+      loadChildren: undefined,
+      canLoad: undefined,
+      component: RoutedPage,
+    }, { path: 'v3', children: tabs.map(route => ({
       ...route,
       children: undefined,
       loadChildren: route.path === 'messages'
@@ -51,6 +59,17 @@ describe('Tab page titles', () => {
   });
 
   afterEach(() => title.setTitle(originalTitle));
+
+  it('restores the experience selector title after repeated visits to Events', async () => {
+    await router.navigateByUrl('/experiences');
+    for (let i = 0; i < 3; i++) {
+      await router.navigateByUrl('/v3/home');
+      await router.navigateByUrl('/v3/events');
+      expect(title.getTitle()).toBe('Events - Practera');
+      await router.navigateByUrl('/experiences');
+      expect(title.getTitle()).toBe('Experiences - Practera');
+    }
+  });
 
   it('restores Events after Home → Events → Messages → Events, repeatedly', async () => {
     await router.navigateByUrl('/v3/home');

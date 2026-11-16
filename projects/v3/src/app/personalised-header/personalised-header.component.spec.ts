@@ -102,6 +102,17 @@ describe('PersonalisedHeaderComponent', () => {
     expect(component).toBeTruthy();
   });
 
+  it('records the current route when opening the mobile Notifications page', async () => {
+    utils.isMobile.and.returnValue(true);
+    (router as any).url = '/assessment-mobile/assessment/11/8/11?view=feedback#answer';
+    const button: HTMLElement = fixture.nativeElement.querySelector('.notify-btn');
+    button.click();
+    await fixture.whenStable();
+    expect(router.navigate).toHaveBeenCalledWith(['v3', 'notifications'], {
+      state: { notificationsReturnUrl: '/assessment-mobile/assessment/11/8/11?view=feedback#answer' },
+    });
+  });
+
   it('should expose the accessWidget custom trigger before notifications', () => {
     const accessibilityButton: HTMLElement = fixture.nativeElement.querySelector('.accessibility-btn');
 

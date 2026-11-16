@@ -75,7 +75,9 @@ export class PersonalisedHeaderComponent implements OnInit, OnDestroy {
 
   async notifications(): Promise<void | boolean> {
     if (this.isMobile) {
-      return this.router.navigate(['v3', 'notifications']);
+      return this.router.navigate(['v3', 'notifications'], {
+        state: { notificationsReturnUrl: this.router.url },
+      });
     }
 
     const modal = await this.modalController.create({

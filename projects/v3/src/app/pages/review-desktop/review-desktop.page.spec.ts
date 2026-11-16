@@ -1,9 +1,9 @@
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, convertToParamMap, DefaultUrlSerializer, Event as RouterEvent, NavigationEnd, NavigationStart, ParamMap, Router } from '@angular/router';
 import { AssessmentService } from '@v3/services/assessment.service';
 import { UtilsService } from '@v3/services/utils.service';
 import { NotificationsService } from '@v3/services/notifications.service';
 import { ReviewService } from '@v3/app/services/review.service';
-import { of, Subject } from 'rxjs';
+import { BehaviorSubject, of, Subject } from 'rxjs';
 
 import { ReviewDesktopPage } from './review-desktop.page';
 
@@ -13,16 +13,29 @@ describe('ReviewDesktopPage', () => {
   let reviewService: jasmine.SpyObj<ReviewService>;
   let notificationsService: jasmine.SpyObj<NotificationsService>;
   let utilsService: jasmine.SpyObj<UtilsService>;
+  let routerEvents: Subject<RouterEvent>;
+  let routerState: { url: string; events: Subject<RouterEvent>; parseUrl: Router['parseUrl'] };
+  let routeSnapshot: { paramMap: ParamMap };
+  let reviewsSource: BehaviorSubject<any[]>;
+  let originalTitle: string;
 
   const createComponent = ({
-    submissionId = 1,
+    submissionId = undefined as number | undefined,
     reviews = [] as any[],
     assessment = { id: 99, pulseCheck: false } as any,
     submission = { id: 100, status: 'pending review' } as any,
     review = { id: 101 } as any,
   } = {}) => {
-    const paramMap$ = new Subject<any>();
-    const params$ = new Subject<any>();
+    const paramMap$ = new BehaviorSubject(convertToParamMap(submissionId ? { submissionId: String(submissionId) } : {}));
+    const params$ = new BehaviorSubject(submissionId ? { submissionId: String(submissionId) } : {});
+    routerEvents = new Subject<RouterEvent>();
+    routerState = {
+      url: '/v3/review-desktop',
+      events: routerEvents,
+      parseUrl: url => new DefaultUrlSerializer().parse(url),
+    };
+    routeSnapshot = { paramMap: convertToParamMap(submissionId ? { submissionId: String(submissionId) } : {}) };
+    reviewsSource = new BehaviorSubject(reviews);
 
     assessmentService = jasmine.createSpyObj<AssessmentService>('AssessmentService', [
       'getAssessment',
@@ -36,7 +49,7 @@ describe('ReviewDesktopPage', () => {
     });
 
     reviewService = jasmine.createSpyObj<ReviewService>('ReviewService', ['getReviews'], {
-      reviews$: of(reviews),
+      reviews$: reviewsSource.asObservable(),
     });
 
     notificationsService = jasmine.createSpyObj<NotificationsService>('NotificationsService', [
@@ -47,10 +60,14 @@ describe('ReviewDesktopPage', () => {
 
     utilsService = jasmine.createSpyObj<UtilsService>('UtilsService', ['setPageTitle', 'isEmpty']);
     utilsService.isEmpty.and.callFake((value) => value === null || value === undefined || value === '');
+    utilsService.setPageTitle.and.callFake(value => {
+      document.title = UtilsService.prototype.decodeHtmlEntities.call({ document }, value);
+    });
 
     const activatedRoute = {
       paramMap: paramMap$.asObservable(),
       params: params$.asObservable(),
+      snapshot: routeSnapshot,
     } as ActivatedRoute;
 
     component = new ReviewDesktopPage(
@@ -61,15 +78,141 @@ describe('ReviewDesktopPage', () => {
       notificationsService,
       { markForCheck: jasmine.createSpy('markForCheck') } as any,
       { run: jasmine.createSpy('ngZoneRun').and.callFake((fn: () => any) => fn()) } as any,
+      routerState as unknown as Router,
     );
 
     component.ngOnInit();
-    paramMap$.next({});
-    params$.next({ submissionId });
   };
 
   beforeEach(() => {
+    originalTitle = document.title;
     createComponent();
+  });
+
+  afterEach(() => {
+    component.ngOnDestroy();
+    reviewsSource.complete();
+    document.title = originalTitle;
+  });
+
+  const navigate = (url: string, pageTitle?: string) => {
+    routerState.url = url;
+    if (pageTitle) document.title = pageTitle;
+    routerEvents.next(new NavigationEnd(2, url, url));
+  };
+
+  it('restores the empty Reviews title after returning from Events', () => {
+    navigate('/v3/events', 'Events - Practera');
+    navigate('/v3/review-desktop');
+    expect(document.title).toBe('Reviews - Practera');
+  });
+
+  for (const url of [
+    '/v3/review-desktop',
+    '/v3/review-desktop?view=details',
+    '/v3/review-desktop/33;view=details?tab=feedback#answer',
+    '/v3/review-desktop;view=details',
+  ]) {
+    it(`restores the selected review title on return to ${url}`, () => {
+      if (url.startsWith('/v3/review-desktop/33')) {
+        routeSnapshot.paramMap = convertToParamMap({ submissionId: '33' });
+        component.submissionId = 33;
+      }
+      component.goto({ assessmentId: 11, contextId: 22, submissionId: 33, name: 'Peer &amp; feedback' } as any);
+      navigate('/v3/events', 'Events - Practera');
+      navigate(url);
+      expect(document.title).toBe('Peer & feedback');
+    });
+  }
+
+  it('preserves another page title when review data arrives in the background', () => {
+    navigate('/v3/events', 'Events - Practera');
+    reviewsSource.next([{ assessmentId: 11, contextId: 22, submissionId: 1, name: 'Background review' }]);
+    expect(document.title).toBe('Events - Practera');
+    navigate('/v3/review-desktop');
+    expect(document.title).toBe('Background review');
+  });
+
+  it('selects a pending review when the base route has no submissionId parameter', () => {
+    const pendingReview = { assessmentId: 11, contextId: 22, submissionId: 3, name: 'Review A', isDone: false };
+    reviewsSource.next([pendingReview]);
+    expect(component.currentReview).toEqual(pendingReview as any);
+    expect(document.title).toBe('Review A');
+  });
+
+  it('keeps the selected review when a cached base route refreshes its reviews', () => {
+    const first = { assessmentId: 11, contextId: 22, submissionId: 3, name: 'Review A', isDone: false };
+    const selected = { assessmentId: 12, contextId: 23, submissionId: 4, name: 'Review B', isDone: false };
+    reviewsSource.next([first, selected]);
+    component.goto(selected as any);
+    navigate('/v3/home', 'Local Test Experience');
+    const refreshed = { ...selected, name: 'Review B refreshed' };
+    reviewsSource.next([first, refreshed]);
+    expect(document.title).toBe('Local Test Experience');
+    navigate('/v3/review-desktop');
+    expect(component.currentReview).toEqual(refreshed as any);
+    expect(document.title).toBe('Review B refreshed');
+  });
+
+  it('advances to the next pending review when the selected review becomes completed', () => {
+    const first = { assessmentId: 11, contextId: 22, submissionId: 3, name: 'Review A', isDone: false };
+    const selected = { assessmentId: 12, contextId: 23, submissionId: 4, name: 'Review B', isDone: false };
+    reviewsSource.next([first, selected]);
+    component.goto(selected as any);
+    reviewsSource.next([first, { ...selected, isDone: true }]);
+    expect(component.currentReview).toEqual(first as any);
+    expect(document.title).toBe('Review A');
+  });
+
+  it('clears the selected review when refreshed data no longer contains reviews', () => {
+    component.goto({ assessmentId: 12, contextId: 23, submissionId: 4, name: 'Review B', isDone: false } as any);
+    reviewsSource.next([]);
+    expect(component.currentReview).toBeUndefined();
+    expect(document.title).toBe('Reviews - Practera');
+  });
+
+  it('clears a stale selected-review title when no review remains', () => {
+    component.goto({ assessmentId: 11, contextId: 22, submissionId: 33, name: 'Peer feedback' } as any);
+    component.goto(undefined as any);
+    navigate('/v3/events', 'Events - Practera');
+    navigate('/v3/review-desktop');
+    expect(document.title).toBe('Reviews - Practera');
+    expect(component.currentReview).toBeUndefined();
+  });
+
+  it('keeps the unnamed-review fallback on cached return', () => {
+    component.goto({ assessmentId: 11, contextId: 22, submissionId: 33, name: '' } as any);
+    navigate('/v3/events', 'Events - Practera');
+    navigate('/v3/review-desktop');
+    expect(document.title).toBe('Review');
+  });
+
+  it('does not retitle a similarly named route', () => {
+    navigate('/v3/review-desktop-other', 'Other page');
+    reviewsSource.next([{ assessmentId: 11, contextId: 22, submissionId: 1, name: 'Background review' }]);
+    expect(document.title).toBe('Other page');
+  });
+
+  it('does not overwrite the title of a different cached review page', () => {
+    routeSnapshot.paramMap = convertToParamMap({ submissionId: '33' });
+    routerState.url = '/v3/review-desktop/33';
+    component.goto({ assessmentId: 11, contextId: 22, submissionId: 33, name: 'First review' } as any);
+    navigate('/v3/review-desktop/44', 'Second review');
+    expect(document.title).toBe('Second review');
+  });
+
+  it('does not restore a title for an unfinished navigation', () => {
+    document.title = 'Events - Practera';
+    routerEvents.next(new NavigationStart(2, '/v3/review-desktop'));
+    expect(document.title).toBe('Events - Practera');
+  });
+
+  it('stops title updates from router and review streams after destruction', () => {
+    component.ngOnDestroy();
+    document.title = 'New page';
+    reviewsSource.next([{ assessmentId: 11, contextId: 22, submissionId: 1, name: 'Late review' }]);
+    navigate('/v3/review-desktop');
+    expect(document.title).toBe('New page');
   });
 
   it('should create', () => {
