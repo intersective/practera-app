@@ -279,6 +279,17 @@ export class AuthJwtLoginComponent implements OnInit {
       save: redirectLater
     };
 
+    if (redirect === 'badges-certificates') {
+      if (!redirectLater && experience) {
+        try {
+          await this.experienceService.switchProgram({ experience });
+        } catch {
+          // Collection access is account-wide; optional team/program requests may fail.
+        }
+      }
+      return this._saveOrRedirect(['v3', 'badges-certificates'], redirectConfig);
+    }
+
     if (!redirect || !timelineId) {
       return this._saveOrRedirect(['experiences'], redirectConfig);
     }

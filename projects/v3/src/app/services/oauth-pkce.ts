@@ -105,13 +105,14 @@ export function beginAuthorizationCode(start: PkceStart): Promise<void> {
 
 async function startAuthorizationCode(start: PkceStart): Promise<void> {
   const { magicToken, ...stored } = start;
+  const createdAt = Date.now();
   // Marker first, so the login guard can see the handoff before the digest finishes.
-  sessionStorage.setItem(STORE_KEY, JSON.stringify({ pending: true, ...stored }));
+  sessionStorage.setItem(STORE_KEY, JSON.stringify({ pending: true, createdAt, ...stored }));
   const verifier = randomVerifier();
   const state = randomVerifier();
   const challenge = await s256(verifier);
   const redirectUri = `${window.location.origin}/`;
-  sessionStorage.setItem(STORE_KEY, JSON.stringify({ verifier, state, redirectUri, ...stored }));
+  sessionStorage.setItem(STORE_KEY, JSON.stringify({ verifier, state, redirectUri, createdAt, ...stored }));
 
   const url = new URL(`${loginApiBase()}/oauth2/authorize`);
   url.searchParams.set('response_type', 'code');
@@ -147,6 +148,26 @@ function readDestination(stored: { destination?: unknown }): Record<string, stri
     if (typeof value === 'string' && value) destination[key] = value;
   }
   return destination;
+}
+
+/** Restore page intent after sign-in, never the previous verifier or recipient identity. */
+export function getPkceResumeStart(stackUuid: string): PkceStart | null {
+  try {
+    const stored = JSON.parse(sessionStorage.getItem(STORE_KEY) || 'null');
+    const age = Date.now() - stored?.createdAt;
+    if (stored?.stackUuid !== stackUuid || !Number.isFinite(age) || age < 0 || age > 30 * 60 * 1000) return null;
+    const destination = readDestination(stored);
+    return {
+      stackUuid,
+      destination,
+      ...(destination.redirect ? { redirect: destination.redirect } : {}),
+      ...(destination.experienceUuid ? { experienceUuid: destination.experienceUuid } : {}),
+      ...(destination.brandColor ? { brandColor: destination.brandColor } : {}),
+      ...(destination.brandLogo ? { brandLogo: destination.brandLogo } : {}),
+    };
+  } catch {
+    return null;
+  }
 }
 
 /**
