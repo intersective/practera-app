@@ -44,6 +44,7 @@ Learners in work-integrated learning programs need to consume structured educati
 - [ ] Each task in the activity list shows its type icon, title, and current completion status (not started, in progress, done). <!-- claim: task-displays-type-icon-title-status -->
 - [ ] Locked tasks are visually indicated with a lock icon and rendered non-interactive; learners cannot navigate to or interact with them until unlock conditions are met. <!-- claim: locked-tasks-non-interactive -->
 - [ ] When a learner taps or clicks an unlocked task, the system navigates to the appropriate destination: topic page for topics, assessment page for assessments, event detail for events, and todo interaction for team todos. <!-- claim: task-navigation-by-type -->
+- [ ] Opening a simulation task on a phone navigates to the desktop activity route `/activity-desktop/:activityId/:taskId` and loads the simulation player there. There is no separate mobile simulation route. <!-- claim: mobile-simulation-opens-desktop-player -->
 - [ ] The activity displays overall progress as a percentage calculated from the number of completed tasks divided by total tasks. <!-- claim: activity-progress-percentage -->
 - [ ] On desktop, the activity page renders tasks in a two-column side-by-side layout for efficient content review. <!-- claim: desktop-two-column-layout -->
 - [ ] Topic content is rendered as sanitised HTML to prevent XSS attacks while preserving formatting, links, and embedded media. <!-- claim: topic-renders-safe-html -->
@@ -168,6 +169,17 @@ Learners in work-integrated learning programs need to consume structured educati
 - Activity task list shows updated completion for topic 7
 - Overall activity progress reflects latest state
 - Page title updates to activity name
+
+### Scenario 9: Open a simulation on a phone
+**Steps:**
+1. Learner is viewing an activity at /activity-mobile/:id
+2. Learner taps an unlocked simulation task
+3. System navigates to /v3/activity-desktop/:activityId/:taskId
+4. The desktop activity page loads the H5P, cmi5, or SCORM player for that task
+
+**Expected Results:**
+- The learner leaves the activity list
+- The simulation player renders for the selected task
 
 ## Security & Data Considerations
 

@@ -1,4 +1,4 @@
-import { TestBed, fakeAsync, tick, flushMicrotasks } from '@angular/core/testing';
+import { TestBed, fakeAsync, flushMicrotasks } from '@angular/core/testing';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { ActivityService } from './activity.service';
 import { of, throwError } from 'rxjs';
@@ -219,108 +219,189 @@ describe('ActivityService', () => {
     service.activity$.subscribe(res => expect(res).toEqual(expected));
   });
 
-  /* xdescribe('getNextTask()', () => {
-    it('should return in format: { is_last, task }', () => {
-      const data = {
-        is_last: true,
-        task: null
-      };
-      const expected = {
-        isLast: true,
-        task: null,
-      };
+  describe('calculateNextTask()', () => {
+    const doneTopic = { id: 2, type: 'Topic', name: 'Done topic', status: 'done' };
+    const nextAssessment = {
+      id: 11,
+      type: 'Assessment',
+      name: 'Next assessment',
+      status: 'in progress',
+      contextId: 12,
+    };
 
-      requestSpy.get.and.returnValue(of({
-        data
-      }));
+    it('selects the next unfinished task after the current task', () => {
+      const goToTask = spyOn(service, 'goToTask').and.resolveTo();
 
-      service.getNextTask(1, '', 1).subscribe(res => {
-        expect(res).toEqual(expected);
-      }, err => {
-        expect(err).toBeFalsy();
-      });
+      service.calculateNextTask([doneTopic, nextAssessment], doneTopic, 1);
+
+      expect(goToTask).toHaveBeenCalledWith(nextAssessment, 1);
     });
   });
 
-  xdescribe('when testing goToNextTask()', () => {
-    it('should go to home page', fakeAsync(() => {
-      requestSpy.get.and.returnValue(of({
+  describe('goToNextTask()', () => {
+    const doneTask = { id: 2, type: 'Topic', name: 'Done topic', status: 'done' };
+
+    beforeEach(() => {
+      service.activity$.subscribe();
+      service.refreshActivity({ id: 1, name: 'activity', tasks: [], unlockConditions: [] });
+      storageSpy.getReferrer.and.returnValue({});
+      storageSpy.getUser.and.returnValue({ teamId: 4 });
+      (utils as any).has = (object: Record<string, unknown> | null | undefined, path: string) => {
+        return !!object && Object.prototype.hasOwnProperty.call(object, path);
+      };
+      (utils as any).isMobile.and.returnValue(true);
+      const shared = TestBed.inject(SharedService) as jasmine.SpyObj<SharedService>;
+      shared.getTeamInfo.and.returnValue(of({ data: { user: { teams: [{ id: 4 }] } } }));
+      const unlock = TestBed.inject(UnlockIndicatorService) as any;
+      unlock.removeTasks = jasmine.createSpy('removeTasks').and.returnValue([]);
+      const assessment = TestBed.inject(AssessmentService) as any;
+      assessment.fetchAssessment = jasmine.createSpy('fetchAssessment').and.returnValue(of({}));
+    });
+
+    function publishActivity(tasks: any[]) {
+      apolloSpy.graphQLFetch.and.returnValue(of({
         data: {
-          is_last: true,
-          task: null
-        }
+          activity: {
+            id: 1,
+            name: 'activity',
+            description: 'des',
+            unlockConditions: [],
+            tasks,
+          },
+        },
       }));
-      service.goToNextTask(1, 2);
-      tick();
-      expect(routerSpy.navigate.calls.first().args[0]).toEqual(['v3', 'home']);
-      expect(routerSpy.navigate.calls.first().args[1]).toEqual({
-        queryParams: {
-          activityId: 1,
-          activityCompleted: true,
-        }
-      });
+    }
+
+    it('navigates home when no task remains after the current one', fakeAsync(() => {
+      publishActivity([
+        { id: 2, type: 'topic', name: 'Done topic', isLocked: false, status: { status: 'done' } },
+      ]);
+
+      service.goToNextTask(doneTask);
+      flushMicrotasks();
+
+      expect(routerSpy.navigate).toHaveBeenCalledWith(['v3', 'home']);
     }));
 
-    it('should go to external url', fakeAsync(() => {
-      requestSpy.get.and.returnValue(of({
-        data: {
-          is_last: true,
-          task: null
-        }
-      }));
-      storageSpy.getReferrer.and.returnValue({
-        activityTaskUrl: 'abc',
-      });
-      service.goToNextTask(1, 2);
-      tick();
-      expect(utils.redirectToUrl).toHaveBeenCalled();
+    it('redirects to the external return url when the activity is complete', fakeAsync(() => {
+      storageSpy.getReferrer.and.returnValue({ activityTaskUrl: 'https://return.example/done' });
+      publishActivity([
+        { id: 2, type: 'topic', name: 'Done topic', isLocked: false, status: { status: 'done' } },
+      ]);
+
+      service.goToNextTask(doneTask);
+      flushMicrotasks();
+
+      expect(utils.redirectToUrl).toHaveBeenCalledWith('https://return.example/done');
+      expect(routerSpy.navigate).not.toHaveBeenCalled();
     }));
 
-    it('should pop up modal', fakeAsync(() => {
-      requestSpy.get.and.returnValue(of({
-        data: {
-          is_last: true,
-          task: {
-            id: 11,
-            name: 'assessment1',
-            type: 'assessment',
-            context_id: 12
-          }
-        }
-      }));
-      service.goToNextTask(1, 2);
-      tick();
-      expect(notificationSpy.activityCompletePopUp.calls.count()).toBe(1);
+    it('opens the activity complete popup when earlier tasks are unfinished', fakeAsync(() => {
+      publishActivity([
+        { id: 2, type: 'topic', name: 'Open topic', isLocked: false, status: { status: 'in progress' } },
+      ]);
+
+      service.goToNextTask({ id: 2, type: 'Topic', name: 'Open topic', status: 'in progress' });
+      flushMicrotasks();
+
+      expect(notificationSpy.activityCompletePopUp).toHaveBeenCalledWith(1, false);
     }));
 
-    it('should go to assessment page', fakeAsync(() => {
-      requestSpy.get.and.returnValue(of({
-        data: {
-          is_last: false,
-          task: {
-            id: 11,
-            name: 'assessment1',
-            type: 'assessment',
-            context_id: 12
-          }
-        }
-      }));
-      service.goToNextTask(1, 2).then(res => expect(res).toEqual(['assessment', 'assessment', '1', '12', '11']));
+    it('navigates to the next assessment', fakeAsync(() => {
+      publishActivity([
+        { id: 2, type: 'topic', name: 'Done topic', isLocked: false, status: { status: 'done' } },
+        {
+          id: 11,
+          type: 'assessment',
+          name: 'assessment1',
+          isLocked: false,
+          isTeam: false,
+          deadline: null,
+          contextId: 12,
+          assessmentType: 'moderated',
+          status: { status: 'in progress', isLocked: false, submitterName: '', submitterImage: '' },
+        },
+      ]);
+
+      service.goToNextTask(doneTask);
+      flushMicrotasks();
+
+      expect(routerSpy.navigate).toHaveBeenCalledWith(['assessment-mobile', 'assessment', 1, 12, 11]);
     }));
-    it('should go to topic page', fakeAsync(() => {
-      requestSpy.get.and.returnValue(of({
-        data: {
-          is_last: false,
-          task: {
-            id: 11,
-            name: 'topic1',
-            type: 'topic'
-          }
-        }
+
+    it('navigates to the next topic', fakeAsync(() => {
+      publishActivity([
+        { id: 2, type: 'topic', name: 'Done topic', isLocked: false, status: { status: 'done' } },
+        { id: 11, type: 'topic', name: 'topic1', isLocked: false, status: { status: 'in progress' } },
+      ]);
+
+      service.goToNextTask(doneTask);
+      flushMicrotasks();
+
+      expect(routerSpy.navigate).toHaveBeenCalledWith(['topic-mobile', 1, 11]);
+    }));
+  });
+
+  describe('goToTask() simulation', () => {
+    const simulation = { id: 7, type: 'Simulation', name: 'Sim' };
+
+    beforeEach(() => {
+      storageSpy.getUser.and.returnValue({ teamId: 4 });
+      const shared = TestBed.inject(SharedService) as jasmine.SpyObj<SharedService>;
+      shared.getTeamInfo.and.returnValue(of({ data: { user: { teams: [{ id: 4 }] } } }));
+      const unlock = TestBed.inject(UnlockIndicatorService) as any;
+      unlock.removeTasks = jasmine.createSpy('removeTasks').and.returnValue([]);
+      const topic = TestBed.inject(TopicService) as any;
+      topic.fetchSimulation = jasmine.createSpy('fetchSimulation').and.returnValue(of({
+        simulationType: 'h5p',
+        h5p: {
+          contentUrl: 'https://example.com/h5p/content/',
+          librariesUrl: 'https://example.com/h5p/libraries/',
+          frameJs: 'https://example.com/h5p/frame.bundle.js',
+          frameCss: 'https://example.com/h5p/frame.css',
+        },
+        launchUrl: null,
+        assessmentId: null,
+        activityId: null,
       }));
-      service.goToNextTask(1, 2).then(res => {
-        expect(res).toEqual(['topic', '1', '11']);
+    });
+
+    it('navigates a mobile learner to the desktop activity route', async () => {
+      (utils as any).isMobile.and.returnValue(true);
+      (routerSpy as any).url = '/v3/activity-mobile/3';
+
+      await service.goToTask(simulation, 3);
+
+      expect(routerSpy.navigate).toHaveBeenCalledWith(['v3', 'activity-desktop', 3, 7]);
+      const topic = TestBed.inject(TopicService) as any;
+      expect(topic.fetchSimulation).not.toHaveBeenCalled();
+    });
+
+    it('loads the simulation when the desktop route is already open on a phone', async () => {
+      (utils as any).isMobile.and.returnValue(true);
+      (routerSpy as any).url = '/v3/activity-desktop/3/7';
+      const loaded: any[] = [];
+      service.currentTask$.subscribe(task => {
+        if (task) {
+          loaded.push(task);
+        }
       });
-    }));
-  }); */
+
+      await service.goToTask(simulation, 3);
+
+      expect(routerSpy.navigate).not.toHaveBeenCalled();
+      expect(loaded[loaded.length - 1].h5p.contentUrl).toBe('https://example.com/h5p/content/');
+    });
+
+    it('loads the simulation on desktop without leaving the activity', async () => {
+      (utils as any).isMobile.and.returnValue(false);
+      (routerSpy as any).url = '/v3/activity-desktop/3';
+
+      await service.goToTask(simulation, 3);
+
+      const topic = TestBed.inject(TopicService) as any;
+      expect(topic.fetchSimulation).toHaveBeenCalledWith(7);
+      expect(routerSpy.navigate).not.toHaveBeenCalled();
+    });
+  });
 });

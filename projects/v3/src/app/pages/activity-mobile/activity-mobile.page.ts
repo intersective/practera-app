@@ -57,6 +57,9 @@ export class ActivityMobilePage implements OnInit {
       case 'Topic':
         this.router.navigate(['topic-mobile', this.activity.id, task.id]);
         break;
+      case 'Simulation':
+        this.router.navigate(['v3', 'activity-desktop', this.activity.id, task.id]);
+        break;
     }
   }
 

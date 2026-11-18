@@ -45,6 +45,7 @@ Learners in work-integrated learning programs need to communicate with peers, me
 - [ ] Learners can open a channel details panel displaying the channel name, announcement badge if applicable, and a list of members with their names, avatars, and roles. <!-- claim: channel-details-panel -->
 - [ ] In the channel details member list, roles such as mentor and coordinator are displayed next to member names, while participant and admin roles are not labeled. <!-- claim: member-role-labels -->
 - [ ] Attachments of type image or browser-supported video (mp4, webm, ogg) can be previewed inline in a modal with download and close controls. <!-- claim: image-video-preview -->
+- [ ] A video attachment in the chat transcript renders an inline preview from a sanitised http(s) video URL (mp4, webm, or ogg) or image URL. The preview is a video or image element. <!-- claim: chat-video-inline-sanitised-preview -->
 - [ ] Video files in formats not natively supported by the browser display a message indicating preview is unavailable with a download link provided. <!-- claim: unsupported-video-handling -->
 - [ ] The edit message modal presents a rich text editor pre-populated with the original message content, an update button that submits changes, and a success confirmation screen after update. <!-- claim: edit-message-modal -->
 - [ ] The attachment popover presents three options: File (any type), Photos (image), and Videos (video), each opening an uploader filtered to the selected media type. <!-- claim: attachment-type-selection -->

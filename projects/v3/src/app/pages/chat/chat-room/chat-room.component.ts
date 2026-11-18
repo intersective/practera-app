@@ -1147,20 +1147,45 @@ export class ChatRoomComponent implements OnInit, OnDestroy, AfterViewInit {
     if (!fileResponse) {
       return;
     }
-    let preview = `Uploaded ${fileResponse.name}`;
-    const dimension = 224;
+    const fallback = `Uploaded ${fileResponse.name}`;
     if (!fileResponse.type) {
-      return preview;
+      return fallback;
     }
-    if (fileResponse.type.includes("image")) {
-      // @TODO need new API to shrink size for preview
-      const truncatedName = fileResponse.name.length > 20 ? fileResponse.name.substring(0, 20) + '...' : fileResponse.name;
-      preview = `<img src="${fileResponse.url}" alt="${truncatedName}">`;
-    } else if (fileResponse.type.includes("video")) {
-      // we'll need to identify filetype for 'any' type fileupload
-      preview = `<app-file-display [file]="submission.answer" [fileType]="question.fileType"></app-file-display>`;
+    if (fileResponse.type.includes('image') || fileResponse.type.includes('video')) {
+      return this.sanitisedMediaUrl(fileResponse.url) ?? fallback;
     }
-    return preview;
+    return fallback;
+  }
+
+  /** http(s) media URL safe to bind as an image or video source. */
+  sanitisedMediaUrl(value: string | null | undefined): string | null {
+    const url = typeof value === 'string' ? value.trim() : '';
+    if (!/^https?:\/\//i.test(url)) {
+      return null;
+    }
+    try {
+      const parsed = new URL(url);
+      if (parsed.protocol !== 'http:' && parsed.protocol !== 'https:') {
+        return null;
+      }
+      return parsed.href;
+    } catch {
+      return null;
+    }
+  }
+
+  isPlayableVideo(type?: string): boolean {
+    if (!type) {
+      return false;
+    }
+    return ['video/mp4', 'video/webm', 'video/ogg'].some(playable => type.includes(playable));
+  }
+
+  isImagePreview(file: { type?: string } | null | undefined, url: string | null | undefined): boolean {
+    if (url && /\.(apng|avif|bmp|gif|jpe?g|png|svg|webp)(?:$|[?#])/i.test(url)) {
+      return true;
+    }
+    return !!file?.type?.includes('image');
   }
 
   getTypeByMime(mimetype: string): string {

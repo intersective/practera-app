@@ -447,7 +447,9 @@ export class ActivityService {
    *   - On mobile: navigates to the mobile topic route and returns the router navigation result.
    *   - On desktop: stores a last-visited URL and triggers loading of the topic via `topic.getTopic`.
    * - For task.type === 'Simulation':
-   *   - On desktop: fetches H5P content URLs and attaches them to the current task.
+   *   - On mobile, navigates to the desktop activity route for this task. There is
+   *     no mobile simulation player. If that route is already open, loads the player.
+   *   - On desktop: fetches H5P, cmi5, or SCORM content and attaches it to the current task.
    *
    * Notes:
    * - This method produces several side effects (navigation, storage updates, observable updates,
@@ -542,9 +544,8 @@ export class ActivityService {
         break;
 
       case 'Simulation':
-        if (this.utils.isMobile()) {
-          console.warn('Simulation tasks are not yet supported on mobile.');
-          return;
+        if (this.utils.isMobile() && !this.onSimulationDesktopRoute(activityId, task.id)) {
+          return this.router.navigate(['v3', 'activity-desktop', activityId, task.id]);
         }
         try {
           const simulation = await firstValueFrom(this.topic.fetchSimulation(task.id));
@@ -573,6 +574,11 @@ export class ActivityService {
     }
   }
 
+
+  private onSimulationDesktopRoute(activityId: number, taskId: number): boolean {
+    const path = (this.router.url || '').split(/[?#]/)[0];
+    return path.endsWith(`/activity-desktop/${activityId}/${taskId}`);
+  }
 
   /**
    * @name nonTeamActivity

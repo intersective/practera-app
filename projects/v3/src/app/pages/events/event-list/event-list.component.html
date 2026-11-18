@@ -42,7 +42,6 @@
   @for (eventObj of events; track eventObj) {
     <ion-list class="ion-no-padding">
       <ion-item class="headline-4 event-group" lines="none">{{ eventObj.date }}</ion-item>
-      <!-- @TODO add isVideoConference by checking event zoom object -->
       @for (event of eventObj.events; track event; let i = $index) {
         <app-list-item class="focusable"
           leadingIcon="calendar-outline"

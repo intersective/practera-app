@@ -83,14 +83,42 @@
           <!-- File attachment -->
           @if (message?.file?.type) {
             @if (message?.file?.type?.includes('image')) {
-              <div class="file-attach" [innerHTML]="message.preview"
+              <div class="file-attach"
                 (click)="preview(message.file)"
                 (keydown)="preview(message.file, $event)"
                 tabindex="0" role="button"
-                [attr.aria-label]="'Preview image: ' + (message.file?.name || 'image')"></div>
+                [attr.aria-label]="'Preview image: ' + (message.file?.name || 'image')">
+                @if (sanitisedMediaUrl(message.preview); as mediaUrl) {
+                  <img [src]="mediaUrl" [alt]="message.file?.name || 'image'">
+                } @else {
+                  {{ message.preview }}
+                }
+              </div>
             }
             @if (message?.file?.type?.includes('video')) {
-              @if (message?.file?.type === 'video/mp4') {
+              @if (sanitisedMediaUrl(message.preview); as mediaUrl) {
+                @if (isImagePreview(message.file, mediaUrl)) {
+                  <div class="file-attach"
+                    (click)="preview(message.file)"
+                    (keydown)="preview(message.file, $event)"
+                    tabindex="0" role="button"
+                    [attr.aria-label]="'Preview video: ' + (message.file?.name || 'video')">
+                    <img [src]="mediaUrl" [alt]="message.file?.name || 'video preview'">
+                  </div>
+                } @else if (isPlayableVideo(message.file.type)) {
+                  <div class="file-attach">
+                    <video
+                      [src]="mediaUrl"
+                      controls
+                      preload="metadata"
+                      playsinline
+                      [attr.aria-label]="message.file?.name || 'video preview'">
+                    </video>
+                  </div>
+                } @else {
+                  <app-video-conversion [video]="message" (preview)="preview($event)"></app-video-conversion>
+                }
+              } @else if (message?.file?.type === 'video/mp4') {
                 <div class="file-attach" (click)="preview(message.file)" tabindex="0" role="button">
                   <ion-icon name="play-circle" aria-hidden="true"></ion-icon> {{ message.file.name }}
                 </div>

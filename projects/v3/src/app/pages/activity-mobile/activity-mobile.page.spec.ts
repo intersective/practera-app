@@ -112,6 +112,15 @@ describe('ActivityMobilePage', () => {
     expect(routerSpy.navigate).toHaveBeenCalledWith(['topic-mobile', 66, 3]);
   });
 
+  it('should navigate a simulation task to the desktop activity route', () => {
+    component.activity = { id: 66 } as any;
+
+    component.goToTask({ id: 8, type: 'Simulation' } as any);
+
+    expect(activityServiceSpy.goToTask).toHaveBeenCalledWith(jasmine.objectContaining({ id: 8 }), false);
+    expect(routerSpy.navigate).toHaveBeenCalledWith(['v3', 'activity-desktop', 66, 8]);
+  });
+
   it('should go back to home', () => {
     component.goBack();
 
