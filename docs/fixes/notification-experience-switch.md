@@ -24,7 +24,7 @@
 - Pusher initialization is single-flight. Concurrent entry points share one operation, and a scope that changes during that operation is reconciled before callers are released.
 - Notification and chat discovery use independent generations. Only the latest response for the active scope may change listeners, preventing both previous-experience and same-experience request races.
 - A valid empty channel response removes that listener type. Pusher leaves authorization failures in a pending state, so reconciliation disconnects before removing a pending channel; this ensures the channel is removed from Pusher's internal registry and cannot return on a later reconnect. A discovery failure preserves the last valid same-scope set, while a scope change remains empty because its previous listeners were removed before discovery.
-- Pusher authorization headers are synchronized from user storage before channel subscription and connection retries. API-key rotation therefore does not require constructing another Pusher client.
+- Pusher 8 private-channel authorization uses `channelAuthorization.endpoint` at the GraphQL `/pusher_auth` route. The endpoint is resolved against the GraphQL base URL so a trailing slash does not produce `//pusher_auth`. Its `headersProvider` reads the current API key and timeline from user storage for each authorization request, so experience switches and API-key rotation do not require constructing another Pusher client. When no scope is active after logout, the provider returns empty user credentials.
 - Private-channel subscription errors trigger one bounded background retry. Same-scope discovery does not cancel an outstanding retry, and simultaneous notification/chat failures are batched into one socket reconnect. Repeated failure is logged and never blocks navigation.
 - Event callbacks capture their subscription scope and discard events after that scope becomes inactive.
 
@@ -35,7 +35,13 @@ Both notification-refresh entry points use `NotificationsService.refreshNotifica
 - `PusherService` is the only owner of Pusher channel subscriptions. Chat pages request `refreshChatChannels()` rather than subscribing to channel names directly.
 - `TabsPage` remains the adapter from real-time notification, chat, and reminder events into `NotificationsService` state.
 - V3, tabs, chat-list, and chat-room consumers release their event-stream subscriptions when destroyed. Chat-room typing listeners are replaced when the active room changes.
-- Logout invalidates in-flight initialization and discovery work, resets generations and retry timers, disconnects the socket, removes all local channels, clears the active scope and authorization headers, and retains only the reusable application Pusher object.
+- Logout invalidates in-flight initialization and discovery work, resets generations and retry timers, disconnects the socket, removes all local channels, clears the active scope, and retains only the reusable application Pusher object. Clearing the scope prevents its authorization provider from returning user credentials until a new authenticated scope is active.
+
+## Local verification
+
+- Install the versions in `package-lock.json` and confirm `pusher-js` resolves to 8.5.0 before testing. An older `node_modules` directory can produce unrelated API and typing failures.
+- Serve the development build with `npm run v3:local`; this build replaces the ignored environment file with `environment.local.ts` and uses the local Soketi endpoint.
+- Confirm the app serves port 4200, then sign in with a local test account. Verify a private-channel request reaches the GraphQL `/pusher_auth` route and subscription succeeds. Switch experiences and log out to check that subsequent authorization uses the current scope and no previous channels remain.
 
 ## Deferred improvements
 
