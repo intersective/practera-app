@@ -112,6 +112,7 @@ describe('AuthService', () => {
       path: '/users/profile.png',
       name: 'profile.png',
       url: 'https://cdn.example.com/users/profile.png',
+      directUrl: 'https://upload.example.com/users/profile.png',
       extension: 'png',
       type: 'image/png',
       size: 10,
@@ -131,6 +132,7 @@ describe('AuthService', () => {
     let apollo: jasmine.SpyObj<ApolloService>;
     const avatar = {
       bucket: 'profile-images', path: '/users/new.png', name: 'new.png',
+      directUrl: 'https://upload.example.com/users/new.png',
       url: 'https://cdn.example.com/new.png', extension: 'png', type: 'image/png', size: 10,
     };
     const profileResponse = (url: string) => ({
@@ -157,7 +159,7 @@ describe('AuthService', () => {
 
     const saveAvatar = async () => {
       await firstValueFrom(service.updateUserProfile(avatar));
-      // Settings caches the display URL after the mutation succeeds.
+      // Seed the cached avatar that a completed post-save profile read would provide.
       storage.setUser({ avatar: avatar.url, image: avatar.url });
     };
 

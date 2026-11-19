@@ -1,3 +1,4 @@
+import { fakeAsync, flushMicrotasks, tick } from '@angular/core/testing';
 import { Router, ActivatedRoute } from '@angular/router';
 import { AuthService } from '@v3/services/auth.service';
 import { BrowserStorageService } from '@v3/services/storage.service';
@@ -130,6 +131,10 @@ describe('SettingsPage', () => {
       graphQLFetch: pending,
       graphQLMutate: of({ data: { updateUserProfile: { success: true } } }),
     });
+    const signedAvatar = 'https://cdn.example.com/new.png?Signature=fresh';
+    apollo.graphQLFetch.and.returnValues(pending, of({ data: { user: {
+      avatar: signedAvatar, image: signedAvatar, name: 'User',
+    } } }));
     // Use the real AuthService so its cache write remains part of this race.
     (component as any).authService = new AuthService(
       {} as any, {} as any, storageSpy, utilsSpy, routerSpy, {} as any, apollo, {} as any,
@@ -144,7 +149,7 @@ describe('SettingsPage', () => {
 
     const refresh = (component as any)._retrieveUserInfo();
     await component.profileImage();
-    expect(component.profile.avatar).toBe('https://cdn.example.com/new.png');
+    expect(component.profile.avatar).toBe(signedAvatar);
 
     pending.next({ data: { user: {
       id: 1, uuid: 'uuid', name: 'User', firstName: 'First', lastName: 'Last',
@@ -154,9 +159,9 @@ describe('SettingsPage', () => {
     pending.complete();
     await refresh;
 
-    expect(component.profile.avatar).toBe('https://cdn.example.com/new.png');
-    expect(storage.getUser().avatar).toBe('https://cdn.example.com/new.png');
-    expect(storage.getUser().image).toBe('https://cdn.example.com/new.png');
+    expect(component.profile.avatar).toBe(signedAvatar);
+    expect(storage.getUser().avatar).toBe(signedAvatar);
+    expect(storage.getUser().image).toBe(signedAvatar);
   });
 
   it('should ignore openLink for unsupported keyboard key', () => {
@@ -280,7 +285,9 @@ describe('SettingsPage', () => {
     expect(authSpy.updateUserProfile).not.toHaveBeenCalled();
   });
 
-  it('persists and displays the canonical image URL instead of the authenticated upload URL', async () => {
+  it('saves upload metadata and displays the avatar returned by the profile refresh', async () => {
+    const signedAvatar = 'https://cdn/profile.png?Signature=fresh';
+    storageSpy.getUser.and.returnValue({ avatar: signedAvatar } as any);
     const uploaded = {
       tus: { uploadUrl: 'https://upload' },
       name: 'profile.png',
@@ -309,13 +316,26 @@ describe('SettingsPage', () => {
       bucket: 'bucket',
       path: '/uploads/profile',
     });
-    expect(component.profile.avatar).toBe('https://cdn/profile.png');
-    expect(storageSpy.setUser).toHaveBeenCalledWith({
-      avatar: 'https://cdn/profile.png',
-      image: 'https://cdn/profile.png',
-    });
+    expect(authSpy.getMyInfo).toHaveBeenCalledTimes(1);
+    expect(component.profile.avatar).toBe(signedAvatar);
+    expect(storageSpy.setUser).not.toHaveBeenCalled();
     expect(notificationsServiceSpy.alert).toHaveBeenCalled();
   });
+
+  it('renews an expiring avatar while Settings is open and cancels renewal on close', fakeAsync(() => {
+    const expires = Math.floor(Date.now() / 1000) + 2;
+    storageSpy.getUser.and.returnValues(
+      { avatar: `https://cdn/profile?Expires=${expires}&Signature=first` } as any,
+      { avatar: `https://cdn/profile?Expires=${expires + 10}&Signature=fresh` } as any,
+    );
+    (component as any)._retrieveUserInfo();
+    flushMicrotasks();
+    tick(2000);
+    expect(component.profile.avatar).toContain('Signature=fresh');
+    component.ngOnDestroy();
+    tick(10000);
+    expect(authSpy.getMyInfo).toHaveBeenCalledTimes(2);
+  }));
 
   it('should not update local profile when the backend rejects the file', async () => {
     const uploaded = {

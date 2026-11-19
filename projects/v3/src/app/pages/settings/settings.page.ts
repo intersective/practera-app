@@ -6,7 +6,7 @@ import { AuthService } from '@v3/services/auth.service';
 import { BrowserStorageService } from '@v3/services/storage.service';
 import { UtilsService } from '@v3/services/utils.service';
 import { NotificationsService } from '@v3/services/notifications.service';
-import { Subject, firstValueFrom } from 'rxjs';
+import { Subject, Subscription, firstValueFrom, timer } from 'rxjs';
 import { AlertOptions, ModalController } from '@ionic/angular/lazy';
 
 import { environment } from '@v3/environments/environment';
@@ -29,6 +29,8 @@ export class SettingsPage implements OnInit, OnDestroy {
     avatar: '',
     name: ''
   };
+  private avatarRefresh?: Subscription;
+  private destroyed = false;
   hasMultipleStacks = false;
   currentProgramName = '';
   currentProgramImage = '';
@@ -66,9 +68,11 @@ export class SettingsPage implements OnInit, OnDestroy {
     });
   }
 
-  private async _retrieveUserInfo(): Promise<void> {
+  private async _retrieveUserInfo(failureMessage = $localize`Failed to retrieve user information`): Promise<boolean> {
     try {
-      await firstValueFrom(this.authService.getMyInfo());
+      const response = await firstValueFrom(this.authService.getMyInfo());
+      if (!environment.demo && !response?.data?.user) throw new Error('Missing user profile');
+      if (this.destroyed) return false;
       const user = this.storage.getUser();
       const {
         email,
@@ -83,15 +87,18 @@ export class SettingsPage implements OnInit, OnDestroy {
         this.profile.email = email;
         this.profile.contactNumber = contactNumber;
         this.profile.avatar = avatar ? avatar : 'https://my.practera.com/img/user-512.png';
+        this.scheduleAvatarRefresh(avatar);
         this.profile.name = name;
         this.currentProgramName = programName;
         this.returnLtiUrl = LtiReturnUrl;
         this.currentProgramImage = programImage;
         this.cdr.markForCheck();
       });
+      return true;
     } catch (error) {
+      if (this.destroyed) return false;
       this.notificationsService.alert({
-        message: $localize`Failed to retrieve user information`,
+        message: failureMessage,
         buttons: [
           {
             text: $localize`OK`,
@@ -99,6 +106,18 @@ export class SettingsPage implements OnInit, OnDestroy {
           }
         ]
       });
+      return false;
+    }
+  }
+
+  private scheduleAvatarRefresh(avatar: string): void {
+    this.avatarRefresh?.unsubscribe();
+    if (!avatar?.includes('?')) return;
+    const params = new URLSearchParams(avatar.substring(avatar.indexOf('?') + 1));
+    if (!params.has('Signature')) return;
+    const remaining = Number(params.get('Expires')) * 1000 - Date.now();
+    if (remaining > 0 && Number.isFinite(remaining)) {
+      this.avatarRefresh = timer(remaining).subscribe(() => this._retrieveUserInfo());
     }
   }
 
@@ -130,6 +149,8 @@ export class SettingsPage implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
+    this.destroyed = true;
+    this.avatarRefresh?.unsubscribe();
     this.unsubscribe$.next(null);
     this.unsubscribe$.complete();
   }
@@ -187,56 +208,42 @@ export class SettingsPage implements OnInit, OnDestroy {
       const modal = await this.uppyUploaderService.open('user-profile');
       const res = await modal.onDidDismiss();
 
-      // eslint-disable-next-line no-console
-      console.log('file-upload res', res);
+      const file = res?.data;
+      if (!file) return;
+      this.ngZone.run(() => {
+        this.imageUpdating = true;
+        this.cdr.markForCheck();
+      });
+      // The upload/download endpoint requires headers that an <img> cannot send.
+      const profileUrl = file.cdnUrl || file.url;
+      const response = await firstValueFrom(this.authService.updateUserProfile({
+        url: profileUrl,
+        directUrl: file.directUrl,
+        name: file.name,
+        extension: file.extension,
+        type: file.type,
+        size: file.size,
+        bucket: file.bucket,
+        path: file.path,
+      }));
 
-      if (!res?.data) {
-        return;
+      const result = response?.data?.updateUserProfile;
+      if (result?.success !== true) {
+        throw new Error(result?.message || 'Profile picture could not be updated.');
       }
 
-      const file = res.data;
-      if (file) {
-        this.ngZone.run(() => {
-          this.imageUpdating = true;
-          this.cdr.markForCheck();
-        });
-        // The upload/download endpoint requires headers that an <img> cannot send.
-        const profileUrl = file.cdnUrl || file.url;
-        const response = await firstValueFrom(this.authService.updateUserProfile({
-          url: profileUrl,
-          directUrl: file.directUrl,
-          name: file.name,
-          extension: file.extension,
-          type: file.type,
-          size: file.size,
-          bucket: file.bucket,
-          path: file.path,
-        }));
+      const refreshed = await this._retrieveUserInfo($localize`Profile picture saved. Reopen Settings to reload it.`);
+      if (!refreshed) return;
 
-        const result = response?.data?.updateUserProfile;
-        if (result?.success !== true) {
-          throw new Error(result?.message || 'Profile picture could not be updated.');
-        }
-
-        this.ngZone.run(() => {
-          this.profile.avatar = profileUrl;
-          this.storage.setUser({
-            avatar: profileUrl,
-            image: profileUrl,
-          });
-          this.cdr.markForCheck();
-        });
-
-        return this.notificationsService.alert({
-          message: $localize`Profile picture successfully updated!`,
-          buttons: [
-            {
-              text: $localize`OK`,
-              role: 'cancel'
-            }
-          ]
-        });
-      }
+      return this.notificationsService.alert({
+        message: $localize`Profile picture successfully updated!`,
+        buttons: [
+          {
+            text: $localize`OK`,
+            role: 'cancel'
+          }
+        ]
+      });
     } catch (error) {
       // eslint-disable-next-line no-console
       console.error('profile image error', error);
