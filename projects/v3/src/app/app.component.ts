@@ -16,7 +16,7 @@ import { VersionCheckService } from "@v3/services/version-check.service";
 import { Subject } from "rxjs";
 import { takeUntil } from "rxjs/operators";
 import { ComponentCleanupService } from "./services/component-cleanup.service";
-import { beginAuthorizationCode, destinationFromSearchParams, exchangeAuthorizationCode } from "./services/oauth-pkce";
+import { beginAuthorizationCode, destinationFromSearchParams, exchangeAuthorizationCode, getPkceResumeStart } from "./services/oauth-pkce";
 
 @Component({
   standalone: false,
@@ -142,7 +142,9 @@ export class AppComponent implements OnInit, OnDestroy {
     }
 
     if (searchParams.get('oauth') === '1' && searchParams.has('stack_uuid')) {
-      const destination = destinationFromSearchParams(searchParams);
+      const resumed = searchParams.get('oauth_resume') === '1'
+        ? getPkceResumeStart(searchParams.get('stack_uuid')) : null;
+      const destination = resumed?.destination || destinationFromSearchParams(searchParams);
       beginAuthorizationCode({
         stackUuid: searchParams.get('stack_uuid'),
         email: searchParams.get('email') || undefined,
@@ -221,6 +223,9 @@ export class AppComponent implements OnInit, OnDestroy {
 
   // redirect to the last visited url/assessment if available
   redirectToLastVisitedUrl(): Promise<boolean> {
+    if (/(?:^|\/)v3\/badges-certificates(?:[/?#]|$)/.test(window.location.pathname)) {
+      return; // An explicit collection link takes priority over the last saved page.
+    }
     if (this.noneCachedUrl.some((url) => window.location?.href?.includes(url))) {
       return; // special urls (login, register, etc.) are already handled by the router
     }

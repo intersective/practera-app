@@ -103,6 +103,19 @@ describe('AppComponent', () => {
     expect(app.title).toEqual('v3');
   });
 
+  it('keeps an explicit collection route ahead of the last visited page',()=>{
+    const oldPath=location.pathname+location.search;
+    const app=TestBed.createComponent(AppComponent).componentInstance;
+    (storageSpy.lastVisited as jasmine.Spy).and.returnValue('/v3/home');
+    const navigate=routerSpy.navigate as jasmine.Spy;
+    navigate.calls.reset();
+    try {
+      history.replaceState(null,'','/v3/badges-certificates');
+      app.redirectToLastVisitedUrl();
+      expect(navigate).not.toHaveBeenCalled();
+    } finally { history.replaceState(null,'',oldPath); }
+  });
+
   describe('initializeApp()', () => {
     it('should check version on Production mode', fakeAsync(() => {
       (environment as any).production = true;
