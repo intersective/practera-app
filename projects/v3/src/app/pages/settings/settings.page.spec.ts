@@ -1,4 +1,3 @@
-import { fakeAsync, flushMicrotasks, tick } from '@angular/core/testing';
 import { Router, ActivatedRoute } from '@angular/router';
 import { AuthService } from '@v3/services/auth.service';
 import { BrowserStorageService } from '@v3/services/storage.service';
@@ -321,21 +320,6 @@ describe('SettingsPage', () => {
     expect(storageSpy.setUser).not.toHaveBeenCalled();
     expect(notificationsServiceSpy.alert).toHaveBeenCalled();
   });
-
-  it('renews an expiring avatar while Settings is open and cancels renewal on close', fakeAsync(() => {
-    const expires = Math.floor(Date.now() / 1000) + 2;
-    storageSpy.getUser.and.returnValues(
-      { avatar: `https://cdn/profile?Expires=${expires}&Signature=first` } as any,
-      { avatar: `https://cdn/profile?Expires=${expires + 10}&Signature=fresh` } as any,
-    );
-    (component as any)._retrieveUserInfo();
-    flushMicrotasks();
-    tick(2000);
-    expect(component.profile.avatar).toContain('Signature=fresh');
-    component.ngOnDestroy();
-    tick(10000);
-    expect(authSpy.getMyInfo).toHaveBeenCalledTimes(2);
-  }));
 
   it('should not update local profile when the backend rejects the file', async () => {
     const uploaded = {

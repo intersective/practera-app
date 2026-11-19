@@ -6,7 +6,7 @@ import { AuthService } from '@v3/services/auth.service';
 import { BrowserStorageService } from '@v3/services/storage.service';
 import { UtilsService } from '@v3/services/utils.service';
 import { NotificationsService } from '@v3/services/notifications.service';
-import { Subject, Subscription, firstValueFrom, timer } from 'rxjs';
+import { Subject, firstValueFrom } from 'rxjs';
 import { AlertOptions, ModalController } from '@ionic/angular/lazy';
 
 import { environment } from '@v3/environments/environment';
@@ -29,7 +29,6 @@ export class SettingsPage implements OnInit, OnDestroy {
     avatar: '',
     name: ''
   };
-  private avatarRefresh?: Subscription;
   private destroyed = false;
   hasMultipleStacks = false;
   currentProgramName = '';
@@ -87,7 +86,6 @@ export class SettingsPage implements OnInit, OnDestroy {
         this.profile.email = email;
         this.profile.contactNumber = contactNumber;
         this.profile.avatar = avatar ? avatar : 'https://my.practera.com/img/user-512.png';
-        this.scheduleAvatarRefresh(avatar);
         this.profile.name = name;
         this.currentProgramName = programName;
         this.returnLtiUrl = LtiReturnUrl;
@@ -107,17 +105,6 @@ export class SettingsPage implements OnInit, OnDestroy {
         ]
       });
       return false;
-    }
-  }
-
-  private scheduleAvatarRefresh(avatar: string): void {
-    this.avatarRefresh?.unsubscribe();
-    if (!avatar?.includes('?')) return;
-    const params = new URLSearchParams(avatar.substring(avatar.indexOf('?') + 1));
-    if (!params.has('Signature')) return;
-    const remaining = Number(params.get('Expires')) * 1000 - Date.now();
-    if (remaining > 0 && Number.isFinite(remaining)) {
-      this.avatarRefresh = timer(remaining).subscribe(() => this._retrieveUserInfo());
     }
   }
 
@@ -150,7 +137,6 @@ export class SettingsPage implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.destroyed = true;
-    this.avatarRefresh?.unsubscribe();
     this.unsubscribe$.next(null);
     this.unsubscribe$.complete();
   }
