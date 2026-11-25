@@ -71,6 +71,7 @@ export interface Answer {
   questionId: number;
   answer?: any;
   comment?: string;
+  file?: FileInput;
 }
 
 export interface AssessmentReview {

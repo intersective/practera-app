@@ -1058,6 +1058,74 @@ describe('AssessmentComponent', () => {
     });
   });
 
+  describe('final attachment submission', () => {
+    const fileQuestion = { ...mockQuestions[0], id: 126, type: 'file' };
+    const textAnswer = { questionId: 123, answer: 'Assessment notes' };
+
+    beforeEach(() => {
+      component.action = 'assessment';
+      component.doAssessment = true;
+      component.assessment = {
+        ...mockAssessment,
+        groups: [{ ...mockAssessment.groups[0], questions: [mockQuestions[0], { ...fileQuestion }] }],
+      };
+      component.submission = { ...mockSubmission, status: 'in progress' };
+      component.questionsForm = new FormGroup({
+        'q-123': new FormControl(textAnswer.answer),
+        'q-126': new FormControl<unknown>(null),
+      });
+      component.form = { nativeElement: document.createElement('div') } as any;
+      (shared.getTeamInfo as jasmine.Spy) = jasmine.createSpy('getTeamInfo').and.returnValue(of({}));
+    });
+
+    const submitWithFile = async (value: unknown) => {
+      component.questionsForm.get('q-126').setValue(value);
+      const save = spyOn(component.save, 'emit');
+      await component._submitAnswer({ autoSave: false, goBack: false });
+      return save;
+    };
+
+    it('submits a required new upload in the file field alongside ordinary answers', async () => {
+      const upload = {
+        bucket: 'assessment-uploads',
+        path: 'uploads/new-attachment.txt',
+        name: 'new-attachment.txt',
+        url: 'https://files.example.test/new-attachment.txt',
+        directUrl: 'https://uploads.example.test/new-attachment.txt',
+        extension: 'txt',
+        type: 'text/plain',
+        size: 64,
+      };
+      const save = await submitWithFile(upload);
+
+      expect(save).toHaveBeenCalledOnceWith(jasmine.objectContaining({
+        answers: [textAnswer, { questionId: 126, file: upload }],
+      }));
+    });
+
+    it('preserves an attachment returned as display metadata on a reopened draft', async () => {
+      const savedFile = {
+        name: 'existing-attachment.png',
+        type: 'image/png',
+        url: 'https://files.example.test/existing-attachment.png',
+      };
+      const save = await submitWithFile(savedFile);
+
+      expect(save).toHaveBeenCalledOnceWith(jasmine.objectContaining({
+        answers: [textAnswer, { questionId: 126, answer: savedFile }],
+      }));
+    });
+
+    it('keeps a blank optional file answer separate from an explicit file removal', async () => {
+      component.assessment.groups[0].questions[1].isRequired = false;
+      const save = await submitWithFile({});
+
+      expect(save).toHaveBeenCalledOnceWith(jasmine.objectContaining({
+        answers: [textAnswer, { questionId: 126, answer: {} }],
+      }));
+    });
+  });
+
   describe('submitting assessment submit(false)', () => {
     const activityId = 1;
     const emptyAnswers = [];
