@@ -1,6 +1,6 @@
 import { environment } from '@v3/environments/environment';
 import { Component, Input, Output, EventEmitter, OnChanges, OnDestroy, OnInit, QueryList, ViewChildren, ChangeDetectionStrategy, ViewChild, signal, ElementRef, SimpleChanges, ChangeDetectorRef } from '@angular/core';
-import { Assessment, Group, Submission, AssessmentReview, AssessmentSubmitParams, AssessmentService } from '@v3/services/assessment.service';
+import { Answer, Assessment, Group, Submission, AssessmentReview, AssessmentService } from '@v3/services/assessment.service';
 import { UtilsService } from '@v3/services/utils.service';
 import { NotificationsService } from '@v3/services/notifications.service';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
@@ -828,9 +828,9 @@ Best regards`;
    * @description to check if every compulsory question has been answered
    * @param {Object[]} answers a list of answer object (in submission-based format)
    */
-  private _compulsoryQuestionsAnswered(answers): Question[] {
+  private _compulsoryQuestionsAnswered(answers: Answer[]): Question[] {
     const missing: Question[] = [];
-    const answered = {};
+    const answered: Record<number, Answer> = {};
     this.utils.each(answers, answer => {
       answered[answer.questionId] = answer;
     });
@@ -839,15 +839,13 @@ Best regards`;
       group.questions.forEach(question => {
         if (this._isRequired(question)) {
           let isEmpty = false;
-          const thisQuestion = answered[question.id];
+          const questionAnswer = answered[question.id];
 
-          // for review: answer & file separated
-          if (this.action === 'review' && this.utils.isEmpty(thisQuestion.answer) && this.utils.isEmpty(thisQuestion.file)) {
-            isEmpty = true;
-
-            // for assessment: file is part of the answer
-          } else if (this.action === 'assessment' && (this.utils.isEmpty(thisQuestion) || this.utils.isEmpty(thisQuestion.answer))) {
-            isEmpty = true;
+          if (this.action === 'review') {
+            isEmpty = this.utils.isEmpty(questionAnswer?.answer) && this.utils.isEmpty(questionAnswer?.file);
+          } else if (this.action === 'assessment') {
+            const hasUpload = question.type === 'file' && !this.utils.isEmpty(questionAnswer?.file);
+            isEmpty = this.utils.isEmpty(questionAnswer?.answer) && !hasUpload;
           }
 
           if (isEmpty) {
@@ -893,56 +891,33 @@ Best regards`;
     });
   }
 
-  /**
-   * @name filledAnswers
-   * @description to collect all latest answers from the form
-   *
-   * @return  {any[]}
-   */
-  filledAnswers(): any[] {
-    const answers = [];
-    let questionId = 0;
-    let assessment: AssessmentSubmitParams;
+  /** Collects the latest answers from the form for final submission. */
+  filledAnswers(): Answer[] {
+    const answers: Answer[] = [];
 
-    assessment = {
-      id: this.assessment.id
-    };
-
-    if (this.submission && this.submission.id) {
-      assessment.submissionId = this.submission.id;
-    }
-
-    // form submission answers (submission API doesn't accept zero length array)
     if (this.doAssessment) {
-      assessment.contextId = this.contextId;
+      const fileQuestionIds = new Set(
+        this.assessment.groups.flatMap(group => group.questions)
+          .filter(question => question.type === 'file')
+          .map(question => question.id),
+      );
 
-      if (this.assessment.isForTeam) {
-        assessment.unlock = true;
-      }
       this.utils.each(this.questionsForm.value, (value, key) => {
-        questionId = +key.replace('q-', '');
-        answers.push({
-          questionId: questionId,
-          answer: this._getAnswerValueForQuestion(questionId, value)
-        });
+        const questionId = +key.replace('q-', '');
+        const answer = this._getAnswerValueForQuestion(questionId, value);
+
+        // Reopened drafts carry display metadata. GraphQL uses it to retain the existing file.
+        const upload = fileQuestionIds.has(questionId) ? this.getUploadedFile(answer) : undefined;
+        if (upload) {
+          answers.push({ questionId, file: upload });
+        } else {
+          answers.push({ questionId, answer });
+        }
       });
     } else if (this.isPendingReview) {
-      // In review we also have comments for a question. and questionsForm value have both
-      // answer and comment. need to add them as separately
-      assessment = Object.assign(assessment, {
-        reviewId: this.review.id
-      });
-
-      // post answers API doesn't accept empty array
-      // compulsory format: (even when no answers provided)
-      // [
-      //   { questionId: 1, answer: null, comment: null },
-      //   { questionId: 2, answer: null, comment: null },
-      //   { questionId: 3, answer: null, comment: null },
-      // ]
       this.utils.each(this.questionsForm.value, (answer, key) => {
-        questionId = +key.replace('q-', '');
-        const save: { questionId: number; answer: any; comment: any; file?: any } = {
+        const questionId = +key.replace('q-', '');
+        const save: Answer = {
           questionId,
           answer: this._getAnswerValueForQuestion(questionId, answer.answer),
           comment: answer?.comment,
@@ -956,6 +931,23 @@ Best regards`;
     }
 
     return answers;
+  }
+
+  private getUploadedFile(value: unknown): FileInput | undefined {
+    if (!value || typeof value !== 'object') {
+      return undefined;
+    }
+
+    const { bucket, path, name, url, directUrl, extension, type, size } = value as Partial<FileInput>;
+    const hasUploadMetadata = [bucket, path, name, url, extension, type]
+      .every(field => typeof field === 'string' && field.trim().length > 0);
+    const hasFileSize = Number.isSafeInteger(size) && size > 0;
+
+    if (!hasUploadMetadata || !hasFileSize || (directUrl != null && typeof directUrl !== 'string')) {
+      return undefined;
+    }
+
+    return { bucket, path, name, url, directUrl, extension, type, size };
   }
 
   private _getAnswerValueForQuestion(questionId: number, value: any): any {
