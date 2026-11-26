@@ -148,7 +148,11 @@ export class UtilsService {
     return values.flat(1);
   }
 
-  indexOf(values: any[], value: any, fromIndex = 0): number {
+  indexOf(values: any[] | null | undefined, value: any, fromIndex = 0): number {
+    if (values == null) {
+      return -1;
+    }
+
     return values.indexOf(value, fromIndex);
   }
 

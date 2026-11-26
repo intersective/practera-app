@@ -90,8 +90,10 @@ describe('FileUploadComponent', () => {
       extension: 'png',
       bucket: 'bucket',
       path: '/uploads/a',
+      url: 'https://cdn/a.png',
       cdnUrl: 'https://cdn/a.png',
-    } as any;
+      directUrl: 'https://direct/a.png',
+    };
 
     expect(component.fileRequestFormat()).toEqual({
       name: 'a.png',
@@ -101,6 +103,7 @@ describe('FileUploadComponent', () => {
       bucket: 'bucket',
       path: '/uploads/a',
       url: 'https://cdn/a.png',
+      directUrl: 'https://direct/a.png',
     });
   });
 

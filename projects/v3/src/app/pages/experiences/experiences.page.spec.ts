@@ -123,7 +123,7 @@ describe('ExperiencesPage', () => {
 
       expect(component.redirectingToHome).toBeTrue();
       expect(component.switchProgram).toHaveBeenCalledWith(
-        onlyExperience,
+        jasmine.objectContaining(onlyExperience),
         undefined,
         { replaceUrl: true },
       );

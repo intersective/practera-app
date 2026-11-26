@@ -59,6 +59,7 @@ describe('FileDisplayComponent', () => {
       path: 'test-path',
       name: 'test-file',
       url: 'DUMMY_URL',
+      directUrl: 'DUMMY_DIRECT_URL',
       extension: 'jpg',
       type: 'image/jpeg',
       size: 1000
@@ -78,18 +79,10 @@ describe('FileDisplayComponent', () => {
       type: 'application/pdf',
       mimetype: 'application/pdf',
       size: 1000,
-      directUrl: 'DUMMY_URL',
+      directUrl: 'DUMMY_DIRECT_URL',
       cdnUrl: 'DUMMY_URL',
     };
-    await component.previewFile({
-      bucket: 'test-bucket',
-      path: 'test-path',
-      name: 'test-file.pdf',
-      url: 'DUMMY_URL',
-      extension: 'pdf',
-      type: 'application/pdf',
-      size: 1000
-    });
+    await component.previewFile(component.file);
     expect(window.open).toHaveBeenCalledWith('DUMMY_URL', '_system');
   });
 
