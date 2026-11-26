@@ -297,8 +297,14 @@ describe('TextComponent', () => {
       textarea.dispatchEvent(new CustomEvent('ionInput', { detail: { value }, bubbles: true }));
     }
 
-    beforeEach(async () => {
+    async function showAnswerTextarea(): Promise<HTMLIonTextareaElement> {
       fixture.componentRef.setInput('doAssessment', true);
+      fixture.detectChanges();
+      await fixture.whenStable();
+      return fixture.nativeElement.querySelector('ion-textarea');
+    }
+
+    beforeEach(() => {
       component.submissionId = 2;
       component.submissionStatus = 'in progress';
       component.question = {
@@ -313,12 +319,26 @@ describe('TextComponent', () => {
       };
       save = spyOn(component.submitActions$, 'next');
       scheduler = new TestScheduler((actual, expected) => expect(actual).toEqual(expected));
-      fixture.detectChanges();
-      await fixture.whenStable();
     });
 
-    it('queues the latest assessment answer after the debounce and cancels pending input on destroy', () => {
-      const textarea: HTMLIonTextareaElement = fixture.nativeElement.querySelector('ion-textarea');
+    it('autosaves when an initially hidden textarea becomes editable', async () => {
+      fixture.componentRef.setInput('doAssessment', false);
+      fixture.detectChanges();
+      await fixture.whenStable();
+      expect(fixture.nativeElement.querySelector('ion-textarea')).toBeNull();
+
+      const textarea = await showAnswerTextarea();
+      scheduler.run(() => enterText(textarea, 'first editable draft'));
+
+      expect(save).toHaveBeenCalledOnceWith({
+        autoSave: true,
+        goBack: false,
+        questionSave: { submissionId: 2, questionId: 3, answer: 'first editable draft' },
+      });
+    });
+
+    it('queues the latest assessment answer after the debounce and cancels pending input on destroy', async () => {
+      const textarea = await showAnswerTextarea();
       scheduler.run(() => {
         enterText(textarea, 'first draft');
         scheduler.schedule(() => enterText(textarea, 'latest draft'), 200);
@@ -335,7 +355,7 @@ describe('TextComponent', () => {
     });
 
     it('cancels input from the old textarea and autosaves from its replacement', async () => {
-      const oldTextarea: HTMLIonTextareaElement = fixture.nativeElement.querySelector('ion-textarea');
+      const oldTextarea = await showAnswerTextarea();
       scheduler.run(() => {
         enterText(oldTextarea, 'pending edit');
         fixture.componentRef.setInput('doAssessment', false);
@@ -346,11 +366,7 @@ describe('TextComponent', () => {
       expect(save).not.toHaveBeenCalled();
       save.calls.reset();
 
-      fixture.componentRef.setInput('doAssessment', true);
-      fixture.detectChanges();
-      await fixture.whenStable();
-
-      const textarea: HTMLIonTextareaElement = fixture.nativeElement.querySelector('ion-textarea');
+      const textarea = await showAnswerTextarea();
       expect(textarea).not.toBe(oldTextarea);
       scheduler.run(() => enterText(textarea, 'reopened draft'));
 
