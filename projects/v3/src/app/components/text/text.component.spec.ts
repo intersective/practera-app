@@ -288,43 +288,77 @@ describe('TextComponent', () => {
     });
   });
 
-  it('queues the latest assessment answer from native textarea input after the debounce', async () => {
-    component.doAssessment = true;
-    component.submissionId = 2;
-    component.submissionStatus = 'in progress';
-    component.question = {
-      id: 3,
-      name: 'Text question',
-      type: 'text',
-      description: '',
-      isRequired: false,
-      canAnswer: true,
-      canComment: false,
-      audience: ['submitter'],
-    };
-    const save = spyOn(component.submitActions$, 'next');
-    fixture.detectChanges();
-    await fixture.whenStable();
+  describe('native textarea autosave', () => {
+    let save: jasmine.Spy;
+    let scheduler: TestScheduler;
 
-    const textarea: HTMLIonTextareaElement = fixture.nativeElement.querySelector('ion-textarea');
-    const enterText = (value: string) => {
+    function enterText(textarea: HTMLIonTextareaElement, value: string): void {
       textarea.value = value;
       textarea.dispatchEvent(new CustomEvent('ionInput', { detail: { value }, bubbles: true }));
-    };
-    const scheduler = new TestScheduler((actual, expected) => expect(actual).toEqual(expected));
+    }
 
-    scheduler.run(() => {
-      enterText('first draft');
-      scheduler.schedule(() => enterText('latest draft'), 200);
-      scheduler.schedule(() => expect(save).not.toHaveBeenCalled(), 999);
-      scheduler.schedule(() => enterText('pending edit'), 1100);
-      scheduler.schedule(() => fixture.destroy(), 1200);
+    beforeEach(async () => {
+      fixture.componentRef.setInput('doAssessment', true);
+      component.submissionId = 2;
+      component.submissionStatus = 'in progress';
+      component.question = {
+        id: 3,
+        name: 'Text question',
+        type: 'text',
+        description: '',
+        isRequired: false,
+        canAnswer: true,
+        canComment: false,
+        audience: ['submitter'],
+      };
+      save = spyOn(component.submitActions$, 'next');
+      scheduler = new TestScheduler((actual, expected) => expect(actual).toEqual(expected));
+      fixture.detectChanges();
+      await fixture.whenStable();
     });
 
-    expect(save).toHaveBeenCalledOnceWith({
-      autoSave: true,
-      goBack: false,
-      questionSave: { submissionId: 2, questionId: 3, answer: 'latest draft' },
+    it('queues the latest assessment answer after the debounce and cancels pending input on destroy', () => {
+      const textarea: HTMLIonTextareaElement = fixture.nativeElement.querySelector('ion-textarea');
+      scheduler.run(() => {
+        enterText(textarea, 'first draft');
+        scheduler.schedule(() => enterText(textarea, 'latest draft'), 200);
+        scheduler.schedule(() => expect(save).not.toHaveBeenCalled(), 999);
+        scheduler.schedule(() => enterText(textarea, 'pending edit'), 1100);
+        scheduler.schedule(() => fixture.destroy(), 1200);
+      });
+
+      expect(save).toHaveBeenCalledOnceWith({
+        autoSave: true,
+        goBack: false,
+        questionSave: { submissionId: 2, questionId: 3, answer: 'latest draft' },
+      });
+    });
+
+    it('cancels input from the old textarea and autosaves from its replacement', async () => {
+      const oldTextarea: HTMLIonTextareaElement = fixture.nativeElement.querySelector('ion-textarea');
+      scheduler.run(() => {
+        enterText(oldTextarea, 'pending edit');
+        fixture.componentRef.setInput('doAssessment', false);
+        fixture.detectChanges();
+        expect(fixture.nativeElement.querySelector('ion-textarea')).toBeNull();
+        enterText(oldTextarea, 'detached edit');
+      });
+      expect(save).not.toHaveBeenCalled();
+      save.calls.reset();
+
+      fixture.componentRef.setInput('doAssessment', true);
+      fixture.detectChanges();
+      await fixture.whenStable();
+
+      const textarea: HTMLIonTextareaElement = fixture.nativeElement.querySelector('ion-textarea');
+      expect(textarea).not.toBe(oldTextarea);
+      scheduler.run(() => enterText(textarea, 'reopened draft'));
+
+      expect(save).toHaveBeenCalledOnceWith({
+        autoSave: true,
+        goBack: false,
+        questionSave: { submissionId: 2, questionId: 3, answer: 'reopened draft' },
+      });
     });
   });
 
