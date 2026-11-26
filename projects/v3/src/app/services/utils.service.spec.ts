@@ -95,6 +95,11 @@ describe('UtilsService', () => {
       expect(result).toBe(1);
     });
 
+    it('returns -1 when the collection is missing', () => {
+      expect(service.indexOf(undefined, 2)).toBe(-1);
+      expect(service.indexOf(null, 2)).toBe(-1);
+    });
+
     it('should remove', () => {
       const arr = [1, 2, 3, 4];
       const removed = service.remove(arr, (val) => val % 2 === 0);
