@@ -1,9 +1,10 @@
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
-import { ComponentFixture, TestBed, waitForAsync, fakeAsync, tick } from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { TextComponent } from './text.component';
 import { FormControl, FormsModule } from '@angular/forms';
-import { IonicModule, IonTextarea } from '@ionic/angular/lazy';
-import { Subject, of } from 'rxjs';
+import { IonicModule } from '@ionic/angular/lazy';
+import { Subject } from 'rxjs';
+import { TestScheduler } from 'rxjs/testing';
 import { DebugElement } from '@angular/core';
 import { LanguageDetectionPipe } from '@v3/app/pipes/language.pipe';
 import { UtilsService } from '@v3/services/utils.service';
@@ -287,39 +288,43 @@ describe('TextComponent', () => {
     });
   });
 
-  describe('when testing ngAfterViewInit()', () => {
-    it('should set up auto-save subscription when answerRef is available', fakeAsync(() => {
-      // Match Ionic's typed ionInput event payload.
-      const mockInputEvent = { detail: { value: 'test' } };
+  it('queues the latest assessment answer from native textarea input after the debounce', async () => {
+    component.doAssessment = true;
+    component.submissionId = 2;
+    component.submissionStatus = 'in progress';
+    component.question = {
+      id: 3,
+      name: 'Text question',
+      type: 'text',
+      description: '',
+      isRequired: false,
+      canAnswer: true,
+      canComment: false,
+      audience: ['submitter'],
+    };
+    const save = spyOn(component.submitActions$, 'next');
+    fixture.detectChanges();
+    await fixture.whenStable();
 
-      component.answerRef = { ionInput: of(mockInputEvent) } as any;
-      spyOn(component, 'triggerSave');
+    const textarea: HTMLIonTextareaElement = fixture.nativeElement.querySelector('ion-textarea');
+    const enterText = (value: string) => {
+      textarea.value = value;
+      textarea.dispatchEvent(new CustomEvent('ionInput', { detail: { value }, bubbles: true }));
+    };
+    const scheduler = new TestScheduler((actual, expected) => expect(actual).toEqual(expected));
 
-      component.ngAfterViewInit();
-      tick(900);
-
-      expect(component.subcriptions.length).toBeGreaterThan(0);
-      expect(component.triggerSave).toHaveBeenCalledTimes(1);
-    }));
-
-    it('should not set up subscription when answerRef is not available', () => {
-      component.answerRef = null;
-      component.ngAfterViewInit();
-      expect(component.subcriptions.length).toBe(0);
+    scheduler.run(() => {
+      enterText('first draft');
+      scheduler.schedule(() => enterText('latest draft'), 200);
+      scheduler.schedule(() => expect(save).not.toHaveBeenCalled(), 999);
+      scheduler.schedule(() => enterText('pending edit'), 1100);
+      scheduler.schedule(() => fixture.destroy(), 1200);
     });
-  });
 
-  describe('when testing ngOnDestroy()', () => {
-    it('should unsubscribe all subscriptions', () => {
-      const mockSubscription1 = jasmine.createSpyObj('Subscription', ['unsubscribe'], { closed: false });
-      const mockSubscription2 = jasmine.createSpyObj('Subscription', ['unsubscribe'], { closed: true });
-
-      component.subcriptions = [mockSubscription1, mockSubscription2] as any;
-
-      component.ngOnDestroy();
-
-      expect(mockSubscription1.unsubscribe).toHaveBeenCalled();
-      expect(mockSubscription2.unsubscribe).not.toHaveBeenCalled();
+    expect(save).toHaveBeenCalledOnceWith({
+      autoSave: true,
+      goBack: false,
+      questionSave: { submissionId: 2, questionId: 3, answer: 'latest draft' },
     });
   });
 
