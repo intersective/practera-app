@@ -71,6 +71,13 @@ describe('AchievementPopUpComponent', () => {
     expect(component).toBeDefined();
   });
 
+  it('loads the default badge image relative to the localized app', () => {
+    fixture.detectChanges();
+
+    const image: HTMLImageElement = fixture.nativeElement.querySelector('#achievement-image');
+    expect(image.getAttribute('src')).toBe('assets/achievement-popup-default.svg');
+  });
+
   describe('ionViewDidEnter()', () => {
     // detectChanges() runs here after achievement is already set (from outer beforeEach),
     // so NG0100 cannot occur. The .el mocks are required because CUSTOM_ELEMENTS_SCHEMA

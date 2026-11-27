@@ -80,13 +80,18 @@ export class SharedService {
       this.achievementEvent = this.utils.getEvent('achievement').subscribe(async event => {
         if (event.type === 'achievement_earned' && event?.meta?.Achievement) {
           const { id, name, description, points, badge } = event.meta.Achievement;
-          await this.notification.achievementPopUp('notification', {
-            id,
-            name,
-            description,
-            points,
-            image: badge
-          });
+          if (badge === undefined) {
+            // The award worker stores the full badge in the todo item before sending the live event.
+            await firstValueFrom(this.notification.getTodoItems());
+          } else {
+            await this.notification.achievementPopUp('notification', {
+              id,
+              name,
+              description,
+              points,
+              image: badge
+            });
+          }
           return this.achievementService.getAchievements();
         }
 
