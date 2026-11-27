@@ -1,4 +1,4 @@
-import { Component, Input, forwardRef, ViewChild, ElementRef, OnInit, AfterViewInit, OnDestroy } from '@angular/core';
+import { Component, Input, forwardRef, ViewChild, ElementRef, OnInit, OnDestroy } from '@angular/core';
 import { NG_VALUE_ACCESSOR, FormControl, AbstractControl, ControlValueAccessor } from '@angular/forms';
 import { fromEvent, Subject, Subscription } from 'rxjs';
 import { debounceTime, distinctUntilChanged, map } from 'rxjs/operators';
@@ -17,7 +17,7 @@ import { Question } from '../types/assessment';
     }
   ]
 })
-export class TextComponent implements ControlValueAccessor, OnInit, AfterViewInit, OnDestroy {
+export class TextComponent implements ControlValueAccessor, OnInit, OnDestroy {
   @Input() submitActions$: Subject<any>;
   private answerAutosave?: Subscription;
 
@@ -34,8 +34,25 @@ export class TextComponent implements ControlValueAccessor, OnInit, AfterViewIni
   @Input() isReviewerFeedbackContext = false;
   @Input() control: AbstractControl;
 
-  // answer field for submitter & reviewer
-  @ViewChild('answerEle', { read: ElementRef }) private answerRef?: ElementRef<HTMLElement>;
+  // Angular can replace the editable textarea while the question stays mounted.
+  @ViewChild('answerEle', { read: ElementRef })
+  private set answerRef(answer: ElementRef<HTMLElement> | undefined) {
+    this.answerAutosave?.unsubscribe();
+    this.answerAutosave = undefined;
+
+    const textarea = answer?.nativeElement;
+    if (!textarea) {
+      return;
+    }
+
+    // Ionic 9 publishes textarea input as a native DOM event.
+    this.answerAutosave = fromEvent<CustomEvent<{ value?: string | null }>>(textarea, 'ionInput').pipe(
+      map(event => event.detail.value ?? ''),
+      debounceTime(800),
+      distinctUntilChanged(),
+    ).subscribe(() => this.triggerSave());
+  }
+
   // comment field for reviewer
   @ViewChild('commentEle') commentRef: ElementRef;
 
@@ -81,20 +98,6 @@ export class TextComponent implements ControlValueAccessor, OnInit, AfterViewIni
     }
 
     this.submitActions$.next(action);
-  }
-
-  ngAfterViewInit() {
-    const textarea = this.answerRef?.nativeElement;
-    if (!textarea) {
-      return;
-    }
-
-    // Ionic 9 publishes textarea input as a native DOM event.
-    this.answerAutosave = fromEvent<CustomEvent<{ value?: string | null }>>(textarea, 'ionInput').pipe(
-      map(event => event.detail.value ?? ''),
-      debounceTime(800),
-      distinctUntilChanged(),
-    ).subscribe(() => this.triggerSave());
   }
 
   ngOnDestroy() {

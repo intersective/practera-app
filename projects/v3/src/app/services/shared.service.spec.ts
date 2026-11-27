@@ -5,12 +5,13 @@ import { RequestService } from 'request';
 import { TopicService } from '@v3/services/topic.service';
 import { BrowserStorageServiceMock } from '@testingv3/mocked.service';
 import { TestUtils } from '@testingv3/utils';
-import { Observable, of, throwError } from 'rxjs';
+import { Observable, of, Subject, throwError } from 'rxjs';
 import { SharedService } from './shared.service';
 import { BrowserStorageService } from './storage.service';
 import { UtilsService } from './utils.service';
 import { PusherService } from './pusher.service';
 import { ApolloService } from './apollo.service';
+import { AchievementService } from './achievement.service';
 
 describe('SharedService', () => {
   let service: SharedService;
@@ -35,7 +36,11 @@ describe('SharedService', () => {
         },
         {
           provide: NotificationsService,
-          useValue: jasmine.createSpyObj('NotificationsService', ['achievementPopUp']),
+          useValue: jasmine.createSpyObj('NotificationsService', ['achievementPopUp', 'getTodoItems']),
+        },
+        {
+          provide: AchievementService,
+          useValue: jasmine.createSpyObj('AchievementService', ['getAchievements']),
         },
         {
           provide: HttpClient,
@@ -183,6 +188,59 @@ describe('SharedService', () => {
       expect(httpSpy.get).toHaveBeenCalled();
       expect(utilsSpy.changeThemeColor).toHaveBeenCalled();
       expect(utilsSpy.changeCardBackgroundImage).toHaveBeenCalled();
+    });
+
+    describe('badge award notifications', () => {
+      let achievementEvents: Subject<unknown>;
+      let notifications: jasmine.SpyObj<NotificationsService>;
+      let achievements: jasmine.SpyObj<AchievementService>;
+
+      beforeEach(async () => {
+        storageSpy.getUser = jasmine.createSpy('getUser').and.returnValue({ timelineId: 1, projectId: 1 });
+        notifications = TestBed.inject(NotificationsService) as jasmine.SpyObj<NotificationsService>;
+        notifications.getTodoItems.and.returnValue(of([]));
+        achievements = TestBed.inject(AchievementService) as jasmine.SpyObj<AchievementService>;
+        achievementEvents = new Subject();
+        (utilsSpy.getEvent as jasmine.Spy).and.returnValue(achievementEvents);
+        await service.onPageLoad();
+      });
+
+      it('loads the saved badge notification when the live event omits the image', async () => {
+        achievementEvents.next({
+          type: 'achievement_earned',
+          meta: { Achievement: { id: 42, name: 'Assessment badge' } },
+        });
+        await Promise.resolve();
+
+        expect(notifications.getTodoItems).toHaveBeenCalledTimes(1);
+        expect(notifications.achievementPopUp).not.toHaveBeenCalled();
+        expect(achievements.getAchievements).toHaveBeenCalledTimes(1);
+      });
+
+      it('opens the popup directly when the live event includes the badge image', async () => {
+        achievementEvents.next({
+          type: 'achievement_earned',
+          meta: {
+            Achievement: {
+              id: 42,
+              name: 'Assessment badge',
+              description: 'Completed an assessment',
+              points: 10,
+              badge: 'https://example.test/badge.png',
+            },
+          },
+        });
+        await Promise.resolve();
+
+        expect(notifications.achievementPopUp).toHaveBeenCalledOnceWith('notification', {
+          id: 42,
+          name: 'Assessment badge',
+          description: 'Completed an assessment',
+          points: 10,
+          image: 'https://example.test/badge.png',
+        });
+        expect(notifications.getTodoItems).not.toHaveBeenCalled();
+      });
     });
   });
 

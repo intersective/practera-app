@@ -8,7 +8,7 @@
   <div class="image-content">
     <div class="image ion-text-center">
       <img alt="{{achievement?.name}}"
-        [src]="achievement?.image ? achievement.image : '/assets/achievement-popup-default.svg'"
+        [src]="achievement?.image ? achievement.image : 'assets/achievement-popup-default.svg'"
         id="achievement-image"
         [ngClass]="type === 'notification'? '' : !achievement?.isEarned ? 'black-white-image': ''"
         tabindex="0"
