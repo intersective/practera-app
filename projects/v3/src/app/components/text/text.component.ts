@@ -1,8 +1,7 @@
 import { Component, Input, forwardRef, ViewChild, ElementRef, OnInit, AfterViewInit, OnDestroy } from '@angular/core';
 import { NG_VALUE_ACCESSOR, FormControl, AbstractControl, ControlValueAccessor } from '@angular/forms';
-import { IonTextarea } from '@ionic/angular/lazy';
-import { Subject, Subscription } from 'rxjs';
-import { debounceTime, distinctUntilChanged, filter, map } from 'rxjs/operators';
+import { fromEvent, Subject, Subscription } from 'rxjs';
+import { debounceTime, distinctUntilChanged, map } from 'rxjs/operators';
 import { Question } from '../types/assessment';
 
 @Component({
@@ -20,7 +19,7 @@ import { Question } from '../types/assessment';
 })
 export class TextComponent implements ControlValueAccessor, OnInit, AfterViewInit, OnDestroy {
   @Input() submitActions$: Subject<any>;
-  subcriptions: Subscription[] = [];
+  private answerAutosave?: Subscription;
 
   @Input() question: Question;
   @Input() submission;
@@ -36,7 +35,7 @@ export class TextComponent implements ControlValueAccessor, OnInit, AfterViewIni
   @Input() control: AbstractControl;
 
   // answer field for submitter & reviewer
-  @ViewChild('answerEle') answerRef: IonTextarea;
+  @ViewChild('answerEle', { read: ElementRef }) private answerRef?: ElementRef<HTMLElement>;
   // comment field for reviewer
   @ViewChild('commentEle') commentRef: ElementRef;
 
@@ -85,24 +84,21 @@ export class TextComponent implements ControlValueAccessor, OnInit, AfterViewIni
   }
 
   ngAfterViewInit() {
-    if (this.answerRef?.ionInput) {
-      this.subcriptions.push(this.answerRef.ionInput.pipe(
-        map(e => e.detail.value ?? ''),
-        filter(text => text.length >= 0),
-        debounceTime(800),
-        distinctUntilChanged(),
-      ).subscribe(_answer => {
-        return this.triggerSave();
-      }));
+    const textarea = this.answerRef?.nativeElement;
+    if (!textarea) {
+      return;
     }
+
+    // Ionic 9 publishes textarea input as a native DOM event.
+    this.answerAutosave = fromEvent<CustomEvent<{ value?: string | null }>>(textarea, 'ionInput').pipe(
+      map(event => event.detail.value ?? ''),
+      debounceTime(800),
+      distinctUntilChanged(),
+    ).subscribe(() => this.triggerSave());
   }
 
   ngOnDestroy() {
-    this.subcriptions.forEach(subscription => {
-      if (!subscription.closed) {
-        subscription.unsubscribe();
-      }
-    });
+    this.answerAutosave?.unsubscribe();
   }
 
   // propagate changes into the form control
